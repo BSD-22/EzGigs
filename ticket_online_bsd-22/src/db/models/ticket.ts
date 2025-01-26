@@ -57,8 +57,6 @@ export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> =>
 
   const tickets = (await collection.find({}).toArray()) as TicketModel[];
 
-  console.log(tickets, "di db model");
-
   const result: CustomResponse<TicketModel[]> = {
     statusCode: 200,
     data: tickets,

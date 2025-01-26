@@ -8,7 +8,7 @@ export type CustomResponse<T> = {
 export type JosePayload = {
   id: string;
   email: string;
-  username: string;
+  name: string;
 };
 
 export type ActionResponse<T> = {

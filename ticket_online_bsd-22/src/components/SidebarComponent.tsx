@@ -41,7 +41,7 @@ const SideBar = () => {
       <ul className="pt-6">
         <li className="mb-2">
           <Link
-            href="/tickets"
+            href="/home/ticket"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">🎫</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Tickets</span>
@@ -49,7 +49,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/my-tickets"
+            href="/home/my-tickets"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">🎯</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Your Tickets</span>
@@ -65,7 +65,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/subscription"
+            href="/home/subscription"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">⭐</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Subscription</span>
@@ -73,7 +73,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/marketplace"
+            href="/home/marketplace"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">🏪</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Marketplace</span>
@@ -81,7 +81,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/wishlist"
+            href="/home/wishlist"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">💝</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Wishlist</span>
