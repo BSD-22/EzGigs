@@ -7,6 +7,7 @@ import { UserModel } from "@/db/models/user";
 import { TicketModel } from "@/db/models/ticket";
 import { ObjectId } from "mongodb";
 import { Dialog } from "@headlessui/react";
+import Link from "next/link";
 
 type UserTicketWithDetails = NonNullable<UserModel["ownedTickets"]>[number] & {
   ticketDetails: TicketModel;
@@ -113,11 +114,11 @@ const MarketplaceSell = () => {
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold text-gray-400">No Tickets Available</h2>
           <p className="text-gray-500 mt-2">You don&apos;t have any tickets to sell at the moment.</p>
-          <a
+          <Link
             href="/home/marketplace"
             className="inline-block mt-4 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
             Browse Marketplace
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

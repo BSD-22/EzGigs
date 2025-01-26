@@ -6,6 +6,7 @@ import { JosePayload } from "@/types";
 import { ObjectId } from "mongodb";
 import { TicketModel } from "@/db/models/ticket";
 import { getAllMarketplace } from "@/db/models/marketplace";
+import BrowseTicketsButton from "@/components/BrowseTicketsButton";
 
 // Add type at the top with other imports
 type TicketWithStatus = {
@@ -52,11 +53,7 @@ async function MyTicketsPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-400">No Tickets Found</h2>
           <p className="text-gray-500 mt-2">You haven&apos;t purchased any tickets yet.</p>
-          <a
-            href="/home/ticket"
-            className="inline-block mt-4 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
-            Browse Tickets
-          </a>
+          <BrowseTicketsButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
