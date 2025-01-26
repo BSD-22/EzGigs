@@ -2,7 +2,7 @@ import { ObjectId, UpdateFilter } from "mongodb";
 import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { hashText } from "@/utils/bcrypt";
-import { TicketModel } from "./ticket";
+// import { TicketModel } from "./ticket";
 
 export type UserModel = {
   _id: ObjectId;
@@ -12,10 +12,12 @@ export type UserModel = {
   ownedTickets?: {
     ticketId: ObjectId;
     status: "owned" | "selling" | "sold";
+    purchasePrice?: number; // Add this field
   }[];
   soldTickets?: {
     ticketId: ObjectId;
     toUserId: ObjectId;
+    soldPrice?: number; // Add this field
   }[];
 };
 
@@ -90,11 +92,11 @@ export const getUserByEmail = async (email: string): Promise<CustomResponse<User
   };
 };
 
-export const getUserTickets = async (email: string): Promise<CustomResponse<UserModel & { ticketDetails: TicketModel[] }>> => {
+export const getUserTickets = async (email: string) => {
   const db = await getDb();
   const collection = db.collection("User");
 
-  const user = (await collection
+  const user = await collection
     .aggregate([
       {
         $match: { email },
@@ -107,8 +109,24 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
           as: "ticketDetails",
         },
       },
+      {
+        $lookup: {
+          from: "User",
+          localField: "soldTickets.toUserId",
+          foreignField: "_id",
+          as: "buyerDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "Marketplace",
+          localField: "soldTickets.ticketId",
+          foreignField: "ticketId",
+          as: "marketplaceDetails",
+        },
+      },
     ])
-    .next()) as UserModel & { ticketDetails: TicketModel[] };
+    .next();
 
   return {
     statusCode: 200,
@@ -116,20 +134,19 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
   };
 };
 
-export const addTicketToUser = async (userId: string, ticketId: string): Promise<CustomResponse<unknown>> => {
+export const addTicketToUser = async (userId: string, ticketId: string, purchasePrice?: number) => {
   const db = await getDb();
   const collection = db.collection<UserModel>("User");
 
-  const updateDocument = {
+  const result = await collection.updateOne({ _id: ObjectId.createFromHexString(userId) }, {
     $push: {
       ownedTickets: {
         ticketId: ObjectId.createFromHexString(ticketId),
-        status: "owned" as const,
+        status: "owned",
+        purchasePrice,
       },
     },
-  } satisfies UpdateFilter<UserModel>;
-
-  const result = await collection.updateOne({ _id: ObjectId.createFromHexString(userId) }, updateDocument);
+  } satisfies UpdateFilter<UserModel>);
 
   return {
     statusCode: 200,
@@ -137,7 +154,7 @@ export const addTicketToUser = async (userId: string, ticketId: string): Promise
   };
 };
 
-export const updateTicketStatus = async (userId: string, ticketId: string, status: "owned" | "selling" | "sold", buyerId?: string): Promise<CustomResponse<unknown>> => {
+export const updateTicketStatus = async (userId: string, ticketId: string, status: "owned" | "selling" | "sold", buyerId?: string, soldPrice?: number): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection = db.collection<UserModel>("User");
 
@@ -164,6 +181,7 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
         soldTickets: {
           ticketId: ObjectId.createFromHexString(ticketId),
           toUserId: ObjectId.createFromHexString(buyerId),
+          soldPrice, // Add the marketplace price to soldTickets
         },
       },
     } satisfies UpdateFilter<UserModel>;

@@ -57,7 +57,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/history"
+            href="/home/history"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
             <span className="text-xl">📜</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>History</span>
@@ -89,7 +89,7 @@ const SideBar = () => {
         </li>
         <li className="mb-2">
           <Link
-            href="/cart"
+            href="/home/cart"
             className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors relative">
             <span className="text-xl">🛒</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Cart</span>

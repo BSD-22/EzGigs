@@ -31,7 +31,17 @@ const Marketplace = async () => {
                 className="object-cover"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                <p className="text-[#00F5A0] font-bold">Rp {listing.ticket.price.toLocaleString("id-ID")}</p>
+                <p className="text-[#00F5A0] font-bold">Rp {listing.price.toLocaleString("id-ID")}</p>
+                {listing.price !== listing.ticket.price && (
+                  <p className="text-sm text-gray-400">
+                    <span className="line-through">Rp {listing.ticket.price.toLocaleString("id-ID")}</span>
+                    {listing.price < listing.ticket.price ? (
+                      <span className="ml-2 text-green-500">({Math.round((1 - listing.price / listing.ticket.price) * 100)}% OFF)</span>
+                    ) : (
+                      <span className="ml-2 text-yellow-500">({Math.round((listing.price / listing.ticket.price - 1) * 100)}% MARKUP)</span>
+                    )}
+                  </p>
+                )}
               </div>
             </div>
             <div className="p-6">
@@ -40,6 +50,7 @@ const Marketplace = async () => {
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#8E2DE2] to-[#00F5A0] flex items-center justify-center text-xs">{listing.user.name[0].toUpperCase()}</div>
                 <span className="text-sm text-gray-400">Sold by {listing.user.name}</span>
               </div>
+              {listing.description && <p className="text-sm text-gray-400 mb-4 italic">{listing.description}</p>}
               <div className="space-y-2 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
                   <span>📍</span>
@@ -61,7 +72,7 @@ const Marketplace = async () => {
                 </div>
               </div>
               <a
-                href={`/marketplace/${listing._id}`}
+                href={`/home/marketplace/${listing._id.toString()}`}
                 className="mt-4 w-full bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
                 View Details
                 <span className="group-hover:translate-x-1 transition-transform">→</span>

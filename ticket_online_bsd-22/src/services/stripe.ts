@@ -24,7 +24,7 @@ export const createPaymentSession = async (ticket: TicketModel, userId: string):
               description: `Seat: ${ticket.seats} at ${ticket.venue}`,
               images: [ticket.image],
             },
-            unit_amount: ticket.price * 10,
+            unit_amount: ticket.price * 100,
           },
           quantity: 1,
         },
