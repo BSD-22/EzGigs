@@ -8,12 +8,16 @@ export type MarketplaceModel = {
   _id: ObjectId;
   ticketId: ObjectId;
   userId: ObjectId;
+  price: number;
+  description?: string;
 };
 
 export type MarketplaceDetailModel = {
   _id: ObjectId;
   user: UserModel;
   ticket: TicketModel;
+  price: number;
+  description?: string;
 };
 
 export const getAllMarketplace = async (): Promise<CustomResponse<MarketplaceDetailModel[]>> => {
@@ -96,25 +100,47 @@ export const getMarketplaceById = async (id: string): Promise<CustomResponse<Mar
   };
 };
 
-export const createMarketplace = async (userId: ObjectId, ticketId: ObjectId): Promise<CustomResponse<unknown>> => {
+export const createMarketplace = async (userId: string, ticketId: string, price: number, description?: string): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection = db.collection("Marketplace");
 
   const newMarketplace = {
-    userId,
-    ticketId,
+    userId: ObjectId.createFromHexString(userId),
+    ticketId: ObjectId.createFromHexString(ticketId),
+    price,
+    description,
   };
 
   const insertedMarketplace = await collection.insertOne(newMarketplace);
 
   const result: MarketplaceModel = {
     _id: insertedMarketplace.insertedId,
-    userId,
-    ticketId,
+    ...newMarketplace,
   };
 
   return {
     statusCode: 201,
     data: result,
+  };
+};
+
+export const deleteMarketplace = async (userId: string, ticketId: string): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const collection = db.collection("Marketplace");
+
+  const foundMarketplace = await collection.findOne({ userId: ObjectId.createFromHexString(userId), ticketId: ObjectId.createFromHexString(ticketId) });
+
+  if (!foundMarketplace) {
+    return {
+      statusCode: 404,
+      message: "Marketplace not found",
+    };
+  }
+
+  const result = await collection.deleteOne({ userId: ObjectId.createFromHexString(userId), ticketId: ObjectId.createFromHexString(ticketId) });
+
+  return {
+    statusCode: 200,
+    data: result.acknowledged,
   };
 };
