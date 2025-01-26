@@ -40,8 +40,6 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
 
   const foundUser = await getUserByEmail(parsedData.data.email);
 
-  console.log(foundUser, "foundUser");
-
   if (!foundUser.data || !compareText(parsedData.data.password, foundUser.data.password)) {
     return {
       success: false,
@@ -52,7 +50,7 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
   const payload: JosePayload = {
     id: foundUser.data._id.toString(),
     email: foundUser.data.email,
-    username: foundUser.data.name,
+    name: foundUser.data.name,
   };
 
   const token = await signToken(payload);
@@ -60,5 +58,5 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
   const cookieStore = await cookies();
   cookieStore.set("token", token);
 
-  return redirect("/");
+  return redirect("/home/ticket");
 };

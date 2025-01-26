@@ -5,31 +5,56 @@ import { TicketModel } from "@/db/models/ticket";
 import Image from "next/image";
 import { baseUrl } from "@/constants/baseUrl";
 import { useRouter } from "next/navigation";
+import { StripeResponse } from "@/services/stripe";
 
 export default function Home() {
   const router = useRouter();
   const [tickets, setTickets] = useState<TicketModel[]>([]);
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      const res = await fetch(baseUrl + "/api/ticket", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await res.json();
+  const fetchTickets = async () => {
+    const res = await fetch(baseUrl + "/api/ticket", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await res.json();
 
-      console.log(json);
-
-      setTickets(json?.data);
-    };
-    fetchTickets();
-  }, []);
+    setTickets(json?.data);
+  };
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
   };
+
+  const handleBuyTicket = async (ticketId: string) => {
+    try {
+      const res = await fetch(baseUrl + "/api/ticket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ ticketId }),
+      });
+
+      const json = await res.json();
+
+      if (res.ok && json.data) {
+        const stripeData = json.data as StripeResponse;
+
+        router.push(stripeData.url);
+      } else {
+        console.error("Payment creation failed:", json.message);
+      }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTickets();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex">
@@ -70,6 +95,7 @@ export default function Home() {
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent card click when clicking button
                       // Add buy now logic here
+                      handleBuyTicket(ticket._id.toString());
                     }}>
                     Buy Now
                   </button>

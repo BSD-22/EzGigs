@@ -1,0 +1,36 @@
+[
+  {
+    "email": "john.doe@mail.com",
+    "name": "John Doe",
+    "password": "$2b$10$3euPcmQFCiblsZeEu5s7p.9MQBWgCTfXPRhK4t2CZFbYxidxoWjie",
+    "ownedTickets": [
+      {
+        "ticketId": "65f2e0a51e3dfa3d2c5718b1",
+        "status": "owned"
+      },
+      {
+        "ticketId": "65f2e0a51e3dfa3d2c5718b2",
+        "status": "selling"
+      }
+    ],
+    "soldTickets": {
+      "ticketId": "65f2e0a51e3dfa3d2c5718b3",
+      "toUserId": "65f2e0a51e3dfa3d2c5718a3"
+    }
+  },
+  {
+    "email": "jane.smith@mail.com",
+    "name": "Jane Smith",
+    "password": "$2b$10$3euPcmQFCiblsZeEu5s7p.9MQBWgCTfXPRhK4t2CZFbYxidxoWjie",
+    "ownedTickets": [
+      {
+        "ticketId": "65f2e0a51e3dfa3d2c5718b4",
+        "status": "selling"
+      }
+    ],
+    "soldTickets": {
+      "ticketId": "65f2e0a51e3dfa3d2c5718b5",
+      "toUserId": "65f2e0a51e3dfa3d2c5718a4"
+    }
+  }
+]

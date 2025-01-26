@@ -1,106 +1,84 @@
-import Image from "next/image";
 import { getTicketById } from "@/db/models/ticket";
-
-const fetchTicketDetail = async (id: string) => {
-  const tickets = await getTicketById(id);
-
-  return tickets;
-};
+import Image from "next/image";
 
 const TicketDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
-  const data = await fetchTicketDetail(id);
+  const data = await getTicketById(id);
   const ticket = data.data;
 
   if (!ticket) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div className="text-2xl font-bold bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Ticket not found ✨</div>
+      <div className="flex-1 p-7">
+        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Ticket Not Found 😢</h1>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white p-8">
-      {/* Ini masih pake a tolong dibenerin nanti ya  */}
-      <a
-        href="/home/ticket"
-        className="inline-flex items-center gap-2 text-[#00F5A0] hover:text-[#8E2DE2] transition-colors mb-8">
-        <span>←</span> Back to tickets
-      </a>
-
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative h-[400px] group">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#8E2DE2]/20 to-[#00F5A0]/20 rounded-2xl transform group-hover:scale-105 transition-transform duration-500 ease-out" />
+    <div className="flex-1 p-7">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-2xl overflow-hidden">
+          <div className="relative h-96 w-full">
             <Image
               src={ticket.image}
               alt={ticket.name}
               fill
-              className="object-cover rounded-2xl"
+              className="object-cover"
             />
           </div>
-
-          <div className="space-y-6 bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-[#8E2DE2]/20">
+          <div className="p-8">
             <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">{ticket.name}</h1>
+            <p className="mt-4 text-gray-400">{ticket.description}</p>
 
-            <div className="flex items-center gap-4">
-              <span className="px-4 py-2 bg-[#8E2DE2]/20 rounded-full text-[#00F5A0] font-semibold">Rp {ticket.price.toLocaleString("id-ID")}</span>
-              <span className="px-4 py-2 bg-[#8E2DE2]/20 rounded-full text-white/80">Seat {ticket.seats}</span>
-            </div>
-
-            <div className="space-y-4 text-gray-300">
-              <p className="text-lg">{ticket.description}</p>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-[#00F5A0]">📍</span>
-                  <span>{ticket.venue}</span>
+            <div className="mt-8 grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📍</span>
+                  <div>
+                    <p className="text-sm text-gray-400">Venue</p>
+                    <p className="text-white">{ticket.venue}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#00F5A0]">📅</span>
-                  <span>
-                    {new Date(ticket.date).toLocaleDateString("id-ID", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📅</span>
+                  <div>
+                    <p className="text-sm text-gray-400">Date</p>
+                    <p className="text-white">
+                      {new Date(ticket.date).toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#00F5A0]">⏰</span>
-                  <span>{ticket.time} WIB</span>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">⌚</span>
+                  <div>
+                    <p className="text-sm text-gray-400">Time</p>
+                    <p className="text-white">{ticket.time}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">💺</span>
+                  <div>
+                    <p className="text-sm text-gray-400">Seat</p>
+                    <p className="text-white">{ticket.seats}</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 space-y-4">
-              <form
-                action="/api/checkout"
-                method="POST"
-                className="w-full">
-                <button className="w-full bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white font-bold py-4 px-8 rounded-xl hover:opacity-90 transition-opacity">Get Your Ticket Now! 🎫</button>
-              </form>
-
-              <div className="flex justify-center gap-4">
-                <form
-                  action="/api/wishlist"
-                  method="POST"
-                  className="contents">
-                  <button className="flex items-center gap-2 text-[#00F5A0] hover:text-white transition-colors">
-                    <span>💝</span> Add to Wishlist
-                  </button>
-                </form>
-                <form
-                  action="/api/cart"
-                  method="POST"
-                  className="contents">
-                  <button className="flex items-center gap-2 text-[#00F5A0] hover:text-white transition-colors">
-                    <span>🛒</span> Add to Cart
-                  </button>
-                </form>
+            <div className="mt-8 flex items-center justify-between border-t border-[#8E2DE2]/20 pt-8">
+              <div>
+                <p className="text-sm text-gray-400">Price</p>
+                <p className="text-2xl font-bold text-[#00F5A0]">Rp {ticket.price.toLocaleString("id-ID")}</p>
               </div>
+              <button className="px-8 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-white font-medium hover:opacity-90 transition-opacity">Buy Ticket</button>
             </div>
           </div>
         </div>
