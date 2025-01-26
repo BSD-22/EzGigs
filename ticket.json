@@ -1,0 +1,253 @@
+[
+  {
+    "name": "Taylor Swift - The Eras Tour",
+    "price": 2500000,
+    "seats": "A-1",
+    "venue": "Gelora Bung Karno Stadium, Jakarta",
+    "date": "2025-03-15",
+    "time": "19:00",
+    "description": "Experience Taylor Swift's record-breaking Eras Tour live in Jakarta!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "BLACKPINK World Tour",
+    "price": 2000000,
+    "seats": "B-15",
+    "venue": "Indonesia Convention Exhibition (ICE) BSD",
+    "date": "2025-01-20",
+    "time": "20:00",
+    "description": "BLACKPINK in your area! Don't miss their explosive performance!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "SEVENTEEN Be The Sun Tour",
+    "price": 2200000,
+    "seats": "E-15",
+    "venue": "Indonesia Convention Exhibition (ICE) BSD",
+    "date": "2024-08-05",
+    "time": "18:30",
+    "description": "Join SEVENTEEN for an unforgettable night of powerful performances!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Westlife - The Wild Dreams Tour",
+    "price": 1950000,
+    "seats": "F-8",
+    "venue": "Stadion Madya Gelora Bung Karno",
+    "date": "2024-09-30",
+    "time": "20:00",
+    "description": "Relive the magic with Westlife's greatest hits and new songs!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "TWICE Ready To Be World Tour",
+    "price": 2100000,
+    "seats": "VIP-7",
+    "venue": "Jakarta International Stadium",
+    "date": "2024-10-12",
+    "time": "19:00",
+
+    "description": "TWICE brings their electrifying performances to Jakarta!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Imagine Dragons - Mercury World Tour",
+    "price": 1750000,
+    "seats": "G-11",
+    "venue": "Gelora Bung Karno Stadium, Jakarta",
+    "date": "2024-11-25",
+    "time": "19:30",
+    "description": "Experience an explosive night of rock with Imagine Dragons!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "The Weeknd - After Hours Tour",
+    "price": 2800000,
+    "seats": "A-22",
+    "venue": "Gelora Bung Karno Stadium, Jakarta",
+    "date": "2024-12-05",
+    "time": "20:00",
+    "description": "The Weeknd brings his cinematic experience to Jakarta!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Rossa 25th Anniversary Concert",
+    "price": 1200000,
+    "seats": "B-8",
+    "venue": "Jakarta Convention Center",
+    "date": "2024-08-25",
+    "time": "19:30",
+    "description": "Celebrate 25 years of Indonesian music legend Rossa!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Raisa x Isyana - Dream Collaboration",
+    "price": 1350000,
+    "seats": "C-15",
+    "venue": "The Kasablanka Hall",
+    "date": "2024-09-10",
+    "time": "20:00",
+    "description": "Two of Indonesia's finest vocalists unite for one magical night!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Tulus - Manusia Tour",
+    "price": 850000,
+    "seats": "A-12",
+    "venue": "Tennis Indoor Senayan",
+    "date": "2024-10-18",
+    "time": "19:00",
+    "description": "Experience the soulful journey of Tulus' latest album!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Dewa 19 Reunion Concert",
+    "price": 1500000,
+    "seats": "VIP-5",
+    "venue": "Istora Senayan",
+    "date": "2024-11-30",
+    "time": "19:30",
+    "description": "The legendary Indonesian rock band returns with all original members!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Java Jazz Festival 2024",
+    "price": 2200000,
+    "seats": "FESTIVAL-1",
+    "venue": "JIExpo Kemayoran",
+    "date": "2024-12-15",
+    "time": "17:00",
+    "description": "Three days of world-class jazz performances in Jakarta!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "NewJeans First Fan Meeting",
+    "price": 1800000,
+    "seats": "H-7",
+    "venue": "Tennis Indoor Senayan",
+    "date": "2024-08-28",
+    "time": "18:00",
+    "description": "Baku hantam rebutan tiket NewJeans pertama kali di Jakarta!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Sheila On 7 - Nostalgia Tour",
+    "price": 750000,
+    "seats": "REG-22",
+    "venue": "Parkir Timur Senayan",
+    "date": "2024-09-22",
+    "time": "19:00",
+    "description": "Nostalgia bareng SO7, bawa tisu ya bestie! 🥹",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "ENHYPEN MANIFESTO Tour",
+    "price": 2300000,
+    "seats": "VIP-12",
+    "venue": "ICE BSD",
+    "date": "2024-10-28",
+    "time": "18:30",
+    "description": "Gas poll nonton ENHYPEN live pertama kali di Indo!",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Slank Reunion Show",
+    "price": 800000,
+    "seats": "REG-45",
+    "venue": "Lapangan D Senayan",
+    "date": "2024-08-17",
+    "time": "19:00",
+    "description": "Slankers merapat! Konser spesial kemerdekaan bareng Slank! 🤘",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Rhoma Irama & Soneta Group",
+    "price": 500000,
+    "seats": "VIP-8",
+    "venue": "Istora Senayan",
+    "date": "2024-09-05",
+    "time": "20:00",
+    "description": "Raja Dangdut is back! Goyang bareng sang raja! 👑",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Hardwell EDM Night",
+    "price": 1850000,
+    "seats": "FESTIVAL-22",
+    "venue": "JIEXPO Kemayoran",
+    "date": "2024-10-31",
+    "time": "22:00",
+    "description": "Rave sampe pagi bareng king of EDM! 🎉",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Maliq & D'Essentials Jazz Night",
+    "price": 950000,
+    "seats": "JAZZ-15",
+    "venue": "Balai Sarbini",
+    "date": "2024-11-08",
+    "time": "19:30",
+    "description": "Malam minggu santuy bareng Maliq! Dress code: all black! 🖤",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "NIKI - Nicole Tour",
+    "price": 1650000,
+    "seats": "A-17",
+    "venue": "Beach City International Stadium",
+    "date": "2024-12-20",
+    "time": "19:00",
+    "description": "Our Indonesian pride is coming home! Jangan sampe kehabisan! 💫",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Bring Me The Horizon",
+    "price": 1750000,
+    "seats": "MOSH-1",
+    "venue": "Gelora Bung Karno Stadium",
+    "date": "2024-08-30",
+    "time": "19:00",
+    "description": "Siap-siap moshing bareng BMTH! Bawa air ya bestie! 🤘",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Rich Brian Homecoming",
+    "price": 1550000,
+    "seats": "VIP-9",
+    "venue": "ICE BSD",
+    "date": "2024-09-28",
+    "time": "20:00",
+    "description": "The Sailor is back! Jangan lupa pake bucket hat! 🪣",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Agnez Mo - X Tour",
+    "price": 2000000,
+    "seats": "GOLD-3",
+    "venue": "Jakarta International Stadium",
+    "date": "2024-10-15",
+    "time": "19:30",
+    "description": "Queen Agnez is serving looks and vocals! Period! 👑",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Weird Genius Live Concert",
+    "price": 890000,
+    "seats": "REG-33",
+    "venue": "Ancol Beach City",
+    "date": "2024-11-22",
+    "time": "18:00",
+    "description": "Lathi challenge live version! Jangan lupa stretching! 💃",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  },
+  {
+    "name": "Kahitna - Cerita Cinta Tour",
+    "price": 750000,
+    "seats": "B-21",
+    "venue": "The Kasablanka Hall",
+    "date": "2024-12-31",
+    "time": "20:00",
+    "description": "New Year's Eve spesial bareng Kahitna! Bawa pasangan ya! ❤️",
+    "image": "https://cdn.rri.co.id/berita/7/images/1709532575929-W/a9cppyjl3v1p7nz.jpeg"
+  }
+]

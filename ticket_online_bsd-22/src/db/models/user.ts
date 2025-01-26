@@ -3,12 +3,15 @@ import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { hashText } from "@/utils/bcrypt";
 
-type UserModel = {
+export type UserModel = {
   _id: ObjectId;
   email: string;
   name: string;
   password: string;
+  tickets?: ObjectId[];
 };
+
+export type UserModelWithoutPassword = Omit<UserModel, "password">;
 
 export const createUser = async (email: string, name: string, password: string): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
@@ -22,13 +25,17 @@ export const createUser = async (email: string, name: string, password: string):
 
   const insertedUser = await collection.insertOne(modifiedUser);
 
-  const result: CustomResponse<unknown> = {
-    statusCode: 201,
-    message: "User created successfully",
-    data: insertedUser.acknowledged,
+  const result: UserModelWithoutPassword = {
+    _id: insertedUser.insertedId,
+    email,
+    name,
+    tickets: [],
   };
 
-  return result;
+  return {
+    statusCode: 201,
+    data: result,
+  };
 };
 
 export const getAllUsers = async (): Promise<CustomResponse<UserModel[]>> => {
