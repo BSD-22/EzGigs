@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
-import { getUserTickets, UserModel } from "@/db/models/user";
+import { getUserTickets } from "@/db/models/user";
 import { verifyToken } from "@/utils/jose";
 import { JosePayload } from "@/types";
-import { ObjectId } from "mongodb";
-import { TicketModel } from "@/db/models/ticket";
+
+import StartSellingButton from "@/components/StartSellingButton";
 
 const HistoryPage = async () => {
   const cookieStore = await cookies();
@@ -22,13 +22,17 @@ const HistoryPage = async () => {
   const payload = await verifyToken<JosePayload>(token.value);
   const tickets = await getUserTickets(payload.email);
 
-  if (!tickets) {
+  if (!tickets || !tickets.data) {
     return (
       <div className="flex-1 p-7">
         <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Sales History 📊</h1>
       </div>
     );
   }
+
+  console.log(tickets.data, "tickets.data");
+
+  console.log(tickets.data.soldTickets, "tickets.data.soldTickets");
 
   return (
     <div className="flex-1 p-7 overflow-auto">
@@ -41,17 +45,14 @@ const HistoryPage = async () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-400">No Sales History Yet</h2>
           <p className="text-gray-500 mt-2 max-w-md mx-auto">Start selling your tickets in the marketplace and track your sales history here.</p>
-          <a
-            href="/home/marketplace/sell"
-            className="inline-block mt-4 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
-            Start Selling
-          </a>
+          <StartSellingButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tickets.data.soldTickets.map((soldTicket: { ticketId: ObjectId; toUserId: ObjectId }) => {
-            const ticketDetails = tickets.data?.ticketDetails.find((detail: TicketModel) => detail._id.toString() === soldTicket.ticketId.toString());
-            const buyerDetails = tickets.data?.buyerDetails?.find((buyer: UserModel) => buyer._id.toString() === soldTicket.toUserId.toString());
+          {tickets.data.soldTickets.map((soldTicket) => {
+            const ticketDetails = tickets.data?.ticketDetails.find((detail) => detail._id.toString() === soldTicket.ticketId.toString());
+
+            const buyerDetails = tickets.data?.buyerDetails.find((buyer) => buyer._id.toString() === soldTicket.toUserId.toString());
 
             if (!ticketDetails || !buyerDetails) return null;
 
@@ -102,7 +103,10 @@ const HistoryPage = async () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span>💰</span>
-                      <span>Rp {ticketDetails.price.toLocaleString("id-ID")}</span>
+                      <div>
+                        <span className="text-green-500">Sold for Rp {soldTicket.soldPrice?.toLocaleString("id-ID")}</span>
+                        {soldTicket.soldPrice !== ticketDetails.price && <span className="text-xs text-gray-500 block">Original price: Rp {ticketDetails.price.toLocaleString("id-ID")}</span>}
+                      </div>
                     </div>
                   </div>
                 </div>

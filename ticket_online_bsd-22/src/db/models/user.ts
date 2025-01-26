@@ -2,6 +2,7 @@ import { ObjectId, UpdateFilter } from "mongodb";
 import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { hashText } from "@/utils/bcrypt";
+import { TicketModel } from "./ticket";
 // import { TicketModel } from "./ticket";
 
 export type UserModel = {
@@ -19,6 +20,25 @@ export type UserModel = {
     toUserId: ObjectId;
     soldPrice?: number; // Add this field
   }[];
+};
+
+export type UserTicketsResponse = {
+  _id: ObjectId;
+  email: string;
+  name: string;
+  password: string;
+  ownedTickets: {
+    ticketId: ObjectId;
+    status: "owned" | "selling" | "sold";
+    purchasePrice?: number;
+  }[];
+  soldTickets: {
+    ticketId: ObjectId;
+    toUserId: ObjectId;
+    soldPrice?: number;
+  }[];
+  ticketDetails: TicketModel[];
+  buyerDetails: UserModel[];
 };
 
 export type UserModelWithoutPassword = Omit<UserModel, "password">;
@@ -92,11 +112,11 @@ export const getUserByEmail = async (email: string): Promise<CustomResponse<User
   };
 };
 
-export const getUserTickets = async (email: string) => {
+export const getUserTickets = async (email: string): Promise<CustomResponse<UserTicketsResponse>> => {
   const db = await getDb();
   const collection = db.collection("User");
 
-  const user = await collection
+  const user = (await collection
     .aggregate([
       {
         $match: { email },
@@ -106,7 +126,22 @@ export const getUserTickets = async (email: string) => {
           from: "Ticket",
           localField: "ownedTickets.ticketId",
           foreignField: "_id",
-          as: "ticketDetails",
+          as: "ownedTicketDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "Ticket",
+          localField: "soldTickets.ticketId",
+          foreignField: "_id",
+          as: "soldTicketDetails",
+        },
+      },
+      {
+        $addFields: {
+          ticketDetails: {
+            $concatArrays: ["$ownedTicketDetails", "$soldTicketDetails"],
+          },
         },
       },
       {
@@ -118,15 +153,13 @@ export const getUserTickets = async (email: string) => {
         },
       },
       {
-        $lookup: {
-          from: "Marketplace",
-          localField: "soldTickets.ticketId",
-          foreignField: "ticketId",
-          as: "marketplaceDetails",
+        $project: {
+          ownedTicketDetails: 0,
+          soldTicketDetails: 0,
         },
       },
     ])
-    .next();
+    .next()) as UserTicketsResponse;
 
   return {
     statusCode: 200,
