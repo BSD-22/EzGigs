@@ -9,6 +9,7 @@ export type JosePayload = {
   id: string;
   email: string;
   name: string;
+  role: string;
 };
 
 export type ActionResponse<T> = {
