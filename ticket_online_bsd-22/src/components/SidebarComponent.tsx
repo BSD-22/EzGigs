@@ -2,8 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import ProfileSection from "./ProfileSection";
 
-const SideBar = () => {
+interface SideBarProps {
+  userData: {
+    name: string;
+    email: string;
+  } | null;
+}
+
+const SideBar = ({ userData }: SideBarProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -26,18 +34,12 @@ const SideBar = () => {
         </svg>
       </div>
 
-      {/* Profile Section */}
-      <div className="flex gap-x-4 items-center">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8E2DE2] to-[#00F5A0] flex items-center justify-center">
-          <span className="text-xl font-bold">U</span>
-        </div>
-        <div className={`${!isOpen && "hidden"} origin-left duration-300`}>
-          <h4 className="font-semibold">Username</h4>
-          <p className="text-xs text-gray-400">Points: 1,234 ⭐</p>
-        </div>
-      </div>
+      <ProfileSection
+        isOpen={isOpen}
+        userData={userData}
+      />
 
-      {/* Navigation */}
+      {/* Rest of your navigation code stays the same */}
       <ul className="pt-6">
         <li className="mb-2">
           <Link
