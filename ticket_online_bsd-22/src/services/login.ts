@@ -51,12 +51,17 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
     id: foundUser.data._id.toString(),
     email: foundUser.data.email,
     name: foundUser.data.name,
+    role: foundUser.data.role,
   };
 
   const token = await signToken(payload);
 
   const cookieStore = await cookies();
   cookieStore.set("token", token);
+
+  if (foundUser.data.role === "seller") {
+    return redirect("/seller");
+  }
 
   return redirect("/home/ticket");
 };

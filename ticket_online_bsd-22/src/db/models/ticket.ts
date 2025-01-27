@@ -6,16 +6,17 @@ export type TicketModel = {
   _id: ObjectId;
   name: string;
   price: number;
-  seats: string;
+  seats?: string;
   venue: string;
   date: string;
   time: string;
   description: string;
   image: string;
+  sellerId?: ObjectId;
+  totalSeats?: number;
 };
 
 export const createTicket = async (
-  userId: ObjectId,
   name: string,
   price: number,
   seats: number,
@@ -23,13 +24,13 @@ export const createTicket = async (
   date: string,
   time: string,
   description: string,
-  image: string
+  image: string,
+  sellerId?: string
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection = db.collection("Ticket");
 
   const newTicket = {
-    userId,
     name,
     price,
     seats,
@@ -38,6 +39,7 @@ export const createTicket = async (
     time,
     description,
     image,
+    ...(sellerId && { sellerId: ObjectId.createFromHexString(sellerId) }),
   };
 
   const insertedTicket = await collection.insertOne(newTicket);

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@headlessui/react": "^2.2.0",
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",

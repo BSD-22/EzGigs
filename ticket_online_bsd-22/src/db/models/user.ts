@@ -10,6 +10,7 @@ export type UserModel = {
   email: string;
   name: string;
   password: string;
+  role: "seller" | "buyer";
   ownedTickets?: {
     ticketId: ObjectId;
     status: "owned" | "selling" | "sold";
@@ -51,6 +52,7 @@ export const createUser = async (email: string, name: string, password: string):
     email,
     name,
     password: hashText(password),
+    role: "buyer" as const,
     ownedTickets: [] as UserModel["ownedTickets"],
     soldTickets: [] as UserModel["soldTickets"],
   };
@@ -61,6 +63,7 @@ export const createUser = async (email: string, name: string, password: string):
     _id: insertedUser.insertedId,
     email,
     name,
+    role: "buyer",
     ownedTickets: [],
     soldTickets: [],
   };
