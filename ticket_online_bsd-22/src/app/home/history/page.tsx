@@ -99,13 +99,28 @@ const HistoryPage = async () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span>💺</span>
-                      <span>Seat {ticketDetails.seats}</span>
+                      <span>
+                        {soldTicket.categoryName} - Seat {soldTicket.seatNumber}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>💰</span>
                       <div>
                         <span className="text-green-500">Sold for Rp {soldTicket.soldPrice?.toLocaleString("id-ID")}</span>
-                        {soldTicket.soldPrice !== ticketDetails.price && <span className="text-xs text-gray-500 block">Original price: Rp {ticketDetails.price.toLocaleString("id-ID")}</span>}
+                        {ticketDetails.seatCategories.map((category) => {
+                          if (category.name === soldTicket.categoryName) {
+                            return (
+                              soldTicket.soldPrice !== category.price && (
+                                <span
+                                  key={category.name}
+                                  className="text-xs text-gray-500 block">
+                                  Original price: Rp {category.price.toLocaleString("id-ID")}
+                                </span>
+                              )
+                            );
+                          }
+                          return null;
+                        })}
                       </div>
                     </div>
                   </div>

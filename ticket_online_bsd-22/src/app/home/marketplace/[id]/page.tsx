@@ -88,7 +88,9 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                   <span className="text-2xl">💺</span>
                   <div>
                     <p className="text-sm text-gray-400">Seat</p>
-                    <p className="text-white">{listing.ticket.seats}</p>
+                    <p className="text-white">
+                      {listing.categoryName} - {listing.seatNumber}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -98,16 +100,25 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
               <div>
                 <p className="text-sm text-gray-400">Price</p>
                 <p className="text-3xl font-bold text-[#00F5A0]">Rp {listing.price.toLocaleString("id-ID")}</p>
-                {listing.price !== listing.ticket.price && (
-                  <p className="text-sm text-gray-400 mt-1">
-                    <span className="line-through">Rp {listing.ticket.price.toLocaleString("id-ID")}</span>
-                    {listing.price < listing.ticket.price ? (
-                      <span className="ml-2 text-green-500">({Math.round((1 - listing.price / listing.ticket.price) * 100)}% OFF)</span>
-                    ) : (
-                      <span className="ml-2 text-yellow-500">({Math.round((listing.price / listing.ticket.price - 1) * 100)}% MARKUP)</span>
-                    )}
-                  </p>
-                )}
+                {listing.ticket.seatCategories.map((category) => {
+                  if (category.name === listing.categoryName) {
+                    return (
+                      listing.price !== category.price && (
+                        <p
+                          key={category.name}
+                          className="text-sm text-gray-400 mt-1">
+                          <span className="line-through">Rp {category.price.toLocaleString("id-ID")}</span>
+                          {listing.price < category.price ? (
+                            <span className="ml-2 text-green-500">({Math.round((1 - listing.price / category.price) * 100)}% OFF)</span>
+                          ) : (
+                            <span className="ml-2 text-yellow-500">({Math.round((listing.price / category.price - 1) * 100)}% MARKUP)</span>
+                          )}
+                        </p>
+                      )
+                    );
+                  }
+                  return null;
+                })}
               </div>
               <BuyTicketButton
                 listingId={listing._id.toString()}

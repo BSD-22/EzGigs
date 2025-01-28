@@ -1,7 +1,7 @@
-import { getAllTickets, getTicketById, TicketModel } from "@/db/models/ticket";
-import { addTicketToUser } from "@/db/models/user";
+import { getAllTickets, getTicketById, purchaseTicket, TicketModel } from "@/db/models/ticket";
 import { createPaymentSession } from "@/services/stripe";
 import { CustomResponse } from "@/types";
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async () => {
@@ -12,9 +12,16 @@ export const GET = async () => {
   });
 };
 
+type PurchaseResponse = {
+  purchaseId: ObjectId;
+  seatNumber: string;
+};
+
 export const POST = async (request: NextRequest) => {
   try {
-    const { ticketId } = await request.json();
+    const body = await request.json();
+    const { ticketId, categoryName, email: buyerEmail, name: buyerName, phone: buyerPhone, identityType, identityNumber } = body;
+
     const userId = request.headers.get("x-user-id");
 
     if (!userId) {
@@ -38,14 +45,35 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    const stripeSession = await createPaymentSession(ticket.data, userId);
+    // First, purchase the ticket and get seat number (status will be pending)
+    const purchaseResult = (await purchaseTicket(ticketId, categoryName, {
+      email: buyerEmail,
+      name: buyerName,
+      phone: buyerPhone,
+      identityType,
+      identityNumber,
+    })) as CustomResponse<PurchaseResponse>;
+
+    if (purchaseResult.statusCode !== 201 || !purchaseResult.data) {
+      return NextResponse.json(purchaseResult, { status: purchaseResult.statusCode });
+    }
+
+    const stripeSession = await createPaymentSession(
+      ticket.data,
+      categoryName,
+      userId,
+      purchaseResult.data.purchaseId.toString(),
+      purchaseResult.data.seatNumber // Add the missing seatNumber parameter
+    );
     if (stripeSession.statusCode !== 200) {
       return NextResponse.json(stripeSession, { status: stripeSession.statusCode });
     }
 
-    await addTicketToUser(userId, ticketId);
-
-    return NextResponse.json(stripeSession);
+    return NextResponse.json({
+      ...stripeSession,
+      purchaseId: purchaseResult.data.purchaseId,
+      seatNumber: purchaseResult.data.seatNumber,
+    });
   } catch (error) {
     console.error("Buy Ticket Error:", error);
     return NextResponse.json(

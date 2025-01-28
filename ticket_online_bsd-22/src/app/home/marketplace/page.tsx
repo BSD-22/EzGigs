@@ -5,15 +5,19 @@ import SearchBar from "./SearchBar";
 const Marketplace = async () => {
   const { data: listings } = await getAllMarketplace();
 
+  console.log(listings, "listings marketplace");
+
   return (
     <div className="flex-1 p-7 overflow-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Ticket Marketplace 🎫</h1>
-        <a
-          href="/home/marketplace/sell"
-          className="bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
-          Sell Your Ticket
-        </a>
+        <form action="/home/marketplace/sell">
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
+            Sell Your Ticket
+          </button>
+        </form>
       </div>
 
       <SearchBar />
@@ -32,13 +36,13 @@ const Marketplace = async () => {
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                 <p className="text-[#00F5A0] font-bold">Rp {listing.price.toLocaleString("id-ID")}</p>
-                {listing.price !== listing.ticket.price && (
+                {listing.price !== listing.ticket.seatCategories[0].price && (
                   <p className="text-sm text-gray-400">
-                    <span className="line-through">Rp {listing.ticket.price.toLocaleString("id-ID")}</span>
-                    {listing.price < listing.ticket.price ? (
-                      <span className="ml-2 text-green-500">({Math.round((1 - listing.price / listing.ticket.price) * 100)}% OFF)</span>
+                    <span className="line-through">Rp {listing.ticket.seatCategories[0].price.toLocaleString("id-ID")}</span>
+                    {listing.price < listing.ticket.seatCategories[0].price ? (
+                      <span className="ml-2 text-green-500">({Math.round((1 - listing.price / listing.ticket.seatCategories[0].price) * 100)}% OFF)</span>
                     ) : (
-                      <span className="ml-2 text-yellow-500">({Math.round((listing.price / listing.ticket.price - 1) * 100)}% MARKUP)</span>
+                      <span className="ml-2 text-yellow-500">({Math.round((listing.price / listing.ticket.seatCategories[0].price - 1) * 100)}% MARKUP)</span>
                     )}
                   </p>
                 )}
@@ -68,7 +72,9 @@ const Marketplace = async () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span>💺</span>
-                  <span>Seat {listing.ticket.seats}</span>
+                  <span>
+                    {listing.categoryName} - Seat {listing.seatNumber}
+                  </span>
                 </div>
               </div>
               <a
