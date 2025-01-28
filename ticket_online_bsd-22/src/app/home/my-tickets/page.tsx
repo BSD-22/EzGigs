@@ -8,11 +8,12 @@ import { TicketModel } from "@/db/models/ticket";
 import { getAllMarketplace } from "@/db/models/marketplace";
 import BrowseTicketsButton from "@/components/BrowseTicketsButton";
 
-// Add type at the top with other imports
 type TicketWithStatus = {
   ticketId: ObjectId;
   status: "owned" | "selling" | "sold";
   purchasePrice?: number;
+  categoryName: string;
+  seatNumber: string;
 };
 
 async function MyTicketsPage() {
@@ -67,7 +68,7 @@ async function MyTicketsPage() {
 
             return (
               <div
-                key={ticket.ticketId.toString()}
+                key={ticket.ticketId.toString() + Math.floor(Math.random() * 1000)}
                 className="block bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300">
                 <div className="relative h-48 w-full">
                   <Image
@@ -101,20 +102,35 @@ async function MyTicketsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span>💺</span>
-                      <span>Seat {ticketDetails.seats}</span>
+                      <span>
+                        {ticket.categoryName} - Seat {ticket.seatNumber}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>💰</span>
                       {ticket.status === "selling" && marketplaceListing ? (
                         <div>
                           <span className="text-yellow-500">Listed for Rp {marketplaceListing.price.toLocaleString("id-ID")}</span>
-                          <span className="text-xs text-gray-500 block">Original price: Rp {ticketDetails.price.toLocaleString("id-ID")}</span>
+                          {ticketDetails.seatCategories.map((category) => {
+                            if (category.name === ticket.categoryName) {
+                              return (
+                                <span
+                                  key={category.name + Math.floor(Math.random() * 100)}
+                                  className="text-xs text-gray-500 block">
+                                  Original price: Rp {category.price.toLocaleString("id-ID")}
+                                </span>
+                              );
+                            }
+                            return null;
+                          })}
                         </div>
                       ) : (
                         <div>
-                          <span>Rp {ticket.purchasePrice?.toLocaleString("id-ID") || ticketDetails.price.toLocaleString("id-ID")}</span>
-                          {ticket.purchasePrice && ticket.purchasePrice !== ticketDetails.price && (
-                            <span className="text-xs text-gray-500 block">Original price: Rp {ticketDetails.price.toLocaleString("id-ID")}</span>
+                          <span>Rp {ticket.purchasePrice?.toLocaleString("id-ID") || ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}</span>
+                          {ticket.purchasePrice && ticket.purchasePrice !== ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price && (
+                            <span className="text-xs text-gray-500 block">
+                              Original price: Rp {ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
+                            </span>
                           )}
                         </div>
                       )}

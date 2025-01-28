@@ -10,6 +10,8 @@ export type MarketplaceModel = {
   userId: ObjectId;
   price: number;
   description?: string;
+  categoryName: string;
+  seatNumber: string;
 };
 
 export type MarketplaceDetailModel = {
@@ -18,6 +20,34 @@ export type MarketplaceDetailModel = {
   ticket: TicketModel;
   price: number;
   description?: string;
+  categoryName: string;
+  seatNumber: string;
+};
+
+export const createMarketplace = async (userId: string, ticketId: string, price: number, categoryName: string, seatNumber: string, description?: string): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const collection = db.collection("Marketplace");
+
+  const newMarketplace = {
+    userId: ObjectId.createFromHexString(userId),
+    ticketId: ObjectId.createFromHexString(ticketId),
+    price,
+    categoryName,
+    seatNumber,
+    description,
+  };
+
+  const insertedMarketplace = await collection.insertOne(newMarketplace);
+
+  const result: MarketplaceModel = {
+    _id: insertedMarketplace.insertedId,
+    ...newMarketplace,
+  };
+
+  return {
+    statusCode: 201,
+    data: result,
+  };
 };
 
 export const getAllMarketplace = async (): Promise<CustomResponse<MarketplaceDetailModel[]>> => {
@@ -47,6 +77,17 @@ export const getAllMarketplace = async (): Promise<CustomResponse<MarketplaceDet
       },
       {
         $unwind: "$ticket",
+      },
+      {
+        $project: {
+          _id: 1,
+          price: 1,
+          description: 1,
+          categoryName: 1,
+          seatNumber: 1,
+          user: 1,
+          ticket: 1,
+        },
       },
     ])
     .toArray()) as MarketplaceDetailModel[];
@@ -89,38 +130,41 @@ export const getMarketplaceById = async (id: string): Promise<CustomResponse<Mar
         $unwind: "$ticket",
       },
       {
-        $limit: 1,
+        $project: {
+          _id: 1,
+          price: 1,
+          description: 1,
+          categoryName: 1,
+          seatNumber: 1,
+          user: {
+            _id: 1,
+            name: 1,
+            email: 1,
+          },
+          ticket: {
+            _id: 1,
+            name: 1,
+            venue: 1,
+            date: 1,
+            time: 1,
+            image: 1,
+            seatCategories: 1,
+          },
+        },
       },
     ])
-    .next()) as MarketplaceDetailModel;
+    .next()) as MarketplaceDetailModel | null;
+
+  if (!marketplace) {
+    return {
+      statusCode: 404,
+      message: "Marketplace listing not found",
+    };
+  }
 
   return {
     statusCode: 200,
     data: marketplace,
-  };
-};
-
-export const createMarketplace = async (userId: string, ticketId: string, price: number, description?: string): Promise<CustomResponse<unknown>> => {
-  const db = await getDb();
-  const collection = db.collection("Marketplace");
-
-  const newMarketplace = {
-    userId: ObjectId.createFromHexString(userId),
-    ticketId: ObjectId.createFromHexString(ticketId),
-    price,
-    description,
-  };
-
-  const insertedMarketplace = await collection.insertOne(newMarketplace);
-
-  const result: MarketplaceModel = {
-    _id: insertedMarketplace.insertedId,
-    ...newMarketplace,
-  };
-
-  return {
-    statusCode: 201,
-    data: result,
   };
 };
 

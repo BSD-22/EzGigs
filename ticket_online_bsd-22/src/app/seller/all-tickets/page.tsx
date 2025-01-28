@@ -120,11 +120,11 @@ const SellerAllTicketsPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span>💺</span>
-                  <span>Seat {ticket.seats}</span>
+                  <span>{ticket.seatCategories.map((cat) => `${cat.name} (${cat.availableSeats}/${cat.totalSeats})`).join(", ")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span>💰</span>
-                  <span>Rp {ticket.price.toLocaleString("id-ID")}</span>
+                  <span>From Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}</span>
                 </div>
               </div>
               <div className="mt-4 flex gap-2">

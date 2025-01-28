@@ -1,82 +1,210 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, UpdateFilter, Collection, WithoutId } from "mongodb";
 import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
+
+export type SeatCategory = {
+  name: string;
+  price: number;
+  totalSeats: number;
+  availableSeats: number;
+  soldSeats: string[];
+};
 
 export type TicketModel = {
   _id: ObjectId;
   name: string;
-  price: number;
-  seats?: string;
   venue: string;
   date: string;
   time: string;
   description: string;
   image: string;
   sellerId?: ObjectId;
-  totalSeats?: number;
+  seatCategories: SeatCategory[];
+};
+
+export type TicketPurchase = {
+  _id: ObjectId;
+  ticketId: ObjectId;
+  buyerEmail: string;
+  buyerName: string;
+  buyerPhone: string;
+  identityType: "KTP" | "Passport" | "SIM" | "Student";
+  identityNumber: string;
+  categoryName: string;
+  seatNumber: string;
+  price: number;
+  paymentStatus: "pending" | "paid" | "failed";
+  paymentIntentId?: string;
+  purchaseDate: Date;
+};
+
+export const purchaseTicket = async (
+  ticketId: string,
+  categoryName: string,
+  buyerData: {
+    email: string;
+    name: string;
+    phone: string;
+    identityType: TicketPurchase["identityType"];
+    identityNumber: string;
+  }
+): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const ticketsCollection: Collection<TicketModel> = db.collection("Ticket");
+  const purchasesCollection: Collection<WithoutId<TicketPurchase>> = db.collection("TicketPurchase");
+
+  // Find the ticket
+  const ticket = await ticketsCollection.findOne({ _id: new ObjectId(ticketId) });
+  if (!ticket) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found",
+    };
+  }
+
+  // Find the category
+  const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
+  if (!category) {
+    return {
+      statusCode: 400,
+      message: "Category not found",
+    };
+  }
+
+  if (category.availableSeats <= 0) {
+    return {
+      statusCode: 400,
+      message: "No seats available in this category",
+    };
+  }
+
+  const nextSeatNumber = `${categoryName}-${category.soldSeats.length + 1}`;
+
+  // Create the purchase record
+  const purchase: WithoutId<TicketPurchase> = {
+    ticketId: new ObjectId(ticketId),
+    buyerEmail: buyerData.email,
+    buyerName: buyerData.name,
+    buyerPhone: buyerData.phone,
+    identityType: buyerData.identityType,
+    identityNumber: buyerData.identityNumber,
+    categoryName,
+    seatNumber: nextSeatNumber,
+    price: category.price,
+    paymentStatus: "pending",
+    purchaseDate: new Date(),
+  };
+
+  // Update the ticket availability
+  const updateOperation: UpdateFilter<TicketModel> = {
+    $push: { "seatCategories.$.soldSeats": nextSeatNumber },
+    $inc: { "seatCategories.$.availableSeats": -1 },
+  };
+
+  await ticketsCollection.updateOne({ _id: new ObjectId(ticketId), "seatCategories.name": categoryName }, updateOperation);
+
+  // Insert the purchase record
+  const insertedPurchase = await purchasesCollection.insertOne(purchase);
+
+  return {
+    statusCode: 201,
+    message: "Ticket purchase initiated",
+    data: {
+      purchaseId: insertedPurchase.insertedId,
+      seatNumber: nextSeatNumber,
+    },
+  };
+};
+
+export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> => {
+  const db = await getDb();
+  const collection: Collection<TicketModel> = db.collection("Ticket");
+
+  const tickets = await collection.find({}).toArray();
+
+  return {
+    statusCode: 200,
+    data: tickets,
+  };
+};
+
+export const getTicketById = async (id: string): Promise<CustomResponse<TicketModel>> => {
+  const db = await getDb();
+  const collection: Collection<TicketModel> = db.collection("Ticket");
+
+  const ticket = await collection.findOne({ _id: new ObjectId(id) });
+
+  if (!ticket) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found",
+    };
+  }
+
+  return {
+    statusCode: 200,
+    data: ticket,
+  };
 };
 
 export const createTicket = async (
   name: string,
-  price: number,
-  seats: number,
   venue: string,
   date: string,
   time: string,
   description: string,
   image: string,
-  sellerId?: string
+  seatCategories: Omit<SeatCategory, "availableSeats" | "soldSeats">[],
+  sellerId: string
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
-  const collection = db.collection("Ticket");
+  const collection: Collection<WithoutId<TicketModel>> = db.collection("Ticket");
 
-  const newTicket = {
+  const formattedSeatCategories = seatCategories.map((category) => ({
+    ...category,
+    availableSeats: category.totalSeats,
+    soldSeats: [],
+  }));
+
+  const newTicket: WithoutId<TicketModel> = {
     name,
-    price,
-    seats,
     venue,
     date,
     time,
     description,
     image,
-    ...(sellerId && { sellerId: ObjectId.createFromHexString(sellerId) }),
+    sellerId: new ObjectId(sellerId),
+    seatCategories: formattedSeatCategories,
   };
 
-  const insertedTicket = await collection.insertOne(newTicket);
+  const result = await collection.insertOne(newTicket);
 
-  const result: CustomResponse<unknown> = {
+  return {
     statusCode: 201,
     message: "Ticket created successfully",
-    data: insertedTicket.acknowledged,
+    data: {
+      _id: result.insertedId,
+      ...newTicket,
+    },
   };
-
-  return result;
 };
 
-export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> => {
+export const updateTicketPurchaseStatus = async (purchaseId: string, status: TicketPurchase["paymentStatus"], paymentIntentId?: string): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
-  const collection = db.collection("Ticket");
+  const collection = db.collection("TicketPurchase");
 
-  const tickets = (await collection.find({}).toArray()) as TicketModel[];
+  const result = await collection.updateOne(
+    { _id: new ObjectId(purchaseId) },
+    {
+      $set: {
+        paymentStatus: status,
+        paymentIntentId,
+      },
+    }
+  );
 
-  const result: CustomResponse<TicketModel[]> = {
+  return {
     statusCode: 200,
-    data: tickets,
+    data: result.acknowledged,
   };
-
-  return result;
-};
-
-export const getTicketById = async (id: string): Promise<CustomResponse<TicketModel>> => {
-  const db = await getDb();
-  const collection = db.collection("Ticket");
-
-  const ticket = (await collection.findOne({ _id: ObjectId.createFromHexString(id) })) as TicketModel;
-
-  const result: CustomResponse<TicketModel> = {
-    statusCode: 200,
-    data: ticket,
-  };
-
-  return result;
 };

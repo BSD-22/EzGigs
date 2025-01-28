@@ -24,7 +24,7 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
   const userId = request.headers.get("x-user-id");
-  const { ticketId, price, description } = await request.json();
+  const { ticketId, price, description, categoryName, seatNumber } = await request.json();
 
   if (!userId) {
     return new Response("Unauthorized", { status: 401 });
@@ -39,7 +39,7 @@ export const POST = async (request: NextRequest) => {
     }
 
     // Then create the marketplace listing
-    const updateMarketplace = await createMarketplace(userId, ticketId, price, description);
+    const updateMarketplace = await createMarketplace(userId, ticketId, price, categoryName, seatNumber, description);
 
     return NextResponse.json<CustomResponse<unknown>>({
       statusCode: 200,

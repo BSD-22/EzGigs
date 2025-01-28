@@ -66,8 +66,16 @@ const TicketDetail = async ({ params }: { params: Promise<{ id: string }> }) => 
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">💺</span>
                   <div>
-                    <p className="text-sm text-gray-400">Seat</p>
-                    <p className="text-white">{ticket.seats}</p>
+                    <p className="text-sm text-gray-400">Seat Categories</p>
+                    <div className="space-y-1">
+                      {ticket.seatCategories.map((category) => (
+                        <p
+                          key={category.name}
+                          className="text-white">
+                          {category.name} - Rp {category.price.toLocaleString("id-ID")}
+                        </p>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -75,8 +83,8 @@ const TicketDetail = async ({ params }: { params: Promise<{ id: string }> }) => 
 
             <div className="mt-8 flex items-center justify-between border-t border-[#8E2DE2]/20 pt-8">
               <div>
-                <p className="text-sm text-gray-400">Price</p>
-                <p className="text-2xl font-bold text-[#00F5A0]">Rp {ticket.price.toLocaleString("id-ID")}</p>
+                <p className="text-sm text-gray-400">Starting from</p>
+                <p className="text-2xl font-bold text-[#00F5A0]">Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}</p>
               </div>
               <button className="px-8 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-white font-medium hover:opacity-90 transition-opacity">Buy Ticket</button>
             </div>

@@ -63,6 +63,10 @@ const MarketplaceSell = () => {
   const handleSubmitSale = async () => {
     if (!selectedTicket || !price) return;
 
+    // Find the selected ticket details
+    const ticket = ownedTickets.find((t) => t.ticketId.toString() === selectedTicket);
+    if (!ticket) return;
+
     try {
       const response = await fetch(baseUrl + "/api/marketplace", {
         method: "POST",
@@ -74,6 +78,8 @@ const MarketplaceSell = () => {
           ticketId: selectedTicket,
           price: Number(price),
           description,
+          categoryName: ticket.categoryName, // Add categoryName
+          seatNumber: ticket.seatNumber, // Add seatNumber
         }),
       });
 
@@ -134,7 +140,7 @@ const MarketplaceSell = () => {
                   className="object-cover"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <p className="text-[#00F5A0] font-bold">Rp {ticket?.ticketDetails?.price.toLocaleString("id-ID")}</p>
+                  <p className="text-[#00F5A0] font-bold">Rp {ticket?.ticketDetails?.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}</p>
                 </div>
               </div>
               <div className="p-6">
@@ -156,7 +162,9 @@ const MarketplaceSell = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span>💺</span>
-                    <span>Seat {ticket?.ticketDetails?.seats}</span>
+                    <span>
+                      {ticket.categoryName} - Seat {ticket.seatNumber}
+                    </span>
                   </div>
                 </div>
                 <button

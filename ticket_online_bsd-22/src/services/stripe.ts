@@ -11,8 +11,22 @@ export type StripeResponse = {
   url: string;
 };
 
-export const createPaymentSession = async (ticket: TicketModel, userId: string): Promise<CustomResponse<StripeResponse>> => {
+export const createPaymentSession = async (
+  ticket: TicketModel,
+  categoryName: string,
+  userId: string,
+  purchaseId: string,
+  seatNumber: string // Add seatNumber parameter
+): Promise<CustomResponse<StripeResponse>> => {
   try {
+    const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
+    if (!category) {
+      return {
+        statusCode: 400,
+        message: "Category not found",
+      };
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -20,21 +34,24 @@ export const createPaymentSession = async (ticket: TicketModel, userId: string):
           price_data: {
             currency: "idr",
             product_data: {
-              name: ticket.name,
-              description: `Seat: ${ticket.seats} at ${ticket.venue}`,
+              name: `${ticket.name} - ${category.name}`,
+              description: `Event at ${ticket.venue} on ${ticket.date} ${ticket.time}`,
               images: [ticket.image],
             },
-            unit_amount: ticket.price * 100,
+            unit_amount: category.price * 100,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/home/ticket?success=true&session_id={CHECKOUT_SESSION_ID}&ticket_id={TICKET_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/home/ticket?success=true&session_id={CHECKOUT_SESSION_ID}&purchase_id=${purchaseId}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/home/ticket`,
       metadata: {
         ticketId: ticket._id.toString(),
+        categoryName,
         userId,
+        purchaseId,
+        seatNumber, // Add seatNumber to metadata
       },
     });
 
@@ -63,6 +80,8 @@ export const verifyPaymentSession = async (sessionId: string): Promise<CustomRes
       data: {
         status: session.payment_status,
         metadata: session.metadata,
+        amount_total: session.amount_total,
+        payment_intent: session.payment_intent, // Add this line
       },
     };
   } catch (error) {

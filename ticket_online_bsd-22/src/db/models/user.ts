@@ -5,41 +5,50 @@ import { hashText } from "@/utils/bcrypt";
 import { TicketModel } from "./ticket";
 // import { TicketModel } from "./ticket";
 
+// Update UserTicket type to include buyer details
+export type UserTicket = {
+  ticketId: ObjectId;
+  categoryName: string;
+  seatNumber: string;
+  status: "owned" | "selling" | "sold";
+  purchasePrice: number;
+  purchaseDate: Date;
+  // Add buyer details
+  buyerEmail: string;
+  buyerName: string;
+  buyerPhone: string;
+  identityType: "KTP" | "Passport" | "SIM" | "Student";
+  identityNumber: string;
+};
+
+export type SoldTicket = {
+  ticketId: ObjectId;
+  categoryName: string;
+  seatNumber: string;
+  toUserId: ObjectId;
+  soldPrice: number;
+  soldDate: Date;
+};
+
 export type UserModel = {
   _id: ObjectId;
   email: string;
   name: string;
   password: string;
   role: "seller" | "buyer";
-  ownedTickets?: {
-    ticketId: ObjectId;
-    status: "owned" | "selling" | "sold";
-    purchasePrice?: number; // Add this field
-  }[];
-  soldTickets?: {
-    ticketId: ObjectId;
-    toUserId: ObjectId;
-    soldPrice?: number; // Add this field
-  }[];
+  ownedTickets: UserTicket[];
+  soldTickets: SoldTicket[];
 };
 
 export type UserTicketsResponse = {
   _id: ObjectId;
   email: string;
   name: string;
-  password: string;
-  ownedTickets: {
-    ticketId: ObjectId;
-    status: "owned" | "selling" | "sold";
-    purchasePrice?: number;
-  }[];
-  soldTickets: {
-    ticketId: ObjectId;
-    toUserId: ObjectId;
-    soldPrice?: number;
-  }[];
+  role: "seller" | "buyer";
+  ownedTickets: UserTicket[];
+  soldTickets: SoldTicket[];
   ticketDetails: TicketModel[];
-  buyerDetails: UserModel[];
+  buyerDetails: Omit<UserModel, "password" | "ownedTickets" | "soldTickets">[];
 };
 
 export type UserModelWithoutPassword = Omit<UserModel, "password">;
@@ -170,16 +179,39 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
   };
 };
 
-export const addTicketToUser = async (userId: string, ticketId: string, purchasePrice?: number) => {
+// Update addTicketToUser function to include buyer details
+export const addTicketToUser = async (
+  userId: string,
+  ticketId: string,
+  categoryName: string,
+  seatNumber: string,
+  purchasePrice: number,
+  buyerData: {
+    email: string;
+    name: string;
+    phone: string;
+    identityType: UserTicket["identityType"];
+    identityNumber: string;
+  }
+): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection = db.collection<UserModel>("User");
 
-  const result = await collection.updateOne({ _id: ObjectId.createFromHexString(userId) }, {
+  const result = await collection.updateOne({ _id: new ObjectId(userId) }, {
     $push: {
       ownedTickets: {
-        ticketId: ObjectId.createFromHexString(ticketId),
+        ticketId: new ObjectId(ticketId),
+        categoryName,
+        seatNumber,
         status: "owned",
         purchasePrice,
+        purchaseDate: new Date(),
+        // Add buyer details
+        buyerEmail: buyerData.email,
+        buyerName: buyerData.name,
+        buyerPhone: buyerData.phone,
+        identityType: buyerData.identityType,
+        identityNumber: buyerData.identityNumber,
       },
     },
   } satisfies UpdateFilter<UserModel>);
@@ -194,10 +226,30 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
   const db = await getDb();
   const collection = db.collection<UserModel>("User");
 
+  const user = await collection.findOne({
+    _id: new ObjectId(userId),
+    "ownedTickets.ticketId": new ObjectId(ticketId),
+  });
+
+  if (!user) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found in user's owned tickets",
+    };
+  }
+
+  const ticket = user.ownedTickets.find((t) => t.ticketId.toString() === ticketId);
+  if (!ticket) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found",
+    };
+  }
+
   const result = await collection.updateOne(
     {
-      _id: ObjectId.createFromHexString(userId),
-      "ownedTickets.ticketId": ObjectId.createFromHexString(ticketId),
+      _id: new ObjectId(userId),
+      "ownedTickets.ticketId": new ObjectId(ticketId),
     },
     {
       $set: {
@@ -206,23 +258,26 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
     } satisfies UpdateFilter<UserModel>
   );
 
-  if (status === "sold" && buyerId) {
+  if (status === "sold" && buyerId && soldPrice) {
     const updateSoldTicket = {
       $pull: {
         ownedTickets: {
-          ticketId: ObjectId.createFromHexString(ticketId),
+          ticketId: new ObjectId(ticketId),
         },
       },
       $push: {
         soldTickets: {
-          ticketId: ObjectId.createFromHexString(ticketId),
-          toUserId: ObjectId.createFromHexString(buyerId),
-          soldPrice, // Add the marketplace price to soldTickets
+          ticketId: new ObjectId(ticketId),
+          categoryName: ticket.categoryName,
+          seatNumber: ticket.seatNumber,
+          toUserId: new ObjectId(buyerId),
+          soldPrice,
+          soldDate: new Date(),
         },
       },
     } satisfies UpdateFilter<UserModel>;
 
-    await collection.updateOne({ _id: ObjectId.createFromHexString(userId) }, updateSoldTicket);
+    await collection.updateOne({ _id: new ObjectId(userId) }, updateSoldTicket);
   }
 
   return {
