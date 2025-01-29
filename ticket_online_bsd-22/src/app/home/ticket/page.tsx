@@ -25,8 +25,6 @@ export default function Home() {
     identityDetails: "",
   });
 
-  console.log(buyerData, "buyerData");
-
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
   };
@@ -79,6 +77,9 @@ export default function Home() {
     if (!selectedTicket) return;
 
     try {
+      // Store buyer data in localStorage
+      localStorage.setItem("tempBuyerData", JSON.stringify(buyerData));
+
       const res = await fetch("/api/ticket", {
         method: "POST",
         headers: {
@@ -121,7 +122,7 @@ export default function Home() {
 
   const verifyPayment = async (sessionId: string, purchaseId: string) => {
     try {
-      const res = await fetch(`/api/ticket/verify-payment`, {
+      const verifyRes = await fetch(`/api/ticket/verify-payment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,15 +130,49 @@ export default function Home() {
         body: JSON.stringify({ sessionId, purchaseId }),
       });
 
-      if (!res.ok) {
+      if (!verifyRes.ok) {
         console.error("Payment verification failed");
-        // Add error notification here if needed
-      } else {
-        // Add success notification or redirect
-        router.refresh(); // Refresh the page to show updated status
+        return;
       }
+
+      const userRes = await fetch("/api/user/me", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!userRes.ok) {
+        console.error("Failed to fetch user data");
+        return;
+      }
+
+      const userData = await userRes.json();
+
+      const storedBuyerData = localStorage.getItem("tempBuyerData");
+      const buyerDataForEmail = storedBuyerData ? JSON.parse(storedBuyerData) : buyerData;
+
+      const eTicketRes = await fetch("/api/ticket/send-eticket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userData: userData.data,
+          buyerData: buyerDataForEmail,
+          purchaseId,
+        }),
+      });
+
+      if (!eTicketRes.ok) {
+        console.error("Failed to send e-ticket");
+      }
+      localStorage.removeItem("tempBuyerData");
     } catch (error) {
-      console.error("Error verifying payment:", error);
+      console.error("Error in payment verification process:", error);
+    } finally {
+      router.push("/home/ticket");
     }
   };
   return (
