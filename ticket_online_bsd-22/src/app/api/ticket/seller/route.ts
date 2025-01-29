@@ -36,11 +36,9 @@ export const GET = async (req: NextRequest) => {
     }
 
     const tickets = await getAllTickets();
-    const sellerTickets = tickets.data?.filter((ticket) => ticket.sellerId?.toString() === sellerId);
-
     return NextResponse.json<CustomResponse<TicketModel[]>>({
       statusCode: 200,
-      data: sellerTickets || [],
+      data: tickets.data || [],
     });
   } catch (error) {
     console.error("Failed to fetch seller tickets:", error);

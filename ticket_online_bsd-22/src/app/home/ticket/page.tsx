@@ -4,23 +4,28 @@ import { useEffect, useState } from "react";
 import { TicketModel } from "@/db/models/ticket";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-// Add imports at the top
-import { Dialog } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { TicketPurchase } from "@/db/models/ticket";
+// Add these imports at the top
+import Webcam from "react-webcam";
+import { useCallback, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
   const [tickets, setTickets] = useState<TicketModel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<{ id: string; category: string } | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const webcamRef = useRef<Webcam | null>(null);
   const [buyerData, setBuyerData] = useState({
     email: "",
     name: "",
     phone: "",
-    identityType: "KTP" as TicketPurchase["identityType"],
-    identityNumber: "",
+    identityType: "KTP" as "KTP" | "Passport" | "SIM" | "Student",
+    identityDetails: "",
   });
+
+  console.log(buyerData, "buyerData");
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -30,6 +35,28 @@ export default function Home() {
   const handleBuyTicket = (ticketId: string, categoryName: string) => {
     setSelectedTicket({ id: ticketId, category: categoryName });
     setIsModalOpen(true);
+  };
+
+  const capture = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
+        setShowCamera(false);
+      }
+    }
+  }, [webcamRef]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setBuyerData((prev) => ({ ...prev, identityDetails: base64String }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const fetchTickets = async () => {
@@ -70,7 +97,7 @@ export default function Home() {
       if (res.ok && json.data) {
         const stripeData = json.data;
         setIsModalOpen(false);
-        router.push(stripeData.data.url); // Fix: access url through stripeData.data.url
+        router.push(stripeData.url); // Fix: access url through stripeData.data.url
       } else {
         console.error("Payment creation failed:", json.message);
       }
@@ -104,6 +131,10 @@ export default function Home() {
 
       if (!res.ok) {
         console.error("Payment verification failed");
+        // Add error notification here if needed
+      } else {
+        // Add success notification or redirect
+        router.refresh(); // Refresh the page to show updated status
       }
     } catch (error) {
       console.error("Error verifying payment:", error);
@@ -184,11 +215,9 @@ export default function Home() {
           className="fixed inset-0 bg-black/30"
           aria-hidden="true"
         />
-
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-md">
-            <Dialog.Title className="text-xl font-bold mb-4">Enter Your Details</Dialog.Title>
-
+          <DialogPanel className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-md">
+            <DialogTitle className="text-xl font-bold mb-4">Enter Your Details</DialogTitle>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Name</label>
@@ -200,7 +229,6 @@ export default function Home() {
                   placeholder="Your full name"
                 />
               </div>
-
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Email</label>
                 <input
@@ -211,7 +239,6 @@ export default function Home() {
                   placeholder="your.email@example.com"
                 />
               </div>
-
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Phone</label>
                 <input
@@ -222,7 +249,6 @@ export default function Home() {
                   placeholder="Your phone number"
                 />
               </div>
-
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Identity Type</label>
                 <select
@@ -235,18 +261,81 @@ export default function Home() {
                   <option value="Student">Student ID</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Number</label>
-                <input
-                  type="text"
-                  value={buyerData.identityNumber}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, identityNumber: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="Your identity number"
-                />
+                <label className="block text-sm text-gray-400 mb-1">Identity Document</label>
+                <div className="space-y-2">
+                  {showCamera ? (
+                    <div className="relative">
+                      <Webcam
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        className="w-full rounded-lg"
+                      />
+                      {/* Add the rectangle overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="border-2 border-white/70 rounded-lg w-[85%] h-[60%] relative">
+                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-gray-400">⎯⎯⎯ Align ID card ⎯⎯⎯</div>
+                          {/* Corner markers */}
+                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00F5A0]" />
+                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00F5A0]" />
+                          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F5A0]" />
+                          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F5A0]" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
+                        <button
+                          onClick={capture}
+                          className="px-4 py-2 bg-[#8E2DE2] rounded-lg hover:opacity-90">
+                          Capture
+                        </button>
+                        <button
+                          onClick={() => setShowCamera(false)}
+                          className="px-4 py-2 bg-red-500 rounded-lg hover:opacity-90">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {buyerData.identityDetails ? (
+                        <div className="relative">
+                          <Image
+                            width={200}
+                            height={200}
+                            src={buyerData.identityDetails}
+                            alt="Identity document"
+                            className="w-full rounded-lg"
+                          />
+                          <button
+                            onClick={() => {
+                              setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+                            }}
+                            className="absolute top-2 right-2 bg-red-500 p-2 rounded-full hover:bg-red-600">
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setShowCamera(true)}
+                            className="flex-1 px-4 py-2 bg-[#8E2DE2]/20 border border-[#8E2DE2]/20 rounded-lg hover:bg-[#8E2DE2]/40">
+                            Open Camera
+                          </button>
+                          <label className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                            />
+                            <span className="block px-4 py-2 bg-[#8E2DE2]/20 border border-[#8E2DE2]/20 rounded-lg hover:bg-[#8E2DE2]/40 text-center cursor-pointer">Upload File</span>
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setIsModalOpen(false)}
@@ -255,13 +344,13 @@ export default function Home() {
                 </button>
                 <button
                   onClick={handleSubmitPurchase}
-                  disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityNumber}
+                  disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityDetails}
                   className="flex-1 px-4 py-2 bg-[#8E2DE2] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
                   Proceed to Payment
                 </button>
               </div>
             </div>
-          </Dialog.Panel>
+          </DialogPanel>
         </div>
       </Dialog>
     </div>
