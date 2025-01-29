@@ -30,7 +30,7 @@ export type TicketPurchase = {
   buyerName: string;
   buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
-  identityNumber: string;
+  identityDetails: string;
   categoryName: string;
   seatNumber: string;
   price: number;
@@ -47,7 +47,7 @@ export const purchaseTicket = async (
     name: string;
     phone: string;
     identityType: TicketPurchase["identityType"];
-    identityNumber: string;
+    identityDetails: string; // This is already correct
     userId: string;
   }
 ): Promise<CustomResponse<unknown>> => {
@@ -56,7 +56,6 @@ export const purchaseTicket = async (
   const purchasesCollection: Collection<WithoutId<TicketPurchase>> = db.collection("TicketPurchase");
   const usersCollection: Collection<UserModel> = db.collection<UserModel>("User");
 
-  // Find the ticket
   const ticket = await ticketsCollection.findOne({ _id: ObjectId.createFromHexString(ticketId) });
   if (!ticket) {
     return {
@@ -65,7 +64,6 @@ export const purchaseTicket = async (
     };
   }
 
-  // Find the category
   const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
   if (!category) {
     return {
@@ -83,14 +81,13 @@ export const purchaseTicket = async (
 
   const nextSeatNumber = `${categoryName}-${category.soldSeats.length + 1}`;
 
-  // Create the purchase record
   const purchase: WithoutId<TicketPurchase> = {
     ticketId: ObjectId.createFromHexString(ticketId),
     buyerEmail: buyerData.email,
     buyerName: buyerData.name,
     buyerPhone: buyerData.phone,
     identityType: buyerData.identityType,
-    identityNumber: buyerData.identityNumber,
+    identityDetails: buyerData.identityDetails, // This is already correct
     categoryName,
     seatNumber: nextSeatNumber,
     price: category.price,
@@ -98,7 +95,6 @@ export const purchaseTicket = async (
     purchaseDate: new Date(),
   };
 
-  // Update the ticket availability
   const updateOperation: UpdateFilter<TicketModel> = {
     $push: { "seatCategories.$.soldSeats": nextSeatNumber },
     $inc: { "seatCategories.$.availableSeats": -1 },
@@ -106,11 +102,8 @@ export const purchaseTicket = async (
 
   await ticketsCollection.updateOne({ _id: ObjectId.createFromHexString(ticketId), "seatCategories.name": categoryName }, updateOperation);
 
-  // Insert the purchase record
   const insertedPurchase = await purchasesCollection.insertOne(purchase);
 
-  // Update buyer's ownedTickets when payment is verified
-  // In purchaseTicket function
   if (purchase.paymentStatus === "paid") {
     const buyerUpdateDoc: UpdateFilter<UserModel> = {
       $push: {
@@ -125,7 +118,7 @@ export const purchaseTicket = async (
           buyerName: buyerData.name,
           buyerPhone: buyerData.phone,
           identityType: buyerData.identityType,
-          identityNumber: buyerData.identityNumber,
+          identityDetails: buyerData.identityDetails,
         },
       },
     };
@@ -142,11 +135,10 @@ export const purchaseTicket = async (
   };
 };
 
-// Update updateTicketPurchaseStatus function similarly
 export const updateTicketPurchaseStatus = async (
   purchaseId: string,
   status: TicketPurchase["paymentStatus"],
-  paymentIntentId?: string,
+  paymentIntent?: { id: string },
   metadata?: { userId: string }
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
@@ -163,7 +155,8 @@ export const updateTicketPurchaseStatus = async (
   }
 
   const ticket = await ticketsCollection.findOne({ _id: purchase.ticketId });
-  if (!ticket || !ticket.sellerId) {
+
+  if (!ticket) {
     return {
       statusCode: 404,
       message: "Ticket or seller not found",
@@ -175,7 +168,7 @@ export const updateTicketPurchaseStatus = async (
     {
       $set: {
         paymentStatus: status,
-        paymentIntentId,
+        paymentIntentId: paymentIntent?.id,
       },
     }
   );
@@ -194,11 +187,7 @@ export const updateTicketPurchaseStatus = async (
       },
     };
     await usersCollection.updateOne({ _id: ticket.sellerId }, updateDoc);
-  }
 
-  // If payment is verified, update the records
-  if (status === "paid" && metadata?.userId) {
-    // Update buyer's ownedTickets
     const buyerUpdateDoc: UpdateFilter<UserModel> = {
       $push: {
         ownedTickets: {
@@ -212,7 +201,7 @@ export const updateTicketPurchaseStatus = async (
           buyerName: purchase.buyerName,
           buyerPhone: purchase.buyerPhone,
           identityType: purchase.identityType,
-          identityNumber: purchase.identityNumber,
+          identityDetails: purchase.identityDetails,
         },
       },
     };

@@ -13,15 +13,13 @@ export type UserTicket = {
   status: "owned" | "selling" | "sold";
   purchasePrice: number;
   purchaseDate: Date;
-  // Add buyer details
   buyerEmail: string;
   buyerName: string;
   buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
-  identityNumber: string;
+  identityDetails: string;
 };
 
-// First, update the SoldTicket type to include Event information
 export type SoldTicket = {
   ticketId: ObjectId;
   categoryName: string;
@@ -31,92 +29,6 @@ export type SoldTicket = {
   soldDate: Date;
   Event?: {
     name: string;
-    // other event fields if needed
-  };
-};
-
-// Then update the getUserTickets function
-export const getUserTickets = async (email: string): Promise<CustomResponse<UserTicketsResponse>> => {
-  const db = await getDb();
-  const collection = db.collection("User");
-
-  const user = (await collection
-    .aggregate([
-      {
-        $match: { email },
-      },
-      {
-        $lookup: {
-          from: "Ticket",
-          localField: "ownedTickets.ticketId",
-          foreignField: "_id",
-          as: "ownedTicketDetails",
-        },
-      },
-      {
-        $lookup: {
-          from: "Ticket",
-          localField: "soldTickets.ticketId",
-          foreignField: "_id",
-          as: "soldTicketDetails",
-        },
-      },
-      {
-        $addFields: {
-          soldTickets: {
-            $map: {
-              input: "$soldTickets",
-              as: "soldTicket",
-              in: {
-                $mergeObjects: [
-                  "$$soldTicket",
-                  {
-                    Event: {
-                      $arrayElemAt: [
-                        {
-                          $filter: {
-                            input: "$soldTicketDetails",
-                            as: "ticket",
-                            cond: { $eq: ["$$ticket._id", "$$soldTicket.ticketId"] },
-                          },
-                        },
-                        0,
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-      {
-        $addFields: {
-          ticketDetails: {
-            $concatArrays: ["$ownedTicketDetails", "$soldTicketDetails"],
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "User",
-          localField: "soldTickets.toUserId",
-          foreignField: "_id",
-          as: "buyerDetails",
-        },
-      },
-      {
-        $project: {
-          ownedTicketDetails: 0,
-          soldTicketDetails: 0,
-        },
-      },
-    ])
-    .next()) as UserTicketsResponse;
-
-  return {
-    statusCode: 200,
-    data: user,
   };
 };
 
@@ -214,6 +126,61 @@ export const getUserByEmail = async (email: string): Promise<CustomResponse<User
   };
 };
 
+export const getUserTickets = async (email: string): Promise<CustomResponse<UserTicketsResponse>> => {
+  const db = await getDb();
+  const collection = db.collection("User");
+
+  const user = (await collection
+    .aggregate([
+      {
+        $match: { email },
+      },
+      {
+        $lookup: {
+          from: "Ticket",
+          localField: "ownedTickets.ticketId",
+          foreignField: "_id",
+          as: "ownedTicketDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "Ticket",
+          localField: "soldTickets.ticketId",
+          foreignField: "_id",
+          as: "soldTicketDetails",
+        },
+      },
+      {
+        $addFields: {
+          ticketDetails: {
+            $concatArrays: ["$ownedTicketDetails", "$soldTicketDetails"],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "User",
+          localField: "soldTickets.toUserId",
+          foreignField: "_id",
+          as: "buyerDetails",
+        },
+      },
+      {
+        $project: {
+          ownedTicketDetails: 0,
+          soldTicketDetails: 0,
+        },
+      },
+    ])
+    .next()) as UserTicketsResponse;
+
+  return {
+    statusCode: 200,
+    data: user,
+  };
+};
+
 // Update addTicketToUser function to include buyer details
 export const addTicketToUser = async (
   userId: string,
@@ -246,7 +213,7 @@ export const addTicketToUser = async (
         buyerName: buyerData.name,
         buyerPhone: buyerData.phone,
         identityType: buyerData.identityType,
-        identityNumber: buyerData.identityNumber,
+        identityDetails: buyerData.identityNumber,
       },
     },
   } satisfies UpdateFilter<UserModel>);

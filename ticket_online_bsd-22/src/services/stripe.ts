@@ -67,7 +67,9 @@ export const createPaymentSession = async (ticket: TicketModel, categoryName: st
 
 export const verifyPaymentSession = async (sessionId: string): Promise<CustomResponse<unknown>> => {
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["payment_intent"],
+    });
 
     return {
       statusCode: 200,
@@ -75,7 +77,7 @@ export const verifyPaymentSession = async (sessionId: string): Promise<CustomRes
         status: session.payment_status,
         metadata: session.metadata,
         amount_total: session.amount_total,
-        payment_intent: session.payment_intent, // Add this line
+        payment_intent: session.payment_intent,
       },
     };
   } catch (error) {

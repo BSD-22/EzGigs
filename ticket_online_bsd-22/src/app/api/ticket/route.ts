@@ -1,4 +1,4 @@
-import { getAllTickets, getTicketById, purchaseTicket, TicketModel, TicketPurchase } from "@/db/models/ticket";
+import { getAllTickets, getTicketById, purchaseTicket, TicketModel } from "@/db/models/ticket";
 import { createPaymentSession } from "@/services/stripe";
 import { CustomResponse } from "@/types";
 import { ObjectId } from "mongodb";
@@ -15,8 +15,9 @@ type PurchaseRequestBody = {
   email: string;
   name: string;
   phone: string;
-  identityType: TicketPurchase["identityType"];
+  identityType: "KTP" | "Passport" | "SIM" | "Student";
   identityNumber: string;
+  identityDetails: string;
 };
 
 export const GET = async () => {
@@ -30,10 +31,9 @@ export const GET = async () => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = (await request.json()) as PurchaseRequestBody;
-    const { ticketId, categoryName, email: buyerEmail, name: buyerName, phone: buyerPhone, identityType, identityNumber } = body;
+    const { ticketId, categoryName, email: buyerEmail, name: buyerName, phone: buyerPhone, identityType, identityDetails } = body;
 
-    // Validate required fields
-    if (!ticketId || !categoryName || !buyerEmail || !buyerName || !buyerPhone || !identityType || !identityNumber) {
+    if (!ticketId || !categoryName || !buyerEmail || !buyerName || !buyerPhone || !identityType || !identityDetails) {
       return NextResponse.json<CustomResponse<null>>(
         {
           statusCode: 400,
@@ -66,13 +66,12 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    // First, purchase the ticket and get seat number (status will be pending)
     const purchaseResult = await purchaseTicket(ticketId, categoryName, {
       email: buyerEmail,
       name: buyerName,
       phone: buyerPhone,
       identityType,
-      identityNumber,
+      identityDetails,
       userId,
     });
 
@@ -91,7 +90,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json<CustomResponse<unknown>>({
       statusCode: 200,
       data: {
-        ...stripeSession,
+        ...stripeSession.data,
         purchaseId: purchaseData.purchaseId,
         seatNumber: purchaseData.seatNumber,
       },

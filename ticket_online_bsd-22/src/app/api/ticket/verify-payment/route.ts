@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (verificationResult.statusCode === 200 && verificationResult.data) {
       const { status, metadata, payment_intent } = verificationResult.data as {
         status: string;
-        payment_intent: string;
+        payment_intent: { id: string };
         metadata: {
           ticketId: string;
           categoryName: string;
@@ -21,20 +21,40 @@ export async function POST(request: NextRequest) {
         };
       };
 
-      if (status === "paid") {
-        // Update purchase status with seller's userId and buyer's userId
+      if (status === "paid" || status === "complete") {
         await updateTicketPurchaseStatus(purchaseId, "paid", payment_intent, { userId: metadata.userId });
 
-        return NextResponse.json({ message: "Payment verified and ticket added to user" });
+        return NextResponse.json({
+          statusCode: 200,
+          message: "Payment verified and ticket added to user",
+        });
       } else {
         await updateTicketPurchaseStatus(purchaseId, "failed");
-        return NextResponse.json({ message: "Payment failed" }, { status: 400 });
+        return NextResponse.json(
+          {
+            statusCode: 400,
+            message: "Payment failed",
+          },
+          { status: 400 }
+        );
       }
     }
 
-    return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
+    return NextResponse.json(
+      {
+        statusCode: 400,
+        message: "Payment verification failed",
+      },
+      { status: 400 }
+    );
   } catch (error) {
     console.error("Payment verification error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        statusCode: 500,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
 }
