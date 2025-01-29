@@ -2,22 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { createTicket, getAllTickets, TicketModel } from "@/db/models/ticket";
 import { CustomResponse } from "@/types";
 import { z } from "zod";
+import { ref, set } from "firebase/database";
+import { database } from "@/services/firebase";
 
 const SeatCategorySchema = z.object({
-  name: z.string().min(1),
-  price: z.number().min(0),
-  totalSeats: z.number().min(1),
+  name: z.string().min(1, "Category name is required"),
+  price: z.number().min(0, "Price must be 0 or greater"),
+  totalSeats: z.number().min(1, "Must have at least 1 seat"),
 });
 
 const TicketSchema = z.object({
-  name: z.string().min(1),
-  venue: z.string().min(1),
-  date: z.string().min(1),
-  time: z.string().min(1),
-  description: z.string().min(1),
-  image: z.string().min(1),
-  sellerId: z.string().min(1),
-  seatCategories: z.array(SeatCategorySchema).min(1),
+  name: z.string().min(1, "Event name is required"),
+  venue: z.string().min(1, "Venue is required"),
+  date: z.string().min(1, "Date is required"),
+  time: z.string().min(1, "Time is required"),
+  description: z.string().min(1, "Description is required"),
+  image: z.string().url("Must be a valid URL"),
+  seatCategories: z.array(SeatCategorySchema).min(1, "At least one seat category is required"),
 });
 
 export const GET = async (req: NextRequest) => {
@@ -68,8 +69,6 @@ export const POST = async (req: NextRequest) => {
     }
 
     const body = await req.json();
-    body.sellerId = sellerId; // Ensure sellerId from auth is used
-
     const parsedTicket = TicketSchema.safeParse(body);
 
     if (!parsedTicket.success) {
@@ -77,7 +76,7 @@ export const POST = async (req: NextRequest) => {
         {
           statusCode: 400,
           message: "Invalid input",
-          data: parsedTicket.error.errors,
+          data: parsedTicket.error.format(),
         },
         { status: 400 }
       );
@@ -86,6 +85,15 @@ export const POST = async (req: NextRequest) => {
     const { name, venue, date, time, description, image, seatCategories } = parsedTicket.data;
 
     const result = await createTicket(name, venue, date, time, description, image, seatCategories, sellerId);
+
+    await set(ref(database, "newTickets/latest"), {
+      eventName: name,
+      eventDate: date,
+      eventTime: time,
+      venue: venue,
+      image: image,
+      timestamp: Date.now(),
+    });
 
     return NextResponse.json<CustomResponse<unknown>>(result);
   } catch (error) {

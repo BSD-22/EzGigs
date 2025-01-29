@@ -11,13 +11,7 @@ export type StripeResponse = {
   url: string;
 };
 
-export const createPaymentSession = async (
-  ticket: TicketModel,
-  categoryName: string,
-  userId: string,
-  purchaseId: string,
-  seatNumber: string // Add seatNumber parameter
-): Promise<CustomResponse<StripeResponse>> => {
+export const createPaymentSession = async (ticket: TicketModel, categoryName: string, userId: string, purchaseId: string, seatNumber: string): Promise<CustomResponse<StripeResponse>> => {
   try {
     const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
     if (!category) {

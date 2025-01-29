@@ -3,39 +3,73 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
+import { SeatCategory } from "@/db/models/ticket";
 
 interface CreateTicketFormProps {
   sellerId: string;
 }
+
+type SeatCategoryInput = Omit<SeatCategory, "availableSeats" | "soldSeats">;
 
 const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    price: "",
-    seats: "",
     venue: "",
     date: "",
     time: "",
     description: "",
     image: "",
+    seatCategories: [
+      {
+        name: "Regular",
+        price: 0,
+        totalSeats: 0,
+      },
+    ] as SeatCategoryInput[],
   });
+
+  const handleSeatCategoryChange = (index: number, field: keyof SeatCategoryInput, value: string | number) => {
+    const updatedCategories = [...formData.seatCategories];
+    updatedCategories[index] = {
+      ...updatedCategories[index],
+      [field]: typeof value === "string" && field === "price" ? Number(value) : value,
+    };
+    setFormData({ ...formData, seatCategories: updatedCategories });
+  };
+
+  const addSeatCategory = () => {
+    setFormData({
+      ...formData,
+      seatCategories: [
+        ...formData.seatCategories,
+        {
+          name: "",
+          price: 0,
+          totalSeats: 0,
+        },
+      ],
+    });
+  };
+
+  const removeSeatCategory = (index: number) => {
+    const updatedCategories = formData.seatCategories.filter((_, i) => i !== index);
+    setFormData({ ...formData, seatCategories: updatedCategories });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch(baseUrl + "/api/ticket/seller", {
+      const res = await fetch(`${baseUrl}/api/ticket/seller`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...formData,
-          price: Number(formData.price),
-          seats: Number(formData.seats),
           sellerId,
         }),
       });
@@ -65,31 +99,6 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
           className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
           required
         />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Price (Rp)</label>
-          <input
-            type="number"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
-            required
-            min="0"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Available Seats</label>
-          <input
-            type="number"
-            value={formData.seats}
-            onChange={(e) => setFormData({ ...formData, seats: e.target.value })}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
-            required
-            min="1"
-          />
-        </div>
       </div>
 
       <div>
@@ -145,6 +154,71 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
           className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
           required
         />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <label className="text-sm font-medium text-gray-400">Seat Categories</label>
+          <button
+            type="button"
+            onClick={addSeatCategory}
+            className="px-3 py-1 bg-[#8E2DE2]/20 text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2]/30">
+            Add Category
+          </button>
+        </div>
+
+        {formData.seatCategories.map((category, index) => (
+          <div
+            key={index}
+            className="p-4 bg-black/20 rounded-lg space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-medium">Category {index + 1}</h3>
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => removeSeatCategory(index)}
+                  className="text-red-500 hover:text-red-400">
+                  Remove
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={category.name}
+                  onChange={(e) => handleSeatCategoryChange(index, "name", e.target.value)}
+                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Price (Rp)</label>
+                <input
+                  type="number"
+                  value={category.price}
+                  onChange={(e) => handleSeatCategoryChange(index, "price", e.target.value)}
+                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  required
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Total Seats</label>
+                <input
+                  type="number"
+                  value={category.totalSeats}
+                  onChange={(e) => handleSeatCategoryChange(index, "totalSeats", Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  required
+                  min="1"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="flex gap-4">
