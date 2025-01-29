@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { TicketModel } from "@/db/models/ticket";
 import Image from "next/image";
-import { baseUrl } from "@/constants/baseUrl";
 import { useRouter } from "next/navigation";
-import { StripeResponse } from "@/services/stripe";
 
 // Add imports at the top
 import { Dialog } from "@headlessui/react";
@@ -14,24 +12,6 @@ import { TicketPurchase } from "@/db/models/ticket";
 export default function Home() {
   const router = useRouter();
   const [tickets, setTickets] = useState<TicketModel[]>([]);
-
-  const fetchTickets = async () => {
-    const res = await fetch(baseUrl + "/api/ticket", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await res.json();
-
-    setTickets(json?.data);
-  };
-
-  const handleTicketClick = (ticketId: string) => {
-    router.push(`/home/ticket/${ticketId}`);
-  };
-
-  // Add new state variables
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<{ id: string; category: string } | null>(null);
   const [buyerData, setBuyerData] = useState({
@@ -42,18 +22,37 @@ export default function Home() {
     identityNumber: "",
   });
 
-  // Update handleBuyTicket
-  const handleBuyTicket = async (ticketId: string, categoryName: string) => {
+  const handleTicketClick = (ticketId: string) => {
+    router.push(`/home/ticket/${ticketId}`);
+  };
+
+  // Add the missing handleBuyTicket function
+  const handleBuyTicket = (ticketId: string, categoryName: string) => {
     setSelectedTicket({ id: ticketId, category: categoryName });
     setIsModalOpen(true);
   };
 
-  // Add new function to handle form submission
+  const fetchTickets = async () => {
+    try {
+      const res = await fetch("/api/ticket", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await res.json();
+      setTickets(json?.data);
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+    }
+  };
+
+  // Update handleSubmitPurchase
   const handleSubmitPurchase = async () => {
     if (!selectedTicket) return;
 
     try {
-      const res = await fetch(baseUrl + "/api/ticket", {
+      const res = await fetch("/api/ticket", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,9 +68,9 @@ export default function Home() {
       const json = await res.json();
 
       if (res.ok && json.data) {
-        const stripeData = json.data as StripeResponse;
+        const stripeData = json.data;
         setIsModalOpen(false);
-        router.push(stripeData.url);
+        router.push(stripeData.data.url); // Fix: access url through stripeData.data.url
       } else {
         console.error("Payment creation failed:", json.message);
       }
@@ -83,7 +82,6 @@ export default function Home() {
   useEffect(() => {
     fetchTickets();
 
-    // Check URL parameters for payment verification
     const urlParams = new URLSearchParams(window.location.search);
     const isSuccess = urlParams.get("success");
     const sessionId = urlParams.get("session_id");
@@ -96,7 +94,7 @@ export default function Home() {
 
   const verifyPayment = async (sessionId: string, purchaseId: string) => {
     try {
-      const res = await fetch(`${baseUrl}/api/ticket/verify-payment`, {
+      const res = await fetch(`/api/ticket/verify-payment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

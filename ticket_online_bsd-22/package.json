@@ -12,6 +12,8 @@
     "@google/generative-ai": "^0.21.0",
     "@headlessui/react": "^2.2.0",
     "bcryptjs": "^2.4.3",
+    "cron": "^3.5.0",
+    "firebase": "^11.2.0",
     "jose": "^5.9.6",
     "mongodb": "^6.12.0",
     "next": "15.1.6",

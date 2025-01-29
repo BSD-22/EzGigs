@@ -5,6 +5,8 @@ import Image from "next/image";
 import { TicketModel } from "@/db/models/ticket";
 import { useRouter } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
+import { ref, onValue, off } from "firebase/database";
+import { database } from "@/services/firebase";
 
 // Add interface for user data from API
 interface TicketWithUser extends TicketModel {
@@ -20,6 +22,11 @@ const SellerAllTicketsPage = () => {
   const router = useRouter();
 
   useEffect(() => {
+    const requestNotification = async () => {
+      if (!("Notification" in window)) return;
+      await Notification.requestPermission();
+    };
+
     const fetchUserAndTickets = async () => {
       try {
         setLoading(true);
@@ -41,7 +48,25 @@ const SellerAllTicketsPage = () => {
       }
     };
 
-    fetchUserAndTickets();
+    requestNotification();
+
+    const newTicketsRef = ref(database, "newTickets");
+    onValue(newTicketsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.latest) {
+        if (Notification.permission === "granted") {
+          new Notification("New Event Added! 🎫", {
+            body: `${data.latest.eventName}\nDate: ${data.latest.eventDate}\nTime: ${data.latest.eventTime}\nVenue: ${data.latest.venue}`,
+            icon: data.latest.image,
+          });
+        }
+        fetchUserAndTickets();
+      }
+    });
+
+    return () => {
+      off(newTicketsRef);
+    };
   }, []);
 
   const filteredTickets = tickets.filter((ticket) => {
@@ -62,7 +87,6 @@ const SellerAllTicketsPage = () => {
     <div className="flex-1 p-7">
       <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-6">All Tickets 🎫</h1>
 
-      {/* Filters remain the same */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1">
           <input
@@ -83,7 +107,6 @@ const SellerAllTicketsPage = () => {
         </div>
       </div>
 
-      {/* Tickets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTickets.map((ticket) => (
           <div
@@ -154,7 +177,6 @@ const SellerAllTicketsPage = () => {
         ))}
       </div>
 
-      {/* Empty state remains the same */}
       {filteredTickets.length === 0 && (
         <div className="text-center py-12">
           <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#8E2DE2]/10 flex items-center justify-center">

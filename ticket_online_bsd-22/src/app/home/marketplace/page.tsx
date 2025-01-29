@@ -5,8 +5,6 @@ import SearchBar from "./SearchBar";
 const Marketplace = async () => {
   const { data: listings } = await getAllMarketplace();
 
-  console.log(listings, "listings marketplace");
-
   return (
     <div className="flex-1 p-7 overflow-auto">
       <div className="flex justify-between items-center mb-8">
