@@ -287,3 +287,36 @@ export const createTicket = async (
     },
   };
 };
+
+export const getTicketByPurchaseId = async (purchaseId: string): Promise<CustomResponse<TicketModel & { seatNumber: string; price: number }>> => {
+  const db = await getDb();
+  const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
+  const ticketsCollection = db.collection<TicketModel>("Ticket");
+
+  const purchase = await purchasesCollection.findOne({ _id: ObjectId.createFromHexString(purchaseId) });
+
+  if (!purchase) {
+    return {
+      statusCode: 404,
+      message: "Ticket purchase not found",
+    };
+  }
+
+  const ticket = await ticketsCollection.findOne({ _id: purchase.ticketId });
+
+  if (!ticket) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found",
+    };
+  }
+
+  return {
+    statusCode: 200,
+    data: {
+      ...ticket,
+      seatNumber: purchase.seatNumber,
+      price: purchase.price,
+    },
+  };
+};
