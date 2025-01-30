@@ -90,8 +90,8 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
               email: currentUser.email,
             },
             [sellerId]: {
-              name: sellerData?.data?.data?.name || "Seller",
-              email: sellerData?.data?.data?.email || "pending",
+              name: sellerData?.data?.name || "Seller",
+              email: sellerData?.data?.email || "pending",
             },
           });
         } catch (error) {
@@ -99,6 +99,7 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
         }
       }
     };
+
     setupParticipants();
 
     onValue(messagesRef, (snapshot) => {
@@ -146,7 +147,7 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
   return (
     <div className="flex-1 flex flex-col h-screen bg-[#0A0A0A]">
       <div className="p-4 bg-black/40 border-b border-[#8E2DE2]/20">
-        <h1 className="text-xl font-bold text-white">Chat with Seller</h1>
+        <h1 className="text-xl font-bold text-white">Chat Room</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

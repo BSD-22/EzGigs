@@ -8,7 +8,6 @@ export const middleware = async (request: NextRequest) => {
   const token = cookieStore.get("token");
 
   if (!token || token.value.length <= 0) {
-    console.log("Malah masuk ke sini");
     return NextResponse.json<CustomResponse<unknown>>(
       {
         statusCode: 401,
