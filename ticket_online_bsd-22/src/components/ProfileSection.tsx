@@ -19,12 +19,18 @@ const ProfileSection = ({ isOpen, userData }: ProfileSectionProps) => {
 
   return (
     <div className="flex gap-x-4 items-center">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8E2DE2] to-[#00F5A0] flex items-center justify-center">
-        <span className="text-xl font-bold">{userData.name[0].toUpperCase()}</span>
+      <div className="min-w-[2.5rem] h-10 rounded-lg bg-[#4A5043] flex items-center justify-center">
+        <span className="text-white font-medium text-xl">
+          {userData.name.charAt(0).toUpperCase()}
+        </span>
       </div>
-      <div className={`${!isOpen && "hidden"} origin-left duration-300`}>
-        <h4 className="font-semibold">{userData.name}</h4>
-        <p className="text-xs text-gray-400">Points: 1,234 ⭐</p>
+      <div className={`${!isOpen && "hidden"} origin-left duration-200`}>
+        <h2 className="text-white font-semibold">
+          {userData.name}
+        </h2>
+        <p className="text-[#D3D9C9] text-sm">
+          {userData.email}
+        </p>
       </div>
     </div>
   );

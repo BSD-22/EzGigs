@@ -45,23 +45,21 @@ async function MyTicketsPage() {
 
   return (
     <div className="flex-1 p-7 overflow-auto">
-      <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-6">My Tickets 🎫</h1>
+      <h1 className="text-4xl font-black text-[#2C3228] mb-6">My Tickets 🎫</h1>
 
       {!activeTickets.length ? (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#8E2DE2]/10 flex items-center justify-center">
+        <div className="text-center py-12 bg-white rounded-2xl border border-[#D3D9C9]">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#4A5043]/10 flex items-center justify-center">
             <span className="text-4xl">🎫</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-400">No Tickets Found</h2>
-          <p className="text-gray-500 mt-2">You haven&apos;t purchased any tickets yet.</p>
+          <h2 className="text-2xl font-bold text-[#2C3228]">No Tickets Found</h2>
+          <p className="text-[#4A5043] mt-2">You haven&apos;t purchased any tickets yet.</p>
           <BrowseTicketsButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeTickets.map((ticket: TicketWithStatus) => {
             const ticketDetails = userTickets.ticketDetails?.find((detail: TicketModel) => detail._id.toString() === ticket.ticketId.toString());
-
-            // Find marketplace listing if ticket is being sold
             const marketplaceListing = ticket.status === "selling" ? marketplaceListings?.find((listing) => listing.ticket._id.toString() === ticket.ticketId.toString()) : null;
 
             if (!ticketDetails) return null;
@@ -69,7 +67,7 @@ async function MyTicketsPage() {
             return (
               <div
                 key={ticket.ticketId.toString() + Math.floor(Math.random() * 1000)}
-                className="block bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300">
+                className="block bg-white rounded-2xl overflow-hidden border border-[#D3D9C9] hover:shadow-lg transition-all duration-300">
                 <div className="relative h-48 w-full">
                   <Image
                     src={ticketDetails.image}
@@ -77,15 +75,20 @@ async function MyTicketsPage() {
                     fill
                     className="object-cover"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#2C3228] to-transparent opacity-60" />
                   <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${ticket.status === "owned" ? "bg-green-500/20 text-green-500" : "bg-yellow-500/20 text-yellow-500"}`}>
+                    <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                      ticket.status === "owned" 
+                        ? "bg-[#4A5043] text-white" 
+                        : "bg-[#D3D9C9] text-[#2C3228]"
+                    }`}>
                       {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
                     </span>
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-white">{ticketDetails.name}</h3>
-                  <div className="space-y-2 text-sm text-gray-400">
+                  <h3 className="text-xl font-bold mb-2 text-[#2C3228]">{ticketDetails.name}</h3>
+                  <div className="space-y-2 text-sm text-[#4A5043]">
                     <div className="flex items-center gap-2">
                       <span>📍</span>
                       <span>{ticketDetails.venue}</span>
@@ -110,13 +113,15 @@ async function MyTicketsPage() {
                       <span>💰</span>
                       {ticket.status === "selling" && marketplaceListing ? (
                         <div>
-                          <span className="text-yellow-500">Listed for Rp {marketplaceListing.price.toLocaleString("id-ID")}</span>
+                          <span className="text-[#4A5043] font-medium">
+                            Listed for Rp {marketplaceListing.price.toLocaleString("id-ID")}
+                          </span>
                           {ticketDetails.seatCategories.map((category) => {
                             if (category.name === ticket.categoryName) {
                               return (
                                 <span
                                   key={category.name + Math.floor(Math.random() * 100)}
-                                  className="text-xs text-gray-500 block">
+                                  className="text-xs text-[#4A5043]/70 block">
                                   Original price: Rp {category.price.toLocaleString("id-ID")}
                                 </span>
                               );
@@ -126,9 +131,11 @@ async function MyTicketsPage() {
                         </div>
                       ) : (
                         <div>
-                          <span>Rp {ticket.purchasePrice?.toLocaleString("id-ID") || ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}</span>
+                          <span className="text-[#4A5043] font-medium">
+                            Rp {ticket.purchasePrice?.toLocaleString("id-ID") || ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
+                          </span>
                           {ticket.purchasePrice && ticket.purchasePrice !== ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price && (
-                            <span className="text-xs text-gray-500 block">
+                            <span className="text-xs text-[#4A5043]/70 block">
                               Original price: Rp {ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
                             </span>
                           )}

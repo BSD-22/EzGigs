@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: "cdn.rri.co.id",
         pathname: "/berita/**",
       },
+      {
+        protocol: "https",
+        hostname: "static.promediateknologi.id",
+      },
     ],
   },
 };
