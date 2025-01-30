@@ -16,8 +16,6 @@ export type UserTicket = {
   buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
   identityDetails: string;
-  // points: number;
-  // subscriptionType: "free" | "premium" | "vip";
 };
 
 export type SoldTicket = {
@@ -38,6 +36,8 @@ export type UserModel = {
   name: string;
   password: string;
   role: "seller" | "buyer";
+  points: number;
+  subscriptionType: "free" | "premium" | "vip";
   ownedTickets: UserTicket[];
   soldTickets: SoldTicket[];
 };
@@ -51,7 +51,7 @@ export type UserTicketsResponse = {
   soldTickets: SoldTicket[];
   ticketDetails: TicketModel[];
   buyerDetails: Omit<UserModel, "password" | "ownedTickets" | "soldTickets">[];
-  eventDetails: TicketModel[]; // Add this line to include eventDetails
+  eventDetails: TicketModel[];
 };
 
 export type UserModelWithoutPassword = Omit<UserModel, "password">;
@@ -65,6 +65,8 @@ export const createUser = async (email: string, name: string, password: string):
     name,
     password: hashText(password),
     role: "buyer" as const,
+    points: 0,
+    subscriptionType: "free" as const,
     ownedTickets: [] as UserModel["ownedTickets"],
     soldTickets: [] as UserModel["soldTickets"],
   };
@@ -76,6 +78,8 @@ export const createUser = async (email: string, name: string, password: string):
     email,
     name,
     role: "buyer",
+    points: 0,
+    subscriptionType: "free",
     ownedTickets: [],
     soldTickets: [],
   };
@@ -196,9 +200,8 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
     ])
     .next()) as UserTicketsResponse;
 
-  // Map event names to sold tickets
   user.soldTickets = user.soldTickets.map((ticket) => {
-    const eventDetail = user.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId)); // Explicitly type 'event'
+    const eventDetail = user.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId));
     return {
       ...ticket,
       Event: {
@@ -213,7 +216,6 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
   };
 };
 
-// Update addTicketToUser function to include buyer details
 export const addTicketToUser = async (
   userId: string,
   ticketId: string,
@@ -240,7 +242,6 @@ export const addTicketToUser = async (
         status: "owned",
         purchasePrice,
         purchaseDate: new Date(),
-        // Add buyer details
         buyerEmail: buyerData.email,
         buyerName: buyerData.name,
         buyerPhone: buyerData.phone,
@@ -313,6 +314,21 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
 
     await collection.updateOne({ _id: new ObjectId(userId) }, updateSoldTicket);
   }
+
+  return {
+    statusCode: 200,
+    data: result.acknowledged,
+  };
+};
+export const updateUserSubscription = async (userId: string, subscriptionType: "free" | "premium" | "vip"): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const collection = db.collection<UserModel>("User");
+
+  const result = await collection.updateOne({ _id: new ObjectId(userId) }, {
+    $set: {
+      subscriptionType,
+    },
+  } satisfies UpdateFilter<UserModel>);
 
   return {
     statusCode: 200,

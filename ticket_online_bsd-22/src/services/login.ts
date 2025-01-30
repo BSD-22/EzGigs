@@ -52,6 +52,7 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
     email: foundUser.data.email,
     name: foundUser.data.name,
     role: foundUser.data.role,
+    subscriptionType: foundUser.data.subscriptionType,
   };
 
   const token = await signToken(payload);

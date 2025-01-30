@@ -106,7 +106,7 @@ export const purchaseTicket = async (
   };
 
   await ticketsCollection.updateOne({ _id: ObjectId.createFromHexString(ticketId), "seatCategories.name": categoryName }, updateOperation);
-  
+
   await redis.del("tickets");
 
   const insertedPurchase = await purchasesCollection.insertOne(purchase);
@@ -142,12 +142,7 @@ export const purchaseTicket = async (
   };
 };
 
-export const updateTicketPurchaseStatus = async (
-  purchaseId: string,
-  status: TicketPurchase["paymentStatus"],
-  paymentIntent?: { id: string },
-  metadata?: { userId: string }
-): Promise<CustomResponse<unknown>> => {
+export const updateTicketPurchaseStatus = async (purchaseId: string, status: "paid" | "failed", paymentIntent: { id: string } | undefined, { userId }: { userId: string }) => {
   const db = await getDb();
   const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
   const ticketsCollection = db.collection<TicketModel>("Ticket");
@@ -180,14 +175,15 @@ export const updateTicketPurchaseStatus = async (
     }
   );
 
-  if (status === "paid" && metadata?.userId) {
+  if (status === "paid" && userId) {
+    // Changed from metadata?.userId to userId
     const updateDoc: UpdateFilter<UserModel> = {
       $push: {
         soldTickets: {
           ticketId: purchase.ticketId,
           categoryName: purchase.categoryName,
           seatNumber: purchase.seatNumber,
-          toUserId: ObjectId.createFromHexString(metadata.userId),
+          toUserId: ObjectId.createFromHexString(userId), // Changed from metadata.userId to userId
           soldPrice: purchase.price,
           soldDate: new Date(),
         },
@@ -213,7 +209,7 @@ export const updateTicketPurchaseStatus = async (
       },
     };
 
-    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(metadata.userId) }, buyerUpdateDoc);
+    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(userId) }, buyerUpdateDoc); // Changed from metadata.userId to userId
   }
 
   return {
@@ -237,7 +233,7 @@ export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> =>
     };
   }
 
-  await redis.set("tickets", JSON.stringify(tickets));  
+  await redis.set("tickets", JSON.stringify(tickets));
 
   return {
     statusCode: 200,
@@ -297,7 +293,7 @@ export const createTicket = async (
   };
 
   const result = await collection.insertOne(newTicket);
-  
+
   await redis.del("tickets");
 
   return {
