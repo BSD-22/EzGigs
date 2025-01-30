@@ -2,6 +2,7 @@ import { ObjectId, UpdateFilter, Collection, WithoutId } from "mongodb";
 import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { UserModel } from "./user";
+import redis from "@/services/redis";
 
 export type SeatCategory = {
   name: string;
@@ -47,7 +48,7 @@ export const purchaseTicket = async (
     name: string;
     phone: string;
     identityType: TicketPurchase["identityType"];
-    identityDetails: string; // This is already correct
+    identityDetails: string;
     userId: string;
   }
 ): Promise<CustomResponse<unknown>> => {
@@ -87,7 +88,7 @@ export const purchaseTicket = async (
     buyerName: buyerData.name,
     buyerPhone: buyerData.phone,
     identityType: buyerData.identityType,
-    identityDetails: buyerData.identityDetails, // This is already correct
+    identityDetails: buyerData.identityDetails,
     categoryName,
     seatNumber: nextSeatNumber,
     price: category.price,
@@ -101,6 +102,8 @@ export const purchaseTicket = async (
   };
 
   await ticketsCollection.updateOne({ _id: ObjectId.createFromHexString(ticketId), "seatCategories.name": categoryName }, updateOperation);
+  
+  await redis.del("tickets");
 
   const insertedPurchase = await purchasesCollection.insertOne(purchase);
 
@@ -221,6 +224,17 @@ export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> =>
 
   const tickets = await collection.find({}).toArray();
 
+  const cachedTickets = await redis.get("tickets");
+
+  if (cachedTickets) {
+    return {
+      statusCode: 200,
+      data: JSON.parse(cachedTickets),
+    };
+  }
+
+  await redis.set("tickets", JSON.stringify(tickets));  
+
   return {
     statusCode: 200,
     data: tickets,
@@ -277,6 +291,8 @@ export const createTicket = async (
   };
 
   const result = await collection.insertOne(newTicket);
+  
+  await redis.del("tickets");
 
   return {
     statusCode: 201,

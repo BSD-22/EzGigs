@@ -39,6 +39,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         userData={userData}
       />
 
+      {/* Rest of your navigation code stays the same */}
       <ul className="pt-6">
         <li className="mb-2">
           <Link
