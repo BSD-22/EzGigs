@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, use } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo, use } from "react";
 import { TicketModel } from "@/db/models/ticket";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import Webcam from "react-webcam";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 
 const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -98,6 +99,24 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
     }
   };
 
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+
+  const googleMapsScript = useMemo(() => {
+    if (!isLoaded || !ticket || !ticket.location) return null;
+
+    return (
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "400px" }}
+        center={{ lat: ticket.location.latitude, lng: ticket.location.longitude }}
+        zoom={15}>
+        <Marker position={{ lat: ticket.location.latitude, lng: ticket.location.longitude }} />
+      </GoogleMap>
+    );
+  }, [isLoaded, ticket]);
+
   if (!ticket) {
     return (
       <div className="flex-1 p-7">
@@ -163,7 +182,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-[#00F5A0] mb-4">Price Range</h3>
-                <p className="text-white">
+                <p className="text-black">
                   From Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")} to Rp{" "}
                   {Math.max(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}
                 </p>
@@ -197,6 +216,14 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
               <div>
                 <h3 className="text-xl font-bold text-[#2C3228] mb-4">About This Event</h3>
                 <p className="text-[#4A5043] leading-relaxed">{ticket.description}</p>
+
+                {/* Google Maps Section */}
+                {googleMapsScript && (
+                  <div className="mt-12">
+                    <h3 className="text-xl font-bold text-[#2C3228] mb-4">Event Location</h3>
+                    {googleMapsScript}
+                  </div>
+                )}
               </div>
 
               {/* Right Column - Ticket Categories */}
