@@ -77,37 +77,50 @@ const ChatsPage = async () => {
 
   return (
     <div className="flex-1 p-7 overflow-auto">
-      <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-8">Your Chats 💬</h1>
+      <h1 className="text-4xl font-black text-[#2C3228] mb-6">Your Chats 💬</h1>
 
-      <div className="space-y-4">
-        {sortedChats.map(([chatId, chat]) => {
-          const otherParticipantId = chatId.split("-").find((id) => id !== currentUserId);
-          const otherParticipant = chat.participants[otherParticipantId || ""];
-
-          return (
-            <Link
-              key={chatId}
-              href={`/home/marketplace/chat/${otherParticipantId}`}
-              className="block bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-4 hover:border-[#00F5A0]/50 transition-all">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8E2DE2] to-[#00F5A0] flex items-center justify-center text-xl">{otherParticipant?.name?.[0]?.toUpperCase() || "?"}</div>
-                <div className="flex-1">
-                  <h3 className="font-bold">{otherParticipant?.name || "Unknown User"}</h3>
-                  {chat.lastMessage ? <p className="text-sm text-gray-400 truncate">{chat.lastMessage.text}</p> : <p className="text-sm text-gray-400 italic">No messages yet</p>}
-                </div>
-                {chat.lastMessage && <div className="text-xs text-gray-500">{new Date(chat.lastMessage.timestamp).toLocaleTimeString()}</div>}
-              </div>
-            </Link>
-          );
-        })}
-
-        {sortedChats.length === 0 && (
-          <div className="text-center text-gray-500 py-8">
-            <p>No chat history yet</p>
-            <p className="text-sm">Start chatting with sellers in the marketplace!</p>
+      {sortedChats.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-[#D3D9C9]">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#4A5043]/10 flex items-center justify-center">
+            <span className="text-4xl">💬</span>
           </div>
-        )}
-      </div>
+          <h2 className="text-2xl font-bold text-[#2C3228]">No Chat History</h2>
+          <p className="text-[#4A5043] mt-2">Start chatting with sellers in the marketplace!</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {sortedChats.map(([chatId, chat]) => {
+            const otherParticipantId = chatId.split("-").find((id) => id !== currentUserId);
+            const otherParticipant = chat.participants[otherParticipantId || ""];
+
+            return (
+              <Link
+                key={chatId}
+                href={`/home/marketplace/chat/${otherParticipantId}`}
+                className="block bg-white rounded-2xl overflow-hidden border border-[#D3D9C9] p-4 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#4A5043]/10 flex items-center justify-center text-xl">
+                    {otherParticipant?.name?.[0]?.toUpperCase() || "?"}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-[#2C3228]">{otherParticipant?.name || "Unknown User"}</h3>
+                    {chat.lastMessage ? (
+                      <p className="text-sm text-[#4A5043] truncate">{chat.lastMessage.text}</p>
+                    ) : (
+                      <p className="text-sm text-[#4A5043]/70 italic">No messages yet</p>
+                    )}
+                  </div>
+                  {chat.lastMessage && (
+                    <div className="text-xs text-[#4A5043]/70">
+                      {new Date(chat.lastMessage.timestamp).toLocaleTimeString()}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
