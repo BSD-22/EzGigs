@@ -176,218 +176,264 @@ export default function Home() {
     }
   };
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex">
-      {/* Main Content */}
-      <div className="flex-1 p-7 overflow-auto">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-6">Welcome to TIXID! 🎉</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tickets?.map((ticket) => (
-            <div
-              key={ticket._id.toString()}
-              onClick={() => handleTicketClick(ticket._id.toString())}
-              className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300 group cursor-pointer">
-              <div className="relative h-48 w-full">
-                <Image
-                  src={ticket.image}
-                  alt={ticket.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-[#00F5A0] transition-colors">{ticket.name}</h3>
-                <p className="text-gray-400 text-sm mb-4">{ticket.description}</p>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[#00F5A0] font-bold">From Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}</p>
-                    <p className="text-xs text-gray-400">
-                      {new Date(ticket.date).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}{" "}
-                      • {ticket.time}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm text-gray-400">Available Categories:</p>
-                    {ticket.seatCategories.map((category) => (
-                      <button
-                        key={category.name}
-                        disabled={category.availableSeats <= 0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleBuyTicket(ticket._id.toString(), category.name);
-                        }}
-                        className={`w-full px-4 py-2 rounded-lg text-left flex justify-between items-center ${
-                          category.availableSeats > 0 ? "bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] text-white transition-colors" : "bg-gray-800/50 text-gray-500 cursor-not-allowed"
-                        }`}>
-                        <span>{category.name}</span>
-                        <div className="text-right">
-                          <p>Rp {category.price.toLocaleString("id-ID")}</p>
-                          <p className="text-xs opacity-75">{category.availableSeats} seats left</p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    <span className="bg-[#8E2DE2]/20 px-2 py-1 rounded">{ticket.venue}</span>
-                  </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">
+        {/* Main Content */}
+        <div className="flex-1 p-7 overflow-auto">
+            <div className="flex justify-between items-center mb-10">
+                <div>
+                    <h1 className="text-5xl font-black text-[#2C3228]">
+                        Upcoming Events
+                    </h1>
+                    <p className="text-[#4A5043] mt-2">Discover and book your next unforgettable experience 🎉</p>
                 </div>
-              </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Add Modal */}
-      <Dialog
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        className="relative z-50">
-        <div
-          className="fixed inset-0 bg-black/30"
-          aria-hidden="true"
-        />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <DialogPanel className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-md">
-            <DialogTitle className="text-xl font-bold mb-4">Enter Your Details</DialogTitle>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={buyerData.name}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="Your full name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={buyerData.email}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={buyerData.phone}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="Your phone number"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Type</label>
-                <select
-                  value={buyerData.identityType}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as TicketPurchase["identityType"] }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white">
-                  <option value="KTP">KTP</option>
-                  <option value="Passport">Passport</option>
-                  <option value="SIM">SIM</option>
-                  <option value="Student">Student ID</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Document</label>
-                <div className="space-y-2">
-                  {showCamera ? (
-                    <div className="relative">
-                      <Webcam
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        className="w-full rounded-lg"
-                      />
-                      {/* Add the rectangle overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="border-2 border-white/70 rounded-lg w-[85%] h-[60%] relative">
-                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-gray-400">⎯⎯⎯ Align ID card ⎯⎯⎯</div>
-                          {/* Corner markers */}
-                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00F5A0]" />
-                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00F5A0]" />
-                          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F5A0]" />
-                          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F5A0]" />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
-                        <button
-                          onClick={capture}
-                          className="px-4 py-2 bg-[#8E2DE2] rounded-lg hover:opacity-90">
-                          Capture
-                        </button>
-                        <button
-                          onClick={() => setShowCamera(false)}
-                          className="px-4 py-2 bg-red-500 rounded-lg hover:opacity-90">
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {buyerData.identityDetails ? (
-                        <div className="relative">
-                          <Image
-                            width={200}
-                            height={200}
-                            src={buyerData.identityDetails}
-                            alt="Identity document"
-                            className="w-full rounded-lg"
-                          />
-                          <button
-                            onClick={() => {
-                              setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
-                            }}
-                            className="absolute top-2 right-2 bg-red-500 p-2 rounded-full hover:bg-red-600">
-                            ✕
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setShowCamera(true)}
-                            className="flex-1 px-4 py-2 bg-[#8E2DE2]/20 border border-[#8E2DE2]/20 rounded-lg hover:bg-[#8E2DE2]/40">
-                            Open Camera
-                          </button>
-                          <label className="flex-1">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileUpload}
-                              className="hidden"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {tickets?.map((ticket) => (
+                    <div
+                        key={ticket._id.toString()}
+                        onClick={() => handleTicketClick(ticket._id.toString())}
+                        className="group bg-white rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 cursor-pointer border border-[#D3D9C9]"
+                    >
+                        {/* Image Container */}
+                        <div className="relative h-[280px] w-full overflow-hidden bg-[#2C3228]">
+                            <Image
+                                src={ticket.image}
+                                alt={ticket.name}
+                                fill
+                                className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                             />
-                            <span className="block px-4 py-2 bg-[#8E2DE2]/20 border border-[#8E2DE2]/20 rounded-lg hover:bg-[#8E2DE2]/40 text-center cursor-pointer">Upload File</span>
-                          </label>
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#2C3228] to-transparent opacity-60" />
+                            
+                            {/* Event Status */}
+                            <div className="absolute top-4 left-4 flex gap-2">
+                                <span className="inline-flex items-center gap-1.5 bg-[#4A5043] text-white px-3 py-1.5 rounded-full text-sm font-medium">
+                                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                    Live Event
+                                </span>
+                            </div>
+
+                            {/* Date Badge */}
+                            <div className="absolute top-4 right-4">
+                                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-2 text-center min-w-[80px]">
+                                    <p className="text-[#2C3228] text-2xl font-bold">
+                                        {new Date(ticket.date).getDate()}
+                                    </p>
+                                    <p className="text-[#4A5043] text-sm font-medium">
+                                        {new Date(ticket.date).toLocaleDateString("id-ID", { month: "short" })}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Event Title on Image */}
+                            <div className="absolute bottom-0 left-0 right-0 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#D3D9C9] transition-colors">
+                                    {ticket.name}
+                                </h3>
+                                <div className="flex items-center gap-4 text-sm text-gray-300">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-[#D3D9C9]">📍</span>
+                                        {ticket.venue}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-[#D3D9C9]">⌚</span>
+                                        {ticket.time}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      )}
+
+                        {/* Ticket Categories */}
+                        <div className="p-6">
+                            <div className="space-y-3">
+                                {ticket.seatCategories.map((category) => (
+                                    <button
+                                        key={category.name}
+                                        disabled={category.availableSeats <= 0}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleBuyTicket(ticket._id.toString(), category.name);
+                                        }}
+                                        className={`w-full p-4 rounded-2xl text-left transition-all duration-300 ${
+                                            category.availableSeats > 0 
+                                                ? "bg-[#F4F6F0] hover:bg-[#E8EDE1] border border-[#D3D9C9]" 
+                                                : "bg-gray-100 cursor-not-allowed opacity-60"
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-semibold text-[#2C3228]">{category.name}</p>
+                                                    <span className="px-2 py-0.5 text-xs font-medium bg-[#4A5043]/10 text-[#4A5043] rounded-full">
+                                                        {category.availableSeats} left
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm text-[#4A5043] mt-0.5">
+                                                    Rp {category.price.toLocaleString("id-ID")}
+                                                </p>
+                                            </div>
+                                            <div className="h-10 w-10 rounded-xl bg-[#4A5043]/10 flex items-center justify-center">
+                                                <span className="text-[#4A5043]">→</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-[#8E2DE2]/20 rounded-lg hover:bg-[#8E2DE2]/20 transition-colors">
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitPurchase}
-                  disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityDetails}
-                  className="flex-1 px-4 py-2 bg-[#8E2DE2] rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
-                  Proceed to Payment
-                </button>
-              </div>
+                ))}
             </div>
-          </DialogPanel>
         </div>
-      </Dialog>
+
+        {/* Purchase Modal - Light Theme */}
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
+            <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" aria-hidden="true" />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+                <DialogPanel className="bg-white rounded-3xl p-8 w-full max-w-md shadow-xl">
+                    <DialogTitle className="text-2xl font-bold text-[#2C3228] mb-6">Complete Your Booking</DialogTitle>
+                    
+                    {/* Form fields with updated styling */}
+                    <div className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-medium text-[#4A5043] mb-2">Name</label>
+                            <input
+                                type="text"
+                                value={buyerData.name}
+                                onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
+                                className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                                placeholder="Enter your full name"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#4A5043] mb-2">Email</label>
+                            <input
+                                type="email"
+                                value={buyerData.email}
+                                onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
+                                className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#4A5043] mb-2">Phone</label>
+                            <input
+                                type="tel"
+                                value={buyerData.phone}
+                                onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
+                                className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                                placeholder="Enter your phone number"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Type</label>
+                            <select
+                                value={buyerData.identityType}
+                                onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as TicketPurchase["identityType"] }))}
+                                className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                            >
+                                <option value="KTP">KTP</option>
+                                <option value="Passport">Passport</option>
+                                <option value="SIM">SIM</option>
+                                <option value="Student">Student ID</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Document</label>
+                            <div className="space-y-3">
+                                {showCamera ? (
+                                    <div className="relative">
+                                        <Webcam
+                                            ref={webcamRef}
+                                            screenshotFormat="image/jpeg"
+                                            className="w-full rounded-xl"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="border-2 border-white/70 rounded-lg w-[85%] h-[60%] relative">
+                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white">⎯⎯⎯ Align ID card ⎯⎯⎯</div>
+                                                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00F5A0]" />
+                                                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00F5A0]" />
+                                                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F5A0]" />
+                                                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F5A0]" />
+                                            </div>
+                                        </div>
+                                        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
+                                            <button
+                                                onClick={capture}
+                                                className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity"
+                                            >
+                                                Capture
+                                            </button>
+                                            <button
+                                                onClick={() => setShowCamera(false)}
+                                                className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:opacity-90 transition-opacity"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {buyerData.identityDetails ? (
+                                            <div className="relative">
+                                                <Image
+                                                    width={200}
+                                                    height={200}
+                                                    src={buyerData.identityDetails}
+                                                    alt="Identity document"
+                                                    className="w-full rounded-xl"
+                                                />
+                                                <button
+                                                    onClick={() => setBuyerData((prev) => ({ ...prev, identityDetails: "" }))}
+                                                    className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setShowCamera(true)}
+                                                    className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700"
+                                                >
+                                                    Open Camera
+                                                </button>
+                                                <label className="flex-1">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleFileUpload}
+                                                        className="hidden"
+                                                    />
+                                                    <span className="block px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 text-center cursor-pointer">
+                                                        Upload File
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex gap-3 mt-8">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="flex-1 px-4 py-3 border border-[#D3D9C9] rounded-xl text-[#4A5043] hover:bg-[#F4F6F0] transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSubmitPurchase}
+                                disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityDetails}
+                                className="flex-1 px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Continue to Payment
+                            </button>
+                        </div>
+                    </div>
+                </DialogPanel>
+            </div>
+        </Dialog>
     </div>
   );
 }

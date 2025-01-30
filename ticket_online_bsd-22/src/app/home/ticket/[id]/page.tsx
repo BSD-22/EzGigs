@@ -15,78 +15,131 @@ const TicketDetail = async ({ params }: { params: Promise<{ id: string }> }) => 
   }
 
   return (
-    <div className="flex-1 p-7">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-2xl overflow-hidden">
-          <div className="relative h-96 w-full">
+    <div className="flex-1 p-7 bg-gradient-to-b from-[#F4F6F0] to-[#E8EDE1] min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        {/* Card Container */}
+        <div className="bg-[#FAFBF6] rounded-2xl overflow-hidden border border-[#D3D9C9] shadow-xl">
+          {/* Hero Section */}
+          <div className="relative h-[400px]">
             <Image
               src={ticket.image}
               alt={ticket.name}
               fill
               className="object-cover"
+              priority
             />
-          </div>
-          <div className="p-8">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">{ticket.name}</h1>
-            <p className="mt-4 text-gray-400">{ticket.description}</p>
-
-            <div className="mt-8 grid grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📍</span>
-                  <div>
-                    <p className="text-sm text-gray-400">Venue</p>
-                    <p className="text-white">{ticket.venue}</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#FAFBF6] via-black/20 to-transparent" />
+            
+            {/* Floating Event Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-10">
+              <div className="flex justify-between items-end">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="px-4 py-1 bg-[#4A5043] text-white text-sm font-medium rounded-full">
+                      Live Event
+                    </span>
+                    <span className="px-4 py-1 bg-[#656D5D] text-white text-sm font-medium rounded-full">
+                      Concert
+                    </span>
                   </div>
+                  <h1 className="text-6xl font-black text-[#2C3228] tracking-tight">
+                    {ticket.name}
+                  </h1>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📅</span>
+                <div className="text-right">
+                  <p className="text-[#4A5043] text-lg">Starting from</p>
+                  <p className="text-3xl font-bold text-[#2C3228]">
+                    Rp {Math.min(...ticket.seatCategories.map(cat => cat.price)).toLocaleString("id-ID")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="p-10">
+            {/* Event Details Grid */}
+            <div className="grid grid-cols-3 gap-8 mb-12">
+              <div className="bg-[#E8EDE1] rounded-xl p-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">📅</span>
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-400">Date</p>
-                    <p className="text-white">
+                    <p className="text-[#4A5043]">Date</p>
+                    <p className="text-[#2C3228] font-medium">
                       {new Date(ticket.date).toLocaleDateString("id-ID", {
-                        weekday: "long",
                         day: "numeric",
                         month: "long",
-                        year: "numeric",
+                        year: "numeric"
                       })}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">⌚</span>
+              <div className="bg-[#E8EDE1] rounded-xl p-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">⌚</span>
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-400">Time</p>
-                    <p className="text-white">{ticket.time}</p>
+                    <p className="text-[#4A5043]">Time</p>
+                    <p className="text-[#2C3228] font-medium">{ticket.time} WIB</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">💺</span>
+              </div>
+
+              <div className="bg-[#E8EDE1] rounded-xl p-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">📍</span>
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-400">Seat Categories</p>
-                    <div className="space-y-1">
-                      {ticket.seatCategories.map((category) => (
-                        <p
-                          key={category.name}
-                          className="text-white">
-                          {category.name} - Rp {category.price.toLocaleString("id-ID")}
-                        </p>
-                      ))}
-                    </div>
+                    <p className="text-[#4A5043]">Venue</p>
+                    <p className="text-[#2C3228] font-medium">{ticket.venue}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-[#8E2DE2]/20 pt-8">
+            <div className="grid grid-cols-2 gap-12">
+              {/* Left Column - Description */}
               <div>
-                <p className="text-sm text-gray-400">Starting from</p>
-                <p className="text-2xl font-bold text-[#00F5A0]">Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}</p>
+                <h3 className="text-xl font-bold text-[#2C3228] mb-4">About This Event</h3>
+                <p className="text-[#4A5043] leading-relaxed">
+                  {ticket.description}
+                </p>
               </div>
-              <button className="px-8 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-white font-medium hover:opacity-90 transition-opacity">Buy Ticket</button>
+
+              {/* Right Column - Ticket Categories */}
+              <div>
+                <h3 className="text-xl font-bold text-[#2C3228] mb-6">Available Tickets</h3>
+                <div className="space-y-4">
+                  {ticket.seatCategories.map((category) => (
+                    <div 
+                      key={category.name}
+                      className="group bg-[#E8EDE1] p-6 rounded-xl border border-[#D3D9C9] hover:bg-[#DFE5D6] transition-all duration-300"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-[#2C3228] text-lg">{category.name}</p>
+                          <p className="text-[#4A5043] text-sm">Limited seats available</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-[#4A5043]">
+                            Rp {category.price.toLocaleString("id-ID")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="mt-8 w-full py-4 bg-gradient-to-r from-[#4A5043] to-[#2C3228] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#2C3228]/25">
+                  Get Your Tickets Now
+                </button>
+              </div>
             </div>
           </div>
         </div>

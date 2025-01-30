@@ -15,7 +15,7 @@ const SideBar = ({ userData }: SideBarProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className={`${isOpen ? "w-64" : "w-20"} bg-black/40 backdrop-blur-xl border-r border-[#8E2DE2]/20 p-5 pt-8 relative duration-300`}>
+    <div className={`${isOpen ? "w-64" : "w-20"}  backdrop-blur-xl border-r border-[#8E2DE2]/20 p-5 pt-8 relative duration-300`}>
       <div
         className="absolute cursor-pointer -right-3 top-9 w-7 h-7 bg-[#8E2DE2] rounded-full flex items-center justify-center"
         onClick={() => setIsOpen(!isOpen)}>
