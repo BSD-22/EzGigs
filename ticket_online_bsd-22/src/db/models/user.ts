@@ -108,6 +108,18 @@ export const getAllUsers = async (): Promise<CustomResponse<UserModel[]>> => {
   };
 };
 
+export const getUserById = async (id: string): Promise<CustomResponse<UserModel>> => {
+  const db = await getDb();
+  const collection = db.collection("User");
+
+  const user = (await collection.findOne({ _id: ObjectId.createFromHexString(id) })) as UserModel;
+
+  return {
+    statusCode: 200,
+    data: user,
+  };
+};
+
 export const getUserByEmail = async (email: string): Promise<CustomResponse<UserModel>> => {
   const db = await getDb();
   const collection = db.collection("User");

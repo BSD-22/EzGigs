@@ -3,6 +3,7 @@ import { CustomResponse } from "@/types";
 import { getUserByEmail } from "@/db/models/user";
 
 export const GET = async (req: NextRequest) => {
+  console.log(req, "req");
   try {
     const userEmail = req.headers.get("x-user-email");
 

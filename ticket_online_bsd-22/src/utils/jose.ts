@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, decodeJwt } from "jose";
 import { JosePayload } from "@/types";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key");
 
@@ -25,6 +25,16 @@ export async function verifyToken<T>(token: string) {
   } catch (error) {
     console.log(error);
 
+    throw new Error("Invalid token");
+  }
+}
+
+export function decodeToken<T>(token: string) {
+  try {
+    const payload = decodeJwt<T>(token);
+    return payload;
+  } catch (error) {
+    console.log(error);
     throw new Error("Invalid token");
   }
 }
