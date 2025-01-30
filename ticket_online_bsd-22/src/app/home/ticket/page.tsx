@@ -118,6 +118,7 @@ export default function Home() {
     if (isSuccess && sessionId && purchaseId) {
       verifyPayment(sessionId, purchaseId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const verifyPayment = async (sessionId: string, purchaseId: string) => {

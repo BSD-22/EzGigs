@@ -1,9 +1,18 @@
 import { getAllMarketplace } from "@/db/models/marketplace";
 import Image from "next/image";
+import Link from "next/link";
 import SearchBar from "./SearchBar";
+import { cookies } from "next/headers";
+import { decodeToken } from "@/utils/jose";
+import { JosePayload } from "@/types";
 
 const Marketplace = async () => {
+  const cookieStore = await cookies();
+  const decodedToken = decodeToken<JosePayload>(cookieStore.get("token")?.value as string);
+
   const { data: listings } = await getAllMarketplace();
+
+  const currentUser = decodedToken;
 
   return (
     <div className="flex-1 p-7 overflow-auto">
@@ -75,12 +84,23 @@ const Marketplace = async () => {
                   </span>
                 </div>
               </div>
-              <a
-                href={`/home/marketplace/${listing._id.toString()}`}
-                className="mt-4 w-full bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                View Details
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </a>
+              {currentUser?.id.toString() !== listing.user._id.toString() ? (
+                <div className="flex gap-2 mt-4">
+                  <Link
+                    href={`/home/marketplace/${listing._id.toString()}`}
+                    className="flex-1 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    View Details
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+                  <Link
+                    href={`/home/marketplace/chat/${listing.user._id.toString()}`}
+                    className="px-4 bg-[#00F5A0]/20 hover:bg-[#00F5A0] text-white py-2 rounded-lg transition-colors flex items-center justify-center">
+                    💬
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-4 text-center py-2 bg-gray-800/50 text-gray-500 rounded-lg">Your Listing</div>
+              )}
             </div>
           </div>
         ))}
