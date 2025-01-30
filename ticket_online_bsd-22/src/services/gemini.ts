@@ -73,7 +73,6 @@ export const analyzeTicket = async (ticketData: TicketData): Promise<TicketAnaly
 
 export const analyzeDashboardData = async (userData: UserTicketsResponse): Promise<DashboardStats> => {
   try {
-    // Focus on sold tickets data
     const data = {
       soldTickets: userData.soldTickets.length,
       totalRevenue: userData.soldTickets.reduce((sum, ticket) => sum + ticket.soldPrice, 0),
@@ -110,14 +109,17 @@ export const analyzeDashboardData = async (userData: UserTicketsResponse): Promi
     const aiResponse = result.response.text();
     const aiStats = JSON.parse(aiResponse.substring(aiResponse.indexOf("{"), aiResponse.lastIndexOf("}") + 1));
 
-    // Sort sold tickets by date and get the 3 most recent ones
+    console.log(userData, "userdata");
+
+    // console.log(userData.soldTickets, "userdata.soldtickets");
+
     const recentActivities = userData.soldTickets
       .sort((a, b) => new Date(b.soldDate).getTime() - new Date(a.soldDate).getTime())
       .slice(0, 3)
       .map((ticket) => ({
         type: "sale" as const,
         ticketId: ticket.ticketId.toString(),
-        eventName: ticket.Event?.name || "Unknown Event",
+        eventName: ticket.Event?.name || "Unknown Event", // Ensure Event is populated
         price: ticket.soldPrice,
         date: new Date(ticket.soldDate),
       }));
@@ -137,7 +139,7 @@ export const analyzeDashboardData = async (userData: UserTicketsResponse): Promi
       totalTickets: userData.soldTickets.length,
       ticketsSold: userData.soldTickets.length,
       revenue: userData.soldTickets.reduce((sum, ticket) => sum + ticket.soldPrice, 0),
-      averagePrice: 0, // Changed from activeListings
+      averagePrice: 0,
       revenueGrowth: 0,
       successRate: 0,
       recentActivities: [],

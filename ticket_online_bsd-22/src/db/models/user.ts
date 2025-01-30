@@ -3,9 +3,7 @@ import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { hashText } from "@/utils/bcrypt";
 import { TicketModel } from "./ticket";
-// import { TicketModel } from "./ticket";
 
-// Update UserTicket type to include buyer details
 export type UserTicket = {
   ticketId: ObjectId;
   categoryName: string;
@@ -51,6 +49,7 @@ export type UserTicketsResponse = {
   soldTickets: SoldTicket[];
   ticketDetails: TicketModel[];
   buyerDetails: Omit<UserModel, "password" | "ownedTickets" | "soldTickets">[];
+  eventDetails: TicketModel[]; // Add this line to include eventDetails
 };
 
 export type UserModelWithoutPassword = Omit<UserModel, "password">;
@@ -172,6 +171,14 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
       },
       {
         $lookup: {
+          from: "Ticket",
+          localField: "soldTickets.ticketId",
+          foreignField: "_id",
+          as: "eventDetails",
+        },
+      },
+      {
+        $lookup: {
           from: "User",
           localField: "soldTickets.toUserId",
           foreignField: "_id",
@@ -186,6 +193,17 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
       },
     ])
     .next()) as UserTicketsResponse;
+
+  // Map event names to sold tickets
+  user.soldTickets = user.soldTickets.map((ticket) => {
+    const eventDetail = user.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId)); // Explicitly type 'event'
+    return {
+      ...ticket,
+      Event: {
+        name: eventDetail ? eventDetail.name : "Unknown Event",
+      },
+    };
+  });
 
   return {
     statusCode: 200,
