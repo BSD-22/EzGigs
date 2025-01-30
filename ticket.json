@@ -29,7 +29,11 @@
         "availableSeats": 300,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b2" },
@@ -61,7 +65,11 @@
         "availableSeats": 250,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.3006,
+      "longitude": 106.6544
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b3" },
@@ -93,7 +101,11 @@
         "availableSeats": 280,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.3006,
+      "longitude": 106.6544
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b4" },
@@ -125,7 +137,11 @@
         "availableSeats": 300,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b5" },
@@ -157,7 +173,11 @@
         "availableSeats": 300,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.1745,
+      "longitude": 106.8272
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b6" },
@@ -189,7 +209,11 @@
         "availableSeats": 400,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b7" },
@@ -221,7 +245,11 @@
         "availableSeats": 350,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b8" },
@@ -253,7 +281,11 @@
         "availableSeats": 300,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718b9" },
@@ -285,7 +317,11 @@
         "availableSeats": 320,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.2188,
+      "longitude": 106.8025
+    }
   },
   {
     "_id": { "$oid": "65f2e0a51e3dfa3d2c5718c0" },
@@ -317,6 +353,10 @@
         "availableSeats": 350,
         "soldSeats": []
       }
-    ]
+    ],
+    "location": {
+      "latitude": -6.3006,
+      "longitude": 106.6544
+    }
   }
 ]

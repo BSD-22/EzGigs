@@ -21,6 +21,10 @@ export type TicketModel = {
   image: string;
   sellerId?: ObjectId;
   seatCategories: SeatCategory[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  }; // Add this line to store location
 };
 
 export type TicketPurchase = {
@@ -254,7 +258,8 @@ export const createTicket = async (
   description: string,
   image: string,
   seatCategories: Omit<SeatCategory, "availableSeats" | "soldSeats">[],
-  sellerId: string
+  sellerId: string,
+  location: { latitude: number; longitude: number }
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection: Collection<WithoutId<TicketModel>> = db.collection("Ticket");
@@ -274,6 +279,7 @@ export const createTicket = async (
     image,
     sellerId: ObjectId.createFromHexString(sellerId),
     seatCategories: formattedSeatCategories,
+    location,
   };
 
   const result = await collection.insertOne(newTicket);
