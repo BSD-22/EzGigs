@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import Webcam from "react-webcam";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { toast } from "react-hot-toast";
 
 const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -15,6 +16,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [showCamera, setShowCamera] = useState(false);
+  const [userSubscription, setUserSubscription] = useState<"free" | "premium" | "vip">("free");
   const webcamRef = useRef<Webcam | null>(null);
   const [buyerData, setBuyerData] = useState({
     email: "",
@@ -23,6 +25,36 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
     identityType: "KTP" as "KTP" | "Passport" | "SIM" | "Student",
     identityDetails: "",
   });
+
+  const fetchUserData = async () => {
+    try {
+      const res = await fetch("/api/user/me", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.statusCode === 200 && data.data) {
+        setUserSubscription(data.data.subscriptionType);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const calculateDiscountedPrice = (price: number) => {
+    if (userSubscription === "premium") return price * 0.95;
+    if (userSubscription === "vip") return price * 0.92;
+    return price;
+  };
+
+  const getDiscountBadge = () => {
+    if (userSubscription === "premium") {
+      return <span className="px-2 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-medium">5% Member Discount</span>;
+    }
+    if (userSubscription === "vip") {
+      return <span className="px-2 py-1 bg-purple-500/10 text-purple-600 rounded-full text-xs font-medium">8% VIP Discount</span>;
+    }
+    return null;
+  };
 
   const fetchTicket = async () => {
     try {
@@ -36,6 +68,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
 
   useEffect(() => {
     fetchTicket();
+    fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -81,6 +114,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
         body: JSON.stringify({
           ticketId: ticket._id.toString(),
           categoryName: selectedCategory,
+          subscriptionType: userSubscription,
           ...buyerData,
         }),
       });
@@ -92,10 +126,11 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
         setIsModalOpen(false);
         router.push(stripeData.url);
       } else {
-        console.error("Payment creation failed:", json.message);
+        toast.error(json.message || "Payment creation failed");
       }
     } catch (error) {
       console.error("Error processing payment:", error);
+      toast.error("Failed to process payment");
     }
   };
 
@@ -230,7 +265,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
               <div>
                 <h3 className="text-xl font-bold text-[#2C3228] mb-6">Available Tickets</h3>
                 <div className="space-y-4">
-                  {ticket.seatCategories.map((category) => (
+                  {ticket?.seatCategories.map((category) => (
                     <div
                       key={category.name}
                       className="group bg-[#E8EDE1] p-6 rounded-xl border border-[#D3D9C9] hover:bg-[#DFE5D6] transition-all duration-300"
@@ -239,9 +274,11 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                         <div>
                           <p className="font-medium text-[#2C3228] text-lg">{category.name}</p>
                           <p className="text-[#4A5043] text-sm">Limited seats available</p>
+                          {getDiscountBadge()}
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-[#4A5043]">Rp {category.price.toLocaleString("id-ID")}</p>
+                          {userSubscription !== "free" && <p className="text-sm text-gray-500 line-through">Rp {category.price.toLocaleString("id-ID")}</p>}
+                          <p className="text-2xl font-bold text-[#4A5043]">Rp {Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</p>
                         </div>
                       </div>
                     </div>

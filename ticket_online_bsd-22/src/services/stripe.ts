@@ -11,7 +11,14 @@ export type StripeResponse = {
   url: string;
 };
 
-export const createPaymentSession = async (ticket: TicketModel, categoryName: string, userId: string, purchaseId: string, seatNumber: string): Promise<CustomResponse<StripeResponse>> => {
+export const createPaymentSession = async (
+  ticket: TicketModel,
+  categoryName: string,
+  userId: string,
+  purchaseId: string,
+  seatNumber: string,
+  subscriptionType: "free" | "premium" | "vip" = "free"
+): Promise<CustomResponse<StripeResponse>> => {
   try {
     const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
     if (!category) {
@@ -19,6 +26,18 @@ export const createPaymentSession = async (ticket: TicketModel, categoryName: st
         statusCode: 400,
         message: "Category not found",
       };
+    }
+
+    // Calculate discount based on subscription type
+    let finalPrice = category.price;
+    let discountPercentage = 0;
+
+    if (subscriptionType === "premium") {
+      discountPercentage = 5;
+      finalPrice = category.price * 0.95; // 5% discount
+    } else if (subscriptionType === "vip") {
+      discountPercentage = 8;
+      finalPrice = category.price * 0.92; // 8% discount
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -29,10 +48,10 @@ export const createPaymentSession = async (ticket: TicketModel, categoryName: st
             currency: "idr",
             product_data: {
               name: `${ticket.name} - ${category.name}`,
-              description: `Event at ${ticket.venue} on ${ticket.date} ${ticket.time}`,
+              description: `Event at ${ticket.venue} on ${ticket.date} ${ticket.time}${discountPercentage > 0 ? ` (${discountPercentage}% Subscription Discount Applied)` : ""}`,
               images: [ticket.image],
             },
-            unit_amount: category.price * 100,
+            unit_amount: Math.round(finalPrice * 100), // Round to avoid floating point issues
           },
           quantity: 1,
         },
@@ -45,7 +64,8 @@ export const createPaymentSession = async (ticket: TicketModel, categoryName: st
         categoryName,
         userId,
         purchaseId,
-        seatNumber, // Add seatNumber to metadata
+        seatNumber,
+        discountApplied: discountPercentage.toString(),
       },
     });
 
@@ -85,6 +105,61 @@ export const verifyPaymentSession = async (sessionId: string): Promise<CustomRes
     return {
       statusCode: 500,
       message: "Failed to verify payment",
+    };
+  }
+};
+
+export const createSubscriptionPaymentSession = async (planName: string, userId: string): Promise<CustomResponse<StripeResponse>> => {
+  try {
+    const prices = {
+      Silver: 149999,
+      Gold: 249999,
+    };
+
+    const price = prices[planName as keyof typeof prices];
+    if (!price) {
+      return {
+        statusCode: 400,
+        message: "Invalid subscription plan",
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "idr",
+            product_data: {
+              name: `${planName} Subscription`,
+              description: `${planName} membership subscription`,
+            },
+            unit_amount: price * 100, // Convert to cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/home/subscription?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/home/subscription`,
+      metadata: {
+        userId,
+        subscriptionType: planName.toLowerCase(),
+      },
+    });
+
+    return {
+      statusCode: 200,
+      data: {
+        sessionId: session.id,
+        url: session.url || "",
+      },
+    };
+  } catch (error) {
+    console.error("Stripe Error:", error);
+    return {
+      statusCode: 500,
+      message: "Failed to create subscription payment session",
     };
   }
 };

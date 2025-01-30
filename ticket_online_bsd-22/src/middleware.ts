@@ -28,11 +28,11 @@ export const middleware = async (request: NextRequest) => {
   headers.set("x-user-email", payload.email);
   headers.set("x-user-name", payload.name);
   headers.set("x-user-role", payload.role);
+  headers.set("x-user-subscriptionType", payload.subscriptionType);
 
   return NextResponse.next({ headers });
 };
 
-// Add matcher config
 export const config = {
   matcher: ["/home/:path*", "/api/:path*", "/seller/:path*"],
 };
