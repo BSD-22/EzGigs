@@ -84,7 +84,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/chats"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">💬</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Chats</span>
           </Link>

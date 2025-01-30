@@ -138,16 +138,22 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#0A0A0A]">
-        <div className="text-white">Loading...</div>
+      <div className="flex-1 p-7">
+        <h1 className="text-4xl font-black text-[#2C3228] mb-6">Chat Room 💬</h1>
+        <div className="text-center py-12 bg-white rounded-2xl border border-[#D3D9C9]">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#4A5043]/10 flex items-center justify-center">
+            <span className="text-2xl">⌛</span>
+          </div>
+          <p className="text-[#4A5043]">Loading conversation...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#0A0A0A]">
-      <div className="p-4 bg-black/40 border-b border-[#8E2DE2]/20">
-        <h1 className="text-xl font-bold text-white">Chat Room</h1>
+    <div className="flex-1 flex flex-col h-screen bg-gradient-to-br from-[#F4F6F0] via-[#E8EDE1] to-[#F4F6F0]">
+      <div className="p-4 bg-white border-b border-[#D3D9C9]">
+        <h1 className="text-4xl font-black text-[#2C3228]">Chat Room 💬</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -155,10 +161,13 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
           <div
             key={message.id}
             className={`flex ${message.senderId === currentUser?._id.toString() ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] rounded-lg p-3 ${message.senderId === currentUser?._id.toString() ? "bg-[#8E2DE2] text-white" : "bg-[#1A1A1A] text-white"}`}>
-              <p className="text-sm opacity-75 mb-1">{message.senderName}</p>
-              <p>{message.text}</p>
-              <p className="text-xs opacity-50 text-right mt-1">{new Date(message.timestamp).toLocaleTimeString()}</p>
+            <div
+              className={`max-w-[80%] rounded-2xl p-4 shadow-sm ${
+                message.senderId === currentUser?._id.toString() ? "bg-gradient-to-r from-[#4A5043] to-[#2C3228] text-white" : "bg-white text-[#2C3228] border border-[#D3D9C9]"
+              }`}>
+              <p className="text-sm font-medium mb-1">{message.senderName}</p>
+              <p className="text-base">{message.text}</p>
+              <p className="text-xs mt-2 opacity-70">{new Date(message.timestamp).toLocaleTimeString()}</p>
             </div>
           </div>
         ))}
@@ -167,18 +176,18 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
 
       <form
         onSubmit={sendMessage}
-        className="p-4 bg-black/40 border-t border-[#8E2DE2]/20">
-        <div className="flex gap-2">
+        className="p-4 bg-white border-t border-[#D3D9C9]">
+        <div className="flex gap-3">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 bg-[#1A1A1A] text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#8E2DE2]"
+            className="flex-1 bg-white border border-[#D3D9C9] text-[#2C3228] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#4A5043]/20"
           />
           <button
             type="submit"
-            className="bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+            className="bg-gradient-to-r from-[#4A5043] to-[#2C3228] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#2C3228]/25">
             Send
           </button>
         </div>
