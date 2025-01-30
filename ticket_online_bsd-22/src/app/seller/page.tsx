@@ -8,7 +8,7 @@ interface Activity {
   ticketId: string;
   price: number;
   date: Date;
-  eventName: string; // Add this field
+  eventName: string;
 }
 
 const SellerPage = () => {

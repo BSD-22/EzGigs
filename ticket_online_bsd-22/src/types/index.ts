@@ -10,6 +10,7 @@ export type JosePayload = {
   email: string;
   name: string;
   role: string;
+  subscriptionType: "free" | "premium" | "vip";
 };
 
 export type ActionResponse<T> = {

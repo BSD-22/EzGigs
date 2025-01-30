@@ -11,6 +11,7 @@ const SeatCategorySchema = z.object({
   totalSeats: z.number().min(1, "Must have at least 1 seat"),
 });
 
+// Update the TicketSchema to include location
 const TicketSchema = z.object({
   name: z.string().min(1, "Event name is required"),
   venue: z.string().min(1, "Venue is required"),
@@ -18,6 +19,10 @@ const TicketSchema = z.object({
   time: z.string().min(1, "Time is required"),
   description: z.string().min(1, "Description is required"),
   image: z.string().url("Must be a valid URL"),
+  location: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
   seatCategories: z.array(SeatCategorySchema).min(1, "At least one seat category is required"),
 });
 
@@ -36,11 +41,9 @@ export const GET = async (req: NextRequest) => {
     }
 
     const tickets = await getAllTickets();
-    const sellerTickets = tickets.data?.filter((ticket) => ticket.sellerId?.toString() === sellerId);
-
     return NextResponse.json<CustomResponse<TicketModel[]>>({
       statusCode: 200,
-      data: sellerTickets || [],
+      data: tickets.data || [],
     });
   } catch (error) {
     console.error("Failed to fetch seller tickets:", error);
@@ -82,9 +85,9 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const { name, venue, date, time, description, image, seatCategories } = parsedTicket.data;
+    const { name, venue, date, time, description, image, seatCategories, location } = parsedTicket.data;
 
-    const result = await createTicket(name, venue, date, time, description, image, seatCategories, sellerId);
+    const result = await createTicket(name, venue, date, time, description, image, seatCategories, sellerId, location);
 
     await set(ref(database, "newTickets/latest"), {
       eventName: name,

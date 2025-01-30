@@ -2,6 +2,7 @@ import { ObjectId, UpdateFilter, Collection, WithoutId } from "mongodb";
 import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { UserModel } from "./user";
+import redis from "@/services/redis";
 
 export type SeatCategory = {
   name: string;
@@ -21,6 +22,10 @@ export type TicketModel = {
   image: string;
   sellerId?: ObjectId;
   seatCategories: SeatCategory[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  }; // Add this line to store location
 };
 
 export type TicketPurchase = {
@@ -30,7 +35,7 @@ export type TicketPurchase = {
   buyerName: string;
   buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
-  identityNumber: string;
+  identityDetails: string;
   categoryName: string;
   seatNumber: string;
   price: number;
@@ -47,7 +52,7 @@ export const purchaseTicket = async (
     name: string;
     phone: string;
     identityType: TicketPurchase["identityType"];
-    identityNumber: string;
+    identityDetails: string;
     userId: string;
   }
 ): Promise<CustomResponse<unknown>> => {
@@ -56,7 +61,6 @@ export const purchaseTicket = async (
   const purchasesCollection: Collection<WithoutId<TicketPurchase>> = db.collection("TicketPurchase");
   const usersCollection: Collection<UserModel> = db.collection<UserModel>("User");
 
-  // Find the ticket
   const ticket = await ticketsCollection.findOne({ _id: ObjectId.createFromHexString(ticketId) });
   if (!ticket) {
     return {
@@ -65,7 +69,6 @@ export const purchaseTicket = async (
     };
   }
 
-  // Find the category
   const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
   if (!category) {
     return {
@@ -83,14 +86,13 @@ export const purchaseTicket = async (
 
   const nextSeatNumber = `${categoryName}-${category.soldSeats.length + 1}`;
 
-  // Create the purchase record
   const purchase: WithoutId<TicketPurchase> = {
     ticketId: ObjectId.createFromHexString(ticketId),
     buyerEmail: buyerData.email,
     buyerName: buyerData.name,
     buyerPhone: buyerData.phone,
     identityType: buyerData.identityType,
-    identityNumber: buyerData.identityNumber,
+    identityDetails: buyerData.identityDetails,
     categoryName,
     seatNumber: nextSeatNumber,
     price: category.price,
@@ -98,7 +100,6 @@ export const purchaseTicket = async (
     purchaseDate: new Date(),
   };
 
-  // Update the ticket availability
   const updateOperation: UpdateFilter<TicketModel> = {
     $push: { "seatCategories.$.soldSeats": nextSeatNumber },
     $inc: { "seatCategories.$.availableSeats": -1 },
@@ -106,11 +107,10 @@ export const purchaseTicket = async (
 
   await ticketsCollection.updateOne({ _id: ObjectId.createFromHexString(ticketId), "seatCategories.name": categoryName }, updateOperation);
 
-  // Insert the purchase record
+  await redis.del("tickets");
+
   const insertedPurchase = await purchasesCollection.insertOne(purchase);
 
-  // Update buyer's ownedTickets when payment is verified
-  // In purchaseTicket function
   if (purchase.paymentStatus === "paid") {
     const buyerUpdateDoc: UpdateFilter<UserModel> = {
       $push: {
@@ -125,7 +125,7 @@ export const purchaseTicket = async (
           buyerName: buyerData.name,
           buyerPhone: buyerData.phone,
           identityType: buyerData.identityType,
-          identityNumber: buyerData.identityNumber,
+          identityDetails: buyerData.identityDetails,
         },
       },
     };
@@ -142,13 +142,7 @@ export const purchaseTicket = async (
   };
 };
 
-// Update updateTicketPurchaseStatus function similarly
-export const updateTicketPurchaseStatus = async (
-  purchaseId: string,
-  status: TicketPurchase["paymentStatus"],
-  paymentIntentId?: string,
-  metadata?: { userId: string }
-): Promise<CustomResponse<unknown>> => {
+export const updateTicketPurchaseStatus = async (purchaseId: string, status: "paid" | "failed", paymentIntent: { id: string } | undefined, { userId }: { userId: string }) => {
   const db = await getDb();
   const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
   const ticketsCollection = db.collection<TicketModel>("Ticket");
@@ -163,7 +157,8 @@ export const updateTicketPurchaseStatus = async (
   }
 
   const ticket = await ticketsCollection.findOne({ _id: purchase.ticketId });
-  if (!ticket || !ticket.sellerId) {
+
+  if (!ticket) {
     return {
       statusCode: 404,
       message: "Ticket or seller not found",
@@ -175,30 +170,27 @@ export const updateTicketPurchaseStatus = async (
     {
       $set: {
         paymentStatus: status,
-        paymentIntentId,
+        paymentIntentId: paymentIntent?.id,
       },
     }
   );
 
-  if (status === "paid" && metadata?.userId) {
+  if (status === "paid" && userId) {
+    // Changed from metadata?.userId to userId
     const updateDoc: UpdateFilter<UserModel> = {
       $push: {
         soldTickets: {
           ticketId: purchase.ticketId,
           categoryName: purchase.categoryName,
           seatNumber: purchase.seatNumber,
-          toUserId: ObjectId.createFromHexString(metadata.userId),
+          toUserId: ObjectId.createFromHexString(userId), // Changed from metadata.userId to userId
           soldPrice: purchase.price,
           soldDate: new Date(),
         },
       },
     };
     await usersCollection.updateOne({ _id: ticket.sellerId }, updateDoc);
-  }
 
-  // If payment is verified, update the records
-  if (status === "paid" && metadata?.userId) {
-    // Update buyer's ownedTickets
     const buyerUpdateDoc: UpdateFilter<UserModel> = {
       $push: {
         ownedTickets: {
@@ -212,12 +204,12 @@ export const updateTicketPurchaseStatus = async (
           buyerName: purchase.buyerName,
           buyerPhone: purchase.buyerPhone,
           identityType: purchase.identityType,
-          identityNumber: purchase.identityNumber,
+          identityDetails: purchase.identityDetails,
         },
       },
     };
 
-    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(metadata.userId) }, buyerUpdateDoc);
+    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(userId) }, buyerUpdateDoc); // Changed from metadata.userId to userId
   }
 
   return {
@@ -231,6 +223,17 @@ export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> =>
   const collection: Collection<TicketModel> = db.collection("Ticket");
 
   const tickets = await collection.find({}).toArray();
+
+  const cachedTickets = await redis.get("tickets");
+
+  if (cachedTickets) {
+    return {
+      statusCode: 200,
+      data: JSON.parse(cachedTickets),
+    };
+  }
+
+  await redis.set("tickets", JSON.stringify(tickets));
 
   return {
     statusCode: 200,
@@ -265,7 +268,8 @@ export const createTicket = async (
   description: string,
   image: string,
   seatCategories: Omit<SeatCategory, "availableSeats" | "soldSeats">[],
-  sellerId: string
+  sellerId: string,
+  location: { latitude: number; longitude: number }
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection: Collection<WithoutId<TicketModel>> = db.collection("Ticket");
@@ -285,9 +289,12 @@ export const createTicket = async (
     image,
     sellerId: ObjectId.createFromHexString(sellerId),
     seatCategories: formattedSeatCategories,
+    location,
   };
 
   const result = await collection.insertOne(newTicket);
+
+  await redis.del("tickets");
 
   return {
     statusCode: 201,
@@ -295,6 +302,39 @@ export const createTicket = async (
     data: {
       _id: result.insertedId,
       ...newTicket,
+    },
+  };
+};
+
+export const getTicketByPurchaseId = async (purchaseId: string): Promise<CustomResponse<TicketModel & { seatNumber: string; price: number }>> => {
+  const db = await getDb();
+  const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
+  const ticketsCollection = db.collection<TicketModel>("Ticket");
+
+  const purchase = await purchasesCollection.findOne({ _id: ObjectId.createFromHexString(purchaseId) });
+
+  if (!purchase) {
+    return {
+      statusCode: 404,
+      message: "Ticket purchase not found",
+    };
+  }
+
+  const ticket = await ticketsCollection.findOne({ _id: purchase.ticketId });
+
+  if (!ticket) {
+    return {
+      statusCode: 404,
+      message: "Ticket not found",
+    };
+  }
+
+  return {
+    statusCode: 200,
+    data: {
+      ...ticket,
+      seatNumber: purchase.seatNumber,
+      price: purchase.price,
     },
   };
 };

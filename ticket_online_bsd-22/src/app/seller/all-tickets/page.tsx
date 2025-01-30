@@ -19,6 +19,7 @@ const SellerAllTicketsPage = () => {
   const [tickets, setTickets] = useState<TicketWithUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>("");
+  const [showOwnTickets, setShowOwnTickets] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,10 +37,14 @@ const SellerAllTicketsPage = () => {
           setCurrentUserId(userData.data._id);
         }
 
-        const ticketRes = await fetch(baseUrl + "/api/ticket");
+        const ticketRes = await fetch(baseUrl + "/api/ticket"); // Changed to fetch all tickets
         const ticketData = await ticketRes.json();
         if (ticketData.statusCode === 200) {
-          setTickets(ticketData.data);
+          const mappedTickets = ticketData.data.map((ticket: TicketModel) => ({
+            ...ticket,
+            userId: ticket.sellerId?.toString(),
+          }));
+          setTickets(mappedTickets);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -49,6 +54,7 @@ const SellerAllTicketsPage = () => {
     };
 
     requestNotification();
+    fetchUserAndTickets(); // Call it immediately
 
     const newTicketsRef = ref(database, "newTickets");
     onValue(newTicketsRef, (snapshot) => {
@@ -69,10 +75,11 @@ const SellerAllTicketsPage = () => {
     };
   }, []);
 
+  // Move filteredTickets outside useEffect and simplify the filter logic
   const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch = ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDate = !dateFilter || ticket.date === dateFilter;
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDate && (showOwnTickets ? ticket.sellerId?.toString() === currentUserId : true);
   });
 
   if (loading) {
@@ -83,9 +90,17 @@ const SellerAllTicketsPage = () => {
     );
   }
 
+  // Modify the return statement, add the toggle button before the search inputs
   return (
     <div className="flex-1 p-7">
-      <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-6">All Tickets 🎫</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">All Tickets 🎫</h1>
+        <button
+          onClick={() => setShowOwnTickets(!showOwnTickets)}
+          className={`px-4 py-2 rounded-lg transition-colors ${showOwnTickets ? "bg-[#8E2DE2] text-white" : "bg-[#8E2DE2]/10 text-[#8E2DE2]"}`}>
+          {showOwnTickets ? "Show All Tickets" : "Show My Tickets"}
+        </button>
+      </div>
 
       <div className="flex gap-4 mb-6">
         <div className="flex-1">
