@@ -15,9 +15,9 @@ const SideBar = ({ userData }: SideBarProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className={`${isOpen ? "w-64" : "w-20"}  backdrop-blur-xl border-r border-[#8E2DE2]/20 p-5 pt-8 relative duration-300`}>
+    <div className={`${isOpen ? "w-64" : "w-20"} bg-[#2C3228] backdrop-blur-xl border-r border-[#4A5043]/20 p-5 pt-8 relative duration-300`}>
       <div
-        className="absolute cursor-pointer -right-3 top-9 w-7 h-7 bg-[#8E2DE2] rounded-full flex items-center justify-center"
+        className="absolute cursor-pointer -right-3 top-9 w-7 h-7 bg-[#4A5043] hover:bg-[#656D5D] rounded-full flex items-center justify-center transition-colors"
         onClick={() => setIsOpen(!isOpen)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/ticket"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">🎫</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Tickets</span>
           </Link>
@@ -52,7 +52,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/my-tickets"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">🎯</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Your Tickets</span>
           </Link>
@@ -60,7 +60,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/history"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">📜</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Sales History</span>
           </Link>
@@ -68,7 +68,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/subscription"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">⭐</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Subscription</span>
           </Link>
@@ -76,7 +76,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/marketplace"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">🏪</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Marketplace</span>
           </Link>
@@ -84,7 +84,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/wishlist"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">💝</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Wishlist</span>
           </Link>
@@ -92,10 +92,10 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/cart"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors relative">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors relative">
             <span className="text-xl">🛒</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Cart</span>
-            <span className="absolute -top-1 -right-1 bg-[#FF2D55] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+            <span className="absolute -top-1 -right-1 bg-[#4A5043] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
           </Link>
         </li>
       </ul>
