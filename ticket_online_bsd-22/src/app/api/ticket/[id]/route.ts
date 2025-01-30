@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getTicketById } from "@/db/models/ticket";
 import { CustomResponse } from "@/types";
 
-export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const GET = async (_: never, { params }: { params: Promise<{ id: string }> }) => {
   try {
-    const { id } = params;
+    const { id } = await params;
     const result = await getTicketById(id);
 
     return NextResponse.json<CustomResponse<unknown>>(result);

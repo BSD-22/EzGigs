@@ -1,9 +1,18 @@
 import { getAllMarketplace } from "@/db/models/marketplace";
 import Image from "next/image";
+import Link from "next/link";
 import SearchBar from "./SearchBar";
+import { cookies } from "next/headers";
+import { decodeToken } from "@/utils/jose";
+import { JosePayload } from "@/types";
 
 const Marketplace = async () => {
+  const cookieStore = await cookies();
+  const decodedToken = decodeToken<JosePayload>(cookieStore.get("token")?.value as string);
+
   const { data: listings } = await getAllMarketplace();
+
+  const currentUser = decodedToken;
 
   return (
     <div className="flex-1 p-7 overflow-auto bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">

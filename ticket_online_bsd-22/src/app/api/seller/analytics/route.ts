@@ -90,7 +90,7 @@ export const GET = async (req: NextRequest) => {
         insights: [
           `Your success rate is ${(analysis.successRate * 100).toFixed(1)}%`,
           `Revenue growth is ${(analysis.revenueGrowth * 100).toFixed(1)}%`,
-          `You have ${analysis.activeListings} active listings`,
+          // `You have ${analysis.activeListings} active listings`,
         ],
       },
     });

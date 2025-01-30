@@ -3,9 +3,7 @@ import { getDb } from "../config/mongo-connection";
 import { CustomResponse } from "@/types";
 import { hashText } from "@/utils/bcrypt";
 import { TicketModel } from "./ticket";
-// import { TicketModel } from "./ticket";
 
-// Update UserTicket type to include buyer details
 export type UserTicket = {
   ticketId: ObjectId;
   categoryName: string;
@@ -38,6 +36,8 @@ export type UserModel = {
   name: string;
   password: string;
   role: "seller" | "buyer";
+  points: number;
+  subscriptionType: "free" | "premium" | "vip";
   ownedTickets: UserTicket[];
   soldTickets: SoldTicket[];
 };
@@ -51,6 +51,7 @@ export type UserTicketsResponse = {
   soldTickets: SoldTicket[];
   ticketDetails: TicketModel[];
   buyerDetails: Omit<UserModel, "password" | "ownedTickets" | "soldTickets">[];
+  eventDetails: TicketModel[];
 };
 
 export type UserModelWithoutPassword = Omit<UserModel, "password">;
@@ -64,6 +65,8 @@ export const createUser = async (email: string, name: string, password: string):
     name,
     password: hashText(password),
     role: "buyer" as const,
+    points: 0,
+    subscriptionType: "free" as const,
     ownedTickets: [] as UserModel["ownedTickets"],
     soldTickets: [] as UserModel["soldTickets"],
   };
@@ -75,6 +78,8 @@ export const createUser = async (email: string, name: string, password: string):
     email,
     name,
     role: "buyer",
+    points: 0,
+    subscriptionType: "free",
     ownedTickets: [],
     soldTickets: [],
   };
@@ -105,6 +110,18 @@ export const getAllUsers = async (): Promise<CustomResponse<UserModel[]>> => {
   return {
     statusCode: 200,
     data: users,
+  };
+};
+
+export const getUserById = async (id: string): Promise<CustomResponse<UserModel>> => {
+  const db = await getDb();
+  const collection = db.collection("User");
+
+  const user = (await collection.findOne({ _id: ObjectId.createFromHexString(id) })) as UserModel;
+
+  return {
+    statusCode: 200,
+    data: user,
   };
 };
 
@@ -160,6 +177,14 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
       },
       {
         $lookup: {
+          from: "Ticket",
+          localField: "soldTickets.ticketId",
+          foreignField: "_id",
+          as: "eventDetails",
+        },
+      },
+      {
+        $lookup: {
           from: "User",
           localField: "soldTickets.toUserId",
           foreignField: "_id",
@@ -175,13 +200,22 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
     ])
     .next()) as UserTicketsResponse;
 
+  user.soldTickets = user.soldTickets.map((ticket) => {
+    const eventDetail = user.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId));
+    return {
+      ...ticket,
+      Event: {
+        name: eventDetail ? eventDetail.name : "Unknown Event",
+      },
+    };
+  });
+
   return {
     statusCode: 200,
     data: user,
   };
 };
 
-// Update addTicketToUser function to include buyer details
 export const addTicketToUser = async (
   userId: string,
   ticketId: string,
@@ -208,7 +242,6 @@ export const addTicketToUser = async (
         status: "owned",
         purchasePrice,
         purchaseDate: new Date(),
-        // Add buyer details
         buyerEmail: buyerData.email,
         buyerName: buyerData.name,
         buyerPhone: buyerData.phone,
@@ -281,6 +314,21 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
 
     await collection.updateOne({ _id: new ObjectId(userId) }, updateSoldTicket);
   }
+
+  return {
+    statusCode: 200,
+    data: result.acknowledged,
+  };
+};
+export const updateUserSubscription = async (userId: string, subscriptionType: "free" | "premium" | "vip"): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const collection = db.collection<UserModel>("User");
+
+  const result = await collection.updateOne({ _id: new ObjectId(userId) }, {
+    $set: {
+      subscriptionType,
+    },
+  } satisfies UpdateFilter<UserModel>);
 
   return {
     statusCode: 200,

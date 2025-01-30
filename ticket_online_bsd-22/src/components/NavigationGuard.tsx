@@ -8,7 +8,6 @@ const NavigationGuard = async ({ children }: { children: React.ReactNode }) => {
   if (!token || token.value.length <= 0) {
     return redirect("/login?error=Please%20Login%20First");
   }
-
   return <>{children}</>;
 };
 

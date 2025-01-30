@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
 import { SeatCategory } from "@/db/models/ticket";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 
 interface CreateTicketFormProps {
   sellerId: string;
@@ -21,6 +22,10 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
     time: "",
     description: "",
     image: "",
+    location: {
+      latitude: -6.2088,
+      longitude: 106.8456,
+    },
     seatCategories: [
       {
         name: "Regular",
@@ -29,6 +34,38 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
       },
     ] as SeatCategoryInput[],
   });
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    const latLng = e.latLng;
+    if (latLng !== null) {
+      setFormData((prev) => ({
+        ...prev,
+        location: {
+          latitude: latLng.lat(),
+          longitude: latLng.lng(),
+        },
+      }));
+    }
+  };
+
+  const googleMapsScript = useMemo(() => {
+    if (!isLoaded) return null;
+
+    return (
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "400px" }}
+        center={{ lat: formData.location.latitude, lng: formData.location.longitude }}
+        zoom={15}
+        onClick={handleMapClick}>
+        <Marker position={{ lat: formData.location.latitude, lng: formData.location.longitude }} />
+      </GoogleMap>
+    );
+  }, [isLoaded, formData.location]);
 
   const handleSeatCategoryChange = (index: number, field: keyof SeatCategoryInput, value: string | number) => {
     const updatedCategories = [...formData.seatCategories];
@@ -154,6 +191,12 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
           className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
           required
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-400 mb-1">Event Location</label>
+        <p className="text-sm text-gray-400 mb-2">Click on the map to set the event location</p>
+        <div className="rounded-lg overflow-hidden border border-[#8E2DE2]/20">{googleMapsScript}</div>
       </div>
 
       <div className="space-y-4">

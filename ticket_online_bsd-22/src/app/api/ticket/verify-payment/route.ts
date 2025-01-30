@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPaymentSession } from "@/services/stripe";
 import { updateTicketPurchaseStatus } from "@/db/models/ticket";
+import { CustomResponse } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
     const { sessionId, purchaseId } = await request.json();
+
+    if (!sessionId || !purchaseId) {
+      return NextResponse.json<CustomResponse<unknown>>(
+        {
+          statusCode: 400,
+          message: "Missing required parameters",
+        },
+        { status: 400 }
+      );
+    }
 
     const verificationResult = await verifyPaymentSession(sessionId);
 
@@ -18,29 +29,43 @@ export async function POST(request: NextRequest) {
           userId: string;
           seatNumber: string;
           purchaseId: string;
+          discountApplied: string;
         };
       };
 
       if (status === "paid" || status === "complete") {
-        await updateTicketPurchaseStatus(purchaseId, "paid", payment_intent, { userId: metadata.userId });
+        // Update ticket purchase status with payment details
+        // Update the type for the options parameter
+        await updateTicketPurchaseStatus(
+          purchaseId,
+          "paid",
+          payment_intent,
+          { userId: metadata.userId } // Remove discountApplied from here
+        );
 
-        return NextResponse.json({
+        return NextResponse.json<CustomResponse<unknown>>({
           statusCode: 200,
           message: "Payment verified and ticket added to user",
+          data: {
+            paymentStatus: status,
+            discountApplied: metadata.discountApplied,
+          },
         });
       } else {
-        await updateTicketPurchaseStatus(purchaseId, "failed");
-        return NextResponse.json(
+        // Update status to failed if payment wasn't successful
+        await updateTicketPurchaseStatus(purchaseId, "failed", undefined, { userId: metadata.userId });
+        return NextResponse.json<CustomResponse<unknown>>(
           {
             statusCode: 400,
             message: "Payment failed",
+            data: { paymentStatus: status },
           },
           { status: 400 }
         );
       }
     }
 
-    return NextResponse.json(
+    return NextResponse.json<CustomResponse<unknown>>(
       {
         statusCode: 400,
         message: "Payment verification failed",
@@ -49,7 +74,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Payment verification error:", error);
-    return NextResponse.json(
+    return NextResponse.json<CustomResponse<unknown>>(
       {
         statusCode: 500,
         message: "Internal server error",

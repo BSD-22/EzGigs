@@ -36,6 +36,7 @@ export const GET = async (req: NextRequest) => {
           email: foundUser.data.email,
           name: foundUser.data.name,
           role: foundUser.data.role,
+          subscriptionType: foundUser.data.subscriptionType,
         },
       },
       { status: 200 }
