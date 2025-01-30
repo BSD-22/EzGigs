@@ -16,6 +16,8 @@ export type UserTicket = {
   buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
   identityDetails: string;
+  // points: number;
+  // subscriptionType: "free" | "premium" | "vip";
 };
 
 export type SoldTicket = {
