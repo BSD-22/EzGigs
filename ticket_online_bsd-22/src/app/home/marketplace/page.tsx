@@ -34,104 +34,120 @@ const Marketplace = async () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
         {listings?.map((listing) => (
-          <a
-            href={`/home/marketplace/${listing._id.toString()}`}
-            key={listing._id.toString()}
-            className="group relative flex h-[200px] bg-[#2C3228] rounded-2xl overflow-hidden"
-          >
-            {/* Background Image */}
-            <div className="absolute inset-0">
-              <Image
-                src={listing.ticket.image}
-                alt={listing.ticket.name}
-                fill
-                className="object-cover opacity-40 group-hover:opacity-30 group-hover:scale-110 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#2C3228] via-[#2C3228]/80 to-transparent" />
-            </div>
+          <div key={listing._id.toString()} className="group relative">
+            <div className="relative flex h-[200px] bg-[#2C3228] rounded-2xl overflow-hidden">
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <Image
+                  src={listing.ticket.image}
+                  alt={listing.ticket.name}
+                  fill
+                  className="object-cover opacity-40 group-hover:opacity-30 group-hover:scale-110 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#2C3228] via-[#2C3228]/80 to-transparent" />
+              </div>
 
-            {/* Content */}
-            <div className="relative flex-1 flex">
-              {/* Left Content */}
-              <div className="flex-1 p-5 flex flex-col justify-between">
-                {/* Top Section */}
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white font-medium">
-                      {listing.categoryName}
-                    </span>
-                    <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white">
-                      Seat {listing.seatNumber}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-[#D3D9C9] transition-colors">
-                    {listing.ticket.name}
-                  </h3>
-
-                  <div className="flex items-center gap-3 text-[#D3D9C9]">
-                    <div className="flex items-center gap-1.5">
-                      <span>📍</span>
-                      <span className="text-xs truncate max-w-[120px]">{listing.ticket.venue}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span>📅</span>
-                      <span className="text-xs">
-                        {new Date(listing.ticket.date).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short"
-                        })}
+              {/* Content */}
+              <div className="relative flex-1 flex">
+                {/* Left Content */}
+                <div className="flex-1 p-5 flex flex-col justify-between">
+                  {/* Top Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white font-medium">
+                        {listing.categoryName}
+                      </span>
+                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white">
+                        Seat {listing.seatNumber}
                       </span>
                     </div>
+
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-[#D3D9C9] transition-colors">
+                      {listing.ticket.name}
+                    </h3>
+
+                    <div className="flex items-center gap-3 text-[#D3D9C9]">
+                      <div className="flex items-center gap-1.5">
+                        <span>📍</span>
+                        <span className="text-xs truncate max-w-[120px]">{listing.ticket.venue}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span>📅</span>
+                        <span className="text-xs">
+                          {new Date(listing.ticket.date).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short"
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Section */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                      <span className="text-xs font-medium text-white">
+                        {listing.user.name[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-xs text-[#D3D9C9] truncate">{listing.user.name}</span>
                   </div>
                 </div>
 
-                {/* Bottom Section */}
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <span className="text-xs font-medium text-white">
-                      {listing.user.name[0].toUpperCase()}
-                    </span>
+                {/* Right Content - Price Section */}
+                <div className="w-[160px] p-5 flex flex-col items-end justify-between">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                    <span className="text-white group-hover:translate-x-1 transition-transform">→</span>
                   </div>
-                  <span className="text-xs text-[#D3D9C9] truncate">{listing.user.name}</span>
+
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-white mb-0.5">
+                      Rp {listing.price.toLocaleString("id-ID")}
+                    </div>
+                    {listing.price !== listing.ticket.seatCategories[0].price && (
+                      <div>
+                        <span className="text-xs line-through text-[#D3D9C9]/70">
+                          Rp {listing.ticket.seatCategories[0].price.toLocaleString("id-ID")}
+                        </span>
+                        <span className="ml-1.5 text-xs">
+                          {listing.price < listing.ticket.seatCategories[0].price ? (
+                            <span className="text-green-400 font-medium">
+                              -{Math.round((1 - listing.price / listing.ticket.seatCategories[0].price) * 100)}%
+                            </span>
+                          ) : (
+                            <span className="text-amber-400 font-medium">
+                              +{Math.round((listing.price / listing.ticket.seatCategories[0].price - 1) * 100)}%
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Right Content - Price Section */}
-              <div className="w-[160px] p-5 flex flex-col items-end justify-between">
-                <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <span className="text-white group-hover:translate-x-1 transition-transform">→</span>
-                </div>
+              {/* Chat Button */}
+              {currentUser?.id.toString() !== listing.user._id.toString() && (
+                <Link
+                  href={`/home/marketplace/chat/${listing.user._id.toString()}`}
+                  className="absolute bottom-1/2 right-3 transform translate-y-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition-colors z-10 flex items-center gap-2"
+                >
+                  <span>💬</span>
+                  <span>Chat</span>
+                </Link>
+              )}
 
-                <div className="text-right">
-                  <div className="text-lg font-bold text-white mb-0.5">
-                    Rp {listing.price.toLocaleString("id-ID")}
-                  </div>
-                  {listing.price !== listing.ticket.seatCategories[0].price && (
-                    <div>
-                      <span className="text-xs line-through text-[#D3D9C9]/70">
-                        Rp {listing.ticket.seatCategories[0].price.toLocaleString("id-ID")}
-                      </span>
-                      <span className="ml-1.5 text-xs">
-                        {listing.price < listing.ticket.seatCategories[0].price ? (
-                          <span className="text-green-400 font-medium">
-                            -{Math.round((1 - listing.price / listing.ticket.seatCategories[0].price) * 100)}%
-                          </span>
-                        ) : (
-                          <span className="text-amber-400 font-medium">
-                            +{Math.round((listing.price / listing.ticket.seatCategories[0].price - 1) * 100)}%
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
+              {/* Hover Border Effect */}
+              <div className="absolute inset-0 rounded-2xl border-2 border-white/0 group-hover:border-white/20 transition-colors" />
             </div>
 
-            {/* Hover Border Effect */}
-            <div className="absolute inset-0 rounded-2xl border-2 border-white/0 group-hover:border-white/20 transition-colors" />
-          </a>
+            {/* Detail Link - Covering whole card except chat button */}
+            <Link 
+              href={`/home/marketplace/${listing._id.toString()}`}
+              className="absolute inset-0 z-[5]"
+              aria-label={`View details for ${listing.ticket.name}`}
+            />
+          </div>
         ))}
       </div>
     </div>
