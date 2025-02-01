@@ -126,7 +126,7 @@ const Marketplace = async () => {
                 </div>
               </div>
 
-              {/* Chat Button */}
+              {/* INI CHAT BUTTONNYA YA MAS */}
               {currentUser?.id.toString() !== listing.user._id.toString() && (
                 <Link
                   href={`/home/marketplace/chat/${listing.user._id.toString()}`}
