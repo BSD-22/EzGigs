@@ -154,264 +154,273 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (!ticket) {
     return (
-      <div className="flex-1 p-7">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Loading...</h1>
+      <div className="min-h-screen bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">
+        <div className="flex-1 p-4 sm:p-7">
+          <h1 className="text-2xl sm:text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Loading...</h1>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-7 bg-gradient-to-b from-[#F4F6F0] to-[#E8EDE1] min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        {/* Card Container */}
-        <div className="bg-[#FAFBF6] rounded-2xl overflow-hidden border border-[#D3D9C9] shadow-xl">
-          {/* Hero Section */}
-          <div className="relative h-[400px]">
-            <Image
-              src={ticket.image}
-              alt={ticket.name}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#FAFBF6] via-black/20 to-transparent" />
-
-            {/* Floating Event Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-10">
-              <div className="flex justify-between items-end">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <span className="px-4 py-1 bg-[#4A5043] text-white text-sm font-medium rounded-full">Live Event</span>
-                    <span className="px-4 py-1 bg-[#656D5D] text-white text-sm font-medium rounded-full">Concert</span>
-                  </div>
-                  <h1 className="text-6xl font-black text-[#2C3228] tracking-tight">{ticket.name}</h1>
-                </div>
-                <div className="text-right">
-                  <p className="text-[#4A5043] text-lg">Starting from</p>
-                  <p className="text-3xl font-bold text-[#2C3228]">Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Content Section */}
-          <div className="p-10">
-            {/* Event Details Grid */}
-            <div className="grid grid-cols-3 gap-8 mb-12">
-              <div className="bg-[#E8EDE1] rounded-xl p-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">📅</span>
-                  </div>
-                  <div>
-                    <p className="text-[#4A5043]">Date</p>
-                    <p className="text-[#2C3228] font-medium">
-                      {new Date(ticket.date).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-[#00F5A0] mb-4">Price Range</h3>
-                <p className="text-black">
-                  From Rp {Math.min(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")} to Rp{" "}
-                  {Math.max(...ticket.seatCategories.map((cat) => cat.price)).toLocaleString("id-ID")}
-                </p>
-              </div>
-              <div className="bg-[#E8EDE1] rounded-xl p-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">⌚</span>
-                  </div>
-                  <div>
-                    <p className="text-[#4A5043]">Time</p>
-                    <p className="text-[#2C3228] font-medium">{ticket.time} WIB</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[#E8EDE1] rounded-xl p-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 bg-[#D3D9C9] rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">📍</span>
-                  </div>
-                  <div>
-                    <p className="text-[#4A5043]">Venue</p>
-                    <p className="text-[#2C3228] font-medium">{ticket.venue}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-12">
-              {/* Left Column - Description */}
-              <div>
-                <h3 className="text-xl font-bold text-[#2C3228] mb-4">About This Event</h3>
-                <p className="text-[#4A5043] leading-relaxed">{ticket.description}</p>
-
-                {/* Google Maps Section */}
-                {googleMapsScript && (
-                  <div className="mt-12">
-                    <h3 className="text-xl font-bold text-[#2C3228] mb-4">Event Location</h3>
-                    {googleMapsScript}
-                  </div>
-                )}
-              </div>
-
-              {/* Right Column - Ticket Categories */}
-              <div>
-                <h3 className="text-xl font-bold text-[#2C3228] mb-6">Available Tickets</h3>
-                <div className="space-y-4">
-                  {ticket?.seatCategories.map((category) => (
-                    <div
-                      key={category.name}
-                      className="group bg-[#E8EDE1] p-6 rounded-xl border border-[#D3D9C9] hover:bg-[#DFE5D6] transition-all duration-300"
-                      onClick={() => handleBuyTicket(category.name)}>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium text-[#2C3228] text-lg">{category.name}</p>
-                          <p className="text-[#4A5043] text-sm">Limited seats available</p>
-                          {getDiscountBadge()}
-                        </div>
-                        <div className="text-right">
-                          {userSubscription !== "free" && <p className="text-sm text-gray-500 line-through">Rp {category.price.toLocaleString("id-ID")}</p>}
-                          <p className="text-2xl font-bold text-[#4A5043]">Rp {Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <button className="mt-8 w-full py-4 bg-gradient-to-r from-[#4A5043] to-[#2C3228] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#2C3228]/25">
-                  Get Your Tickets Now
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">
+        {/* Sidebar with high z-index but no content margin */}
+        <div className="fixed left-0 top-0 h-full z-50">
+            {/* Your existing sidebar component */}
         </div>
-      </div>
 
-      {/* Purchase Modal */}
-      <Dialog
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        className="relative z-50">
-        <div
-          className="fixed inset-0 bg-black/30"
-          aria-hidden="true"
-        />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <DialogPanel className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-md">
-            <DialogTitle className="text-xl font-bold mb-4 text-white">Enter Your Details</DialogTitle>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={buyerData.name}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="Your full name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={buyerData.email}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={buyerData.phone}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
-                  placeholder="Your phone number"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Type</label>
-                <select
-                  value={buyerData.identityType}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as typeof buyerData.identityType }))}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white">
-                  <option value="KTP">KTP</option>
-                  <option value="Passport">Passport</option>
-                  <option value="SIM">SIM</option>
-                  <option value="Student">Student ID</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Document</label>
-                <div className="space-y-2">
-                  {showCamera ? (
-                    <div className="relative">
-                      <Webcam
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        className="w-full rounded-lg"
-                      />
-                      <button
-                        onClick={capture}
-                        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-[#8E2DE2] rounded-lg text-white">
-                        Capture
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setShowCamera(true)}
-                        className="w-full px-4 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-white transition-colors">
-                        Take Photo
-                      </button>
-                      <div className="relative">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                          id="identity-upload"
+        <div className="flex-1"> {/* Removed margin */}
+            {!ticket ? (
+                <div className="flex-1 p-4 sm:p-7">
+                    <h1 className="text-2xl sm:text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Loading...</h1>
+                </div>
+            ) : (
+                <div className="flex-1">
+                    {/* Hero Section */}
+                    <div className="relative h-[250px] sm:h-[400px]">
+                        <Image
+                            src={ticket.image}
+                            alt={ticket.name}
+                            fill
+                            className="object-cover"
                         />
-                        <label
-                          htmlFor="identity-upload"
-                          className="block w-full px-4 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-white transition-colors text-center cursor-pointer">
-                          Upload Photo
-                        </label>
-                      </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                        
+                        {/* Back Button */}
+                        <button 
+                            onClick={() => router.back()}
+                            className="absolute top-4 left-4 z-10 p-2 rounded-full bg-black/30 hover:bg-black/50 text-white transition-all"
+                        >
+                            ← Back
+                        </button>
+
+                        {/* Hero Content */}
+                        <div className="absolute bottom-0 inset-x-0 p-4 sm:p-8">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+                                <div className="flex-1">
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                        <div className="px-3 py-1 bg-[#8E2DE2] rounded-full text-xs sm:text-sm text-white">
+                                            {new Date(ticket.date).toLocaleDateString("id-ID", { 
+                                                weekday: 'long',
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </div>
+                                        <div className="px-3 py-1 bg-[#00F5A0] rounded-full text-xs sm:text-sm text-black">
+                                            {ticket.time}
+                                        </div>
+                                    </div>
+                                    <h1 className="text-2xl sm:text-5xl font-bold text-white mb-2">{ticket.name}</h1>
+                                    <p className="text-gray-300 text-sm sm:text-base flex items-center gap-2">
+                                        <span>📍</span>
+                                        {ticket.venue}
+                                    </p>
+                                </div>
+                                {userSubscription !== "free" && (
+                                    <div className="flex-shrink-0">
+                                        {getDiscountBadge()}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                  )}
-                  {buyerData.identityDetails && (
-                    <div className="mt-2">
-                      <Image
-                        width={200}
-                        height={200}
-                        src={buyerData.identityDetails}
-                        alt="Identity preview"
-                        className="w-full rounded-lg"
-                      />
+
+                    {/* Content Section */}
+                    <div className="p-3 sm:p-8">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+                                {/* Left Column - Details */}
+                                <div className="lg:col-span-2 space-y-6">
+                                    {/* Description */}
+                                    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+                                        <h3 className="text-lg sm:text-xl font-bold text-[#2C3228] mb-4">About This Event</h3>
+                                        <div className="prose prose-sm sm:prose-base text-[#4A5043]">
+                                            {ticket.description}
+                                        </div>
+                                    </div>
+
+                                    {/* Location Map */}
+                                    {ticket.location && (
+                                        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+                                            <h3 className="text-lg sm:text-xl font-bold text-[#2C3228] mb-4">Event Location</h3>
+                                            {googleMapsScript}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Updated Available Tickets Section */}
+                                <div className="lg:col-span-1">
+                                    <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-sm sticky top-4">
+                                        <h3 className="text-base sm:text-xl font-bold text-[#2C3228] mb-3 sm:mb-4">Available Tickets</h3>
+                                        <div className="space-y-2 sm:space-y-3">
+                                            {ticket.seatCategories.map((category) => (
+                                                <button
+                                                    key={category.name}
+                                                    onClick={() => handleBuyTicket(category.name)}
+                                                    className="w-full group bg-[#F4F6F0] hover:bg-[#E8EDE1] p-3 sm:p-4 rounded-lg sm:rounded-xl border border-[#D3D9C9] transition-all"
+                                                >
+                                                    <div className="flex justify-between items-center gap-2 sm:gap-4">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-[#2C3228] text-sm sm:text-lg mb-0.5 sm:mb-1 truncate">
+                                                                {category.name}
+                                                            </p>
+                                                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A5043]">
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${
+                                                                        category.availableSeats <= 20 
+                                                                            ? 'bg-red-500 animate-pulse' 
+                                                                            : 'bg-green-500'
+                                                                    }`}></span>
+                                                                    <span className={
+                                                                        category.availableSeats <= 20 
+                                                                            ? 'text-red-600 font-medium' 
+                                                                            : ''
+                                                                    }>
+                                                                        {category.availableSeats} seats
+                                                                    </span>
+                                                                </div>
+                                                                {category.availableSeats <= 20 && (
+                                                                    <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                                                                        Selling fast!
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right flex-shrink-0">
+                                                            {userSubscription !== "free" && (
+                                                                <p className="text-xs sm:text-sm text-gray-500 line-through mb-0.5">
+                                                                    Rp {category.price.toLocaleString("id-ID")}
+                                                                </p>
+                                                            )}
+                                                            <p className="text-base sm:text-xl font-bold text-[#2C3228]">
+                                                                Rp {Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  )}
+
+                    {/* Purchase Modal - Updated for Mobile */}
+                    <Dialog
+                        open={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        className="relative z-50"
+                    >
+                        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                        <div className="fixed inset-0 flex items-center justify-center p-4">
+                            <DialogPanel className="w-full max-w-md bg-[#1A1A1A] rounded-2xl p-4 sm:p-6 shadow-xl">
+                                <DialogTitle className="text-lg sm:text-xl font-bold mb-4 text-white">Enter Your Details</DialogTitle>
+                                <div className="space-y-3 sm:space-y-4">
+                                    {/* Form Fields */}
+                                    <div>
+                                        <label className="block text-xs sm:text-sm text-gray-400 mb-1">Name</label>
+                                        <input
+                                            type="text"
+                                            value={buyerData.name}
+                                            onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
+                                            className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
+                                            placeholder="Your full name"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs sm:text-sm text-gray-400 mb-1">Email</label>
+                                        <input
+                                            type="email"
+                                            value={buyerData.email}
+                                            onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
+                                            className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
+                                            placeholder="your.email@example.com"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs sm:text-sm text-gray-400 mb-1">Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={buyerData.phone}
+                                            onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
+                                            className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
+                                            placeholder="Your phone number"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs sm:text-sm text-gray-400 mb-1">Identity Type</label>
+                                        <select
+                                            value={buyerData.identityType}
+                                            onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as typeof buyerData.identityType }))}
+                                            className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white">
+                                            <option value="KTP">KTP</option>
+                                            <option value="Passport">Passport</option>
+                                            <option value="SIM">SIM</option>
+                                            <option value="Student">Student ID</option>
+                                        </select>
+                                    </div>
+                                    {/* Camera/Upload Section */}
+                                    <div>
+                                        <label className="block text-xs sm:text-sm text-gray-400 mb-1">Identity Document</label>
+                                        <div className="space-y-2">
+                                            {showCamera ? (
+                                                <div className="relative rounded-lg overflow-hidden">
+                                                    <Webcam
+                                                        ref={webcamRef}
+                                                        screenshotFormat="image/jpeg"
+                                                        className="w-full"
+                                                    />
+                                                    <button
+                                                        onClick={capture}
+                                                        className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-[#8E2DE2] rounded-lg text-sm text-white"
+                                                    >
+                                                        Capture
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <button
+                                                        onClick={() => setShowCamera(true)}
+                                                        className="px-3 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-xs sm:text-sm text-white transition-colors"
+                                                    >
+                                                        Take Photo
+                                                    </button>
+                                                    <div className="relative">
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={handleFileUpload}
+                                                            className="hidden"
+                                                            id="identity-upload"
+                                                        />
+                                                        <label
+                                                            htmlFor="identity-upload"
+                                                            className="block w-full px-3 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-xs sm:text-sm text-white transition-colors text-center cursor-pointer"
+                                                        >
+                                                            Upload Photo
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Submit Button */}
+                                    <button
+                                        onClick={handleSubmitPurchase}
+                                        className="w-full px-4 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-sm sm:text-base text-white font-medium hover:opacity-90 transition-opacity"
+                                    >
+                                        Proceed to Payment
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </div>
+                    </Dialog>
                 </div>
-              </div>
-              <div className="pt-4">
-                <button
-                  onClick={handleSubmitPurchase}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-white font-medium hover:opacity-90 transition-opacity">
-                  Proceed to Payment
-                </button>
-              </div>
-            </div>
-          </DialogPanel>
+            )}
         </div>
-      </Dialog>
     </div>
   );
 };
