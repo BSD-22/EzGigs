@@ -258,42 +258,27 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                                                 <button
                                                     key={category.name}
                                                     onClick={() => handleBuyTicket(category.name)}
-                                                    className="w-full group bg-[#F4F6F0] hover:bg-[#E8EDE1] p-3 sm:p-4 rounded-lg sm:rounded-xl border border-[#D3D9C9] transition-all"
+                                                    className="w-full group hover:bg-[#F4F6F0] p-3 sm:p-4 rounded-lg sm:rounded-xl border border-[#D3D9C9] transition-all"
                                                 >
-                                                    <div className="flex justify-between items-center gap-2 sm:gap-4">
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-[#2C3228] text-sm sm:text-lg mb-0.5 sm:mb-1 truncate">
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div className="flex flex-col items-start">
+                                                            <span className="text-base sm:text-lg font-semibold text-[#2C3228] mb-1">
                                                                 {category.name}
-                                                            </p>
-                                                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A5043]">
-                                                                <div className="flex items-center gap-1">
-                                                                    <span className={`w-1.5 h-1.5 rounded-full ${
-                                                                        category.availableSeats <= 20 
-                                                                            ? 'bg-red-500 animate-pulse' 
-                                                                            : 'bg-green-500'
-                                                                    }`}></span>
-                                                                    <span className={
-                                                                        category.availableSeats <= 20 
-                                                                            ? 'text-red-600 font-medium' 
-                                                                            : ''
-                                                                    }>
-                                                                        {category.availableSeats} seats
-                                                                    </span>
-                                                                </div>
-                                                                {category.availableSeats <= 20 && (
-                                                                    <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
-                                                                        Selling fast!
-                                                                    </span>
-                                                                )}
+                                                            </span>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                                <span className="text-xs sm:text-sm text-[#4A5043]">
+                                                                    {category.availableSeats} seats
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right flex-shrink-0">
+                                                        <div className="text-right">
                                                             {userSubscription !== "free" && (
-                                                                <p className="text-xs sm:text-sm text-gray-500 line-through mb-0.5">
+                                                                <p className="text-xs sm:text-sm text-gray-400 line-through mb-0.5">
                                                                     Rp {category.price.toLocaleString("id-ID")}
                                                                 </p>
                                                             )}
-                                                            <p className="text-base sm:text-xl font-bold text-[#2C3228]">
+                                                            <p className="text-base sm:text-lg font-bold text-[#2C3228]">
                                                                 Rp {Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}
                                                             </p>
                                                         </div>
