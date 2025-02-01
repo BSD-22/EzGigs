@@ -34,7 +34,9 @@ const Marketplace = async () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
         {listings?.map((listing) => (
-          <div key={listing._id.toString()} className="group relative">
+          <div
+            key={listing._id.toString()}
+            className="group relative">
             <div className="relative flex h-[200px] bg-[#2C3228] rounded-2xl overflow-hidden">
               {/* Background Image */}
               <div className="absolute inset-0">
@@ -54,17 +56,11 @@ const Marketplace = async () => {
                   {/* Top Section */}
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white font-medium">
-                        {listing.categoryName}
-                      </span>
-                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white">
-                        Seat {listing.seatNumber}
-                      </span>
+                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white font-medium">{listing.categoryName}</span>
+                      <span className="px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white">Seat {listing.seatNumber}</span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-[#D3D9C9] transition-colors">
-                      {listing.ticket.name}
-                    </h3>
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-[#D3D9C9] transition-colors">{listing.ticket.name}</h3>
 
                     <div className="flex items-center gap-3 text-[#D3D9C9]">
                       <div className="flex items-center gap-1.5">
@@ -76,7 +72,7 @@ const Marketplace = async () => {
                         <span className="text-xs">
                           {new Date(listing.ticket.date).toLocaleDateString("id-ID", {
                             day: "numeric",
-                            month: "short"
+                            month: "short",
                           })}
                         </span>
                       </div>
@@ -86,9 +82,7 @@ const Marketplace = async () => {
                   {/* Bottom Section */}
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-xs font-medium text-white">
-                        {listing.user.name[0].toUpperCase()}
-                      </span>
+                      <span className="text-xs font-medium text-white">{listing.user.name[0].toUpperCase()}</span>
                     </div>
                     <span className="text-xs text-[#D3D9C9] truncate">{listing.user.name}</span>
                   </div>
@@ -101,23 +95,15 @@ const Marketplace = async () => {
                   </div>
 
                   <div className="text-right">
-                    <div className="text-lg font-bold text-white mb-0.5">
-                      Rp {listing.price.toLocaleString("id-ID")}
-                    </div>
+                    <div className="text-lg font-bold text-white mb-0.5">Rp {listing.price.toLocaleString("id-ID")}</div>
                     {listing.price !== listing.ticket.seatCategories[0].price && (
                       <div>
-                        <span className="text-xs line-through text-[#D3D9C9]/70">
-                          Rp {listing.ticket.seatCategories[0].price.toLocaleString("id-ID")}
-                        </span>
+                        <span className="text-xs line-through text-[#D3D9C9]/70">Rp {listing.ticket.seatCategories[0].price.toLocaleString("id-ID")}</span>
                         <span className="ml-1.5 text-xs">
                           {listing.price < listing.ticket.seatCategories[0].price ? (
-                            <span className="text-green-400 font-medium">
-                              -{Math.round((1 - listing.price / listing.ticket.seatCategories[0].price) * 100)}%
-                            </span>
+                            <span className="text-green-400 font-medium">-{Math.round((1 - listing.price / listing.ticket.seatCategories[0].price) * 100)}%</span>
                           ) : (
-                            <span className="text-amber-400 font-medium">
-                              +{Math.round((listing.price / listing.ticket.seatCategories[0].price - 1) * 100)}%
-                            </span>
+                            <span className="text-amber-400 font-medium">+{Math.round((listing.price / listing.ticket.seatCategories[0].price - 1) * 100)}%</span>
                           )}
                         </span>
                       </div>
@@ -130,8 +116,7 @@ const Marketplace = async () => {
               {currentUser?.id.toString() !== listing.user._id.toString() && (
                 <Link
                   href={`/home/marketplace/chat/${listing.user._id.toString()}`}
-                  className="absolute bottom-1/2 right-3 transform translate-y-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition-colors z-10 flex items-center gap-2"
-                >
+                  className="absolute bottom-1/2 right-3 transform translate-y-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition-colors z-10 flex items-center gap-2">
                   <span>💬</span>
                   <span>Chat</span>
                 </Link>
@@ -142,7 +127,7 @@ const Marketplace = async () => {
             </div>
 
             {/* Detail Link - Covering whole card except chat button */}
-            <Link 
+            <Link
               href={`/home/marketplace/${listing._id.toString()}`}
               className="absolute inset-0 z-[5]"
               aria-label={`View details for ${listing.ticket.name}`}
