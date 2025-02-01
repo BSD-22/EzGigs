@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import ProfileSection from "./ProfileSection";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 interface SideBarProps {
   userData: {
@@ -13,6 +14,18 @@ interface SideBarProps {
 
 const SideBar = ({ userData }: SideBarProps) => {
   const [isOpen, setIsOpen] = useState(true);
+  const { subscription } = useSubscription();
+
+  const getSubscriptionEmoji = (type: "free" | "premium" | "vip") => {
+    switch (type) {
+      case "vip":
+        return "👑";
+      case "premium":
+        return "⭐";
+      default:
+        return "🆓";
+    }
+  };
 
   return (
     <div className={`${isOpen ? "w-64" : "w-20"} bg-[#2C3228] backdrop-blur-xl border-r border-[#4A5043]/20 p-5 pt-8 relative duration-300`}>
@@ -38,6 +51,13 @@ const SideBar = ({ userData }: SideBarProps) => {
         isOpen={isOpen}
         userData={userData}
       />
+
+      {userData && isOpen && (
+        <div className="mt-2 px-2 py-1 bg-[#4A5043]/20 rounded-lg flex items-center gap-2 text-[#E8EDE1]">
+          <span>{getSubscriptionEmoji(subscription)}</span>
+          <span className="capitalize text-sm">{subscription} Plan</span>
+        </div>
+      )}
 
       {/* Rest of your navigation code stays the same */}
       <ul className="pt-6">
@@ -84,7 +104,7 @@ const SideBar = ({ userData }: SideBarProps) => {
         <li className="mb-2">
           <Link
             href="/home/chats"
-            className="flex items-center gap-x-4 p-2 hover:bg-[#8E2DE2]/10 rounded-lg transition-colors">
+            className="flex items-center gap-x-4 p-2 hover:bg-[#4A5043]/20 text-[#E8EDE1] hover:text-white rounded-lg transition-colors">
             <span className="text-xl">💬</span>
             <span className={`${!isOpen && "hidden"} origin-left duration-200`}>Chats</span>
           </Link>

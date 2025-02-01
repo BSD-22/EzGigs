@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
 import { toast } from "react-hot-toast";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 const SubscriptionPage = () => {
   const router = useRouter();
@@ -11,32 +12,13 @@ const SubscriptionPage = () => {
   const success = searchParams.get("success");
   const sessionId = searchParams.get("session_id");
   const [loading, setLoading] = useState(false);
-  const [currentSubscription, setCurrentSubscription] = useState<"free" | "premium" | "vip">("free");
-
-  useEffect(() => {
-    fetchUserSubscription();
-  }, []);
+  const { subscription: currentSubscription, updateSubscription } = useSubscription();
 
   useEffect(() => {
     if (success && sessionId) {
       verifySubscription(sessionId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [success, sessionId]);
-
-  const fetchUserSubscription = async () => {
-    try {
-      const res = await fetch(`${baseUrl}/api/user/me`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.statusCode === 200 && data.data) {
-        setCurrentSubscription(data.data.subscriptionType);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user subscription:", error);
-    }
-  };
 
   const verifySubscription = async (sessionId: string) => {
     try {
@@ -51,7 +33,7 @@ const SubscriptionPage = () => {
 
       if (data.statusCode === 200) {
         toast.success("Subscription updated successfully!");
-        await fetchUserSubscription();
+        await updateSubscription(); // Update global subscription state
         router.replace("/home/subscription?status=success");
       } else {
         toast.error("Failed to verify subscription");
