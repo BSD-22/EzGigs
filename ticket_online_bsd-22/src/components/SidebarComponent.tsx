@@ -28,9 +28,9 @@ const SideBar = ({ userData }: SideBarProps) => {
   };
 
   return (
-    <div className={`${isOpen ? "w-64" : "w-20"} bg-[#2C3228] backdrop-blur-xl border-r border-[#4A5043]/20 p-5 pt-8 relative duration-300`}>
+    <div className={`${isOpen ? "w-64" : "w-20"} bg-[#2C3228] backdrop-blur-xl border-r border-[#4A5043]/20 p-5 pt-8 relative duration-300 z-[100]`}>
       <div
-        className="absolute cursor-pointer -right-3 top-9 w-7 h-7 bg-[#4A5043] hover:bg-[#656D5D] rounded-full flex items-center justify-center transition-colors"
+        className="absolute cursor-pointer -right-3 top-9 w-7 h-7 bg-[#4A5043] hover:bg-[#656D5D] rounded-full flex items-center justify-center transition-colors z-[101] shadow-lg"
         onClick={() => setIsOpen(!isOpen)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

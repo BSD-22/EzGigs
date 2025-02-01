@@ -44,111 +44,123 @@ async function MyTicketsPage() {
   const activeTickets = userTickets.ownedTickets?.filter((ticket: TicketWithStatus) => ticket.status !== "sold") || [];
 
   return (
-    <div className="flex-1 p-7 overflow-auto">
-      <h1 className="text-4xl font-black text-[#2C3228] mb-6">My Tickets 🎫</h1>
-
-      {!activeTickets.length ? (
-        <div className="text-center py-12 bg-white rounded-2xl border border-[#D3D9C9]">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#4A5043]/10 flex items-center justify-center">
-            <span className="text-4xl">🎫</span>
-          </div>
-          <h2 className="text-2xl font-bold text-[#2C3228]">No Tickets Found</h2>
-          <p className="text-[#4A5043] mt-2">You haven&apos;t purchased any tickets yet.</p>
-          <BrowseTicketsButton />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeTickets.map((ticket: TicketWithStatus) => {
-            const ticketDetails = userTickets.ticketDetails?.find((detail: TicketModel) => detail._id.toString() === ticket.ticketId.toString());
-            const marketplaceListing = ticket.status === "selling" ? marketplaceListings?.find((listing) => listing.ticket._id.toString() === ticket.ticketId.toString()) : null;
-
-            if (!ticketDetails) return null;
-
-            return (
-              <div
-                key={ticket.ticketId.toString() + Math.floor(Math.random() * 1000)}
-                className="block bg-white rounded-2xl overflow-hidden border border-[#D3D9C9] hover:shadow-lg transition-all duration-300">
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={ticketDetails.image}
-                    alt={ticketDetails.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#2C3228] to-transparent opacity-60" />
-                  <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                      ticket.status === "owned" 
-                        ? "bg-[#4A5043] text-white" 
-                        : "bg-[#D3D9C9] text-[#2C3228]"
-                    }`}>
-                      {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
-                    </span>
-                  </div>
+    <div className="min-h-screen bg-gray-50">
+        <div className="flex-1 p-4 sm:p-7 overflow-auto">
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl sm:text-4xl font-black text-gray-800">
+                    My Tickets 
+                    <span className="ml-2 inline-block">🎫</span>
+                </h1>
+                <div className="text-sm sm:text-base text-gray-600">
+                    {activeTickets.length} {activeTickets.length === 1 ? 'ticket' : 'tickets'}
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-[#2C3228]">{ticketDetails.name}</h3>
-                  <div className="space-y-2 text-sm text-[#4A5043]">
-                    <div className="flex items-center gap-2">
-                      <span>📍</span>
-                      <span>{ticketDetails.venue}</span>
+            </div>
+
+            {!activeTickets.length ? (
+                <div className="text-center p-6 sm:p-12 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-3xl sm:text-4xl animate-pulse">🎫</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span>📅</span>
-                      <span>
-                        {new Date(ticketDetails.date).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span>💺</span>
-                      <span>
-                        {ticket.categoryName} - Seat {ticket.seatNumber}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span>💰</span>
-                      {ticket.status === "selling" && marketplaceListing ? (
-                        <div>
-                          <span className="text-[#4A5043] font-medium">
-                            Listed for Rp {marketplaceListing.price.toLocaleString("id-ID")}
-                          </span>
-                          {ticketDetails.seatCategories.map((category) => {
-                            if (category.name === ticket.categoryName) {
-                              return (
-                                <span
-                                  key={category.name + Math.floor(Math.random() * 100)}
-                                  className="text-xs text-[#4A5043]/70 block">
-                                  Original price: Rp {category.price.toLocaleString("id-ID")}
-                                </span>
-                              );
-                            }
-                            return null;
-                          })}
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="text-[#4A5043] font-medium">
-                            Rp {ticket.purchasePrice?.toLocaleString("id-ID") || ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
-                          </span>
-                          {ticket.purchasePrice && ticket.purchasePrice !== ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price && (
-                            <span className="text-xs text-[#4A5043]/70 block">
-                              Original price: Rp {ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">No Tickets Found</h2>
+                    <p className="text-gray-600 mt-2 text-sm sm:text-base">You haven&apos;t purchased any tickets yet.</p>
+                    <BrowseTicketsButton />
                 </div>
-              </div>
-            );
-          })}
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {activeTickets.map((ticket: TicketWithStatus) => {
+                        const ticketDetails = userTickets.ticketDetails?.find((detail: TicketModel) => 
+                            detail._id.toString() === ticket.ticketId.toString()
+                        );
+                        const marketplaceListing = ticket.status === "selling" 
+                            ? marketplaceListings?.find((listing) => 
+                                listing.ticket._id.toString() === ticket.ticketId.toString()
+                              ) 
+                            : null;
+
+                        if (!ticketDetails) return null;
+
+                        return (
+                            <div
+                                key={ticket.ticketId.toString() + Math.floor(Math.random() * 1000)}
+                                className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300"
+                            >
+                                <div className="relative h-40 sm:h-48 w-full overflow-hidden">
+                                    <Image
+                                        src={ticketDetails.image}
+                                        alt={ticketDetails.name}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                    <div className="absolute top-3 right-3">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                            ticket.status === "owned" 
+                                                ? "bg-gray-800 text-white" 
+                                                : "bg-white/90 text-gray-800"
+                                        }`}>
+                                            {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <h3 className="text-lg sm:text-xl font-bold text-white mb-1 line-clamp-1">{ticketDetails.name}</h3>
+                                        <p className="text-white/80 text-xs sm:text-sm flex items-center gap-1.5">
+                                            <span>📍</span>
+                                            <span className="line-clamp-1">{ticketDetails.venue}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="p-4">
+                                    <div className="space-y-2 text-xs sm:text-sm">
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <span className="w-4 text-center">📅</span>
+                                            <span>{new Date(ticketDetails.date).toLocaleDateString("id-ID", {
+                                                day: "numeric",
+                                                month: "long",
+                                                year: "numeric",
+                                            })}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <span className="w-4 text-center">💺</span>
+                                            <span className="font-medium">{ticket.categoryName} - Seat {ticket.seatNumber}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                                            <span className="w-4 text-center">💰</span>
+                                            {ticket.status === "selling" && marketplaceListing ? (
+                                                <div>
+                                                    <span className="font-semibold text-gray-800">
+                                                        Rp {marketplaceListing.price.toLocaleString("id-ID")}
+                                                    </span>
+                                                    <span className="text-xs text-gray-500 block">
+                                                        Original: Rp {ticketDetails.seatCategories.find(
+                                                            cat => cat.name === ticket.categoryName
+                                                        )?.price.toLocaleString("id-ID")}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <span className="font-semibold text-gray-800">
+                                                        Rp {ticket.purchasePrice?.toLocaleString("id-ID")}
+                                                    </span>
+                                                    {ticket.purchasePrice !== ticketDetails.seatCategories.find(
+                                                        cat => cat.name === ticket.categoryName
+                                                    )?.price && (
+                                                        <span className="text-xs text-gray-500 block">
+                                                            Original: Rp {ticketDetails.seatCategories.find(
+                                                                cat => cat.name === ticket.categoryName
+                                                            )?.price.toLocaleString("id-ID")}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
-      )}
     </div>
   );
 }
