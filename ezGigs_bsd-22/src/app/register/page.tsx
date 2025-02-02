@@ -33,9 +33,16 @@ export default function RegisterPage() {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-4 border-white/20 rounded-full"></div>
               </div>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12 text-center">
-                <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm border border-white/20">
-                  <span className="text-3xl font-black">TIXID</span>
-                </div>
+              <div className="w-40 h-40 bg-white/10 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm border border-white/20">
+                    <Link href={"/"}>
+                    <img
+              src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20size.png?updatedAt=1738307076179"
+              alt="Logo"
+              className="w-32"
+            />
+                    </Link>
+
+                    </div>
                 <h2 className="text-4xl font-black mb-4">Start Your Journey Here!</h2>
                 <p className="text-lg text-white/80">Join our community of music lovers and never miss a beat! ✨</p>
               </div>

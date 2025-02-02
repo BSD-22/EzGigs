@@ -1,23 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TicketModel } from "@/db/models/ticket";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { TicketPurchase } from "@/db/models/ticket";
 import Webcam from "react-webcam";
-import { useCallback, useRef } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
+import GridView from "./_components/GridView";
+import ListView from "./_components/ListView";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
 
 export default function Home() {
   const router = useRouter();
   const [tickets, setTickets] = useState<TicketModel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState<{ id: string; category: string } | null>(null);
   const [showCamera, setShowCamera] = useState(false);
-  const [userSubscription, setUserSubscription] = useState<"free" | "premium" | "vip">("free");
+  const [selectedTicket, setSelectedTicket] = useState<{ id: string; category: string } | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState<string>("");
+  const [isIdentityVerified, setIsIdentityVerified] = useState(false);
   const webcamRef = useRef<Webcam | null>(null);
   const [buyerData, setBuyerData] = useState({
     email: "",
@@ -31,7 +37,7 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [isLoading, setIsLoading] = useState(true);
+  const [userSubscription, setUserSubscription] = useState<"free" | "premium" | "vip">("free");
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -42,62 +48,102 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const capture = useCallback(() => {
-    if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc) {
-        setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
-        setShowCamera(false);
-      }
-    }
-  }, [webcamRef]);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setBuyerData((prev) => ({ ...prev, identityDetails: base64String }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const fetchTickets = async () => {
     try {
-      setIsLoading(true);
+      setisLoading(true);
       const res = await fetch("/api/ticket", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        cache: 'no-store'
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const json = await res.json();
-      
-      if (!json?.data) {
-        throw new Error('Data tidak ditemukan');
-      }
-
-      setTickets(json.data);
-      
+      setTickets(json?.data);
     } catch (error) {
       console.error("Error fetching tickets:", error);
-      toast.error("Gagal mengambil data tiket, coba refresh halaman ya! 😅");
-      setTickets([]);
     } finally {
-      setIsLoading(false);
+      setisLoading(false);
+    }
+  };
+
+  const verifyIdentity = async (faceImage: string, identityImage: string) => {
+    try {
+      const verifyRes = await fetch("/api/verify-identity", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          faceImage,
+          identityImage,
+        }),
+      });
+
+      const result = await verifyRes.json();
+      console.log("Verification result:", result);
+
+      if (!verifyRes.ok) {
+        throw new Error("API request failed");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error in verifyIdentity:", error);
+      return { isMatch: false, message: "Network error occurred" };
+    }
+  };
+
+  const handleCapturePhoto = async () => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc) {
+      toast.error("Failed to capture photo. Please try again.");
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerificationMessage("Verifying your identity...");
+
+    try {
+      setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
+      const result = await verifyIdentity(imageSrc, imageSrc);
+
+      setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+
+      if (result.isMatch) {
+        setIsIdentityVerified(true);
+        setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
+        toast.success("Identity verified successfully!");
+        setShowCamera(false);
+      } else {
+        setIsIdentityVerified(false);
+        toast.error(result.message || "Verification failed. Please try again.", {
+          autoClose: 5000,
+        });
+      }
+    } catch (error) {
+      console.error("Error during verification:", error);
+      setIsIdentityVerified(false);
+      setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+      toast.error("Verification failed. Please try again.");
+    } finally {
+      setIsVerifying(false);
+      setVerificationMessage("");
     }
   };
 
   const handleSubmitPurchase = async () => {
-    if (!selectedTicket) return;
+    if (!isIdentityVerified) {
+      toast.error("Please complete identity verification first");
+      return;
+    }
+
+    if (!selectedTicket || !buyerData.identityDetails) {
+      toast.error("Please provide all required information");
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerificationMessage("Processing your purchase...");
 
     try {
       localStorage.setItem("tempBuyerData", JSON.stringify(buyerData));
@@ -123,10 +169,13 @@ export default function Home() {
         setIsModalOpen(false);
         router.push(stripeData.url);
       } else {
-        console.error("Payment creation failed:", json.message);
+        toast.error(json.message || "Payment creation failed");
       }
     } catch (error) {
       console.error("Error processing payment:", error);
+      toast.error("Payment processing failed. Please try again.");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -172,11 +221,7 @@ export default function Home() {
 
       if (verifyData.statusCode === 200) {
         toast.success("Payment successful! Your ticket has been confirmed.");
-
-        // Clear stored buyer data
         localStorage.removeItem("tempBuyerData");
-
-        // Refresh tickets list
         await fetchTickets();
       } else {
         toast.error("Payment verification failed");
@@ -185,7 +230,6 @@ export default function Home() {
       console.error("Error verifying payment:", error);
       toast.error("Error verifying payment");
     } finally {
-      // Redirect to tickets page without query params
       router.replace("/home/ticket");
     }
   };
@@ -469,6 +513,78 @@ export default function Home() {
           )}
         </div>
       )}
+      <ToastContainer />
+      <div className="flex-1 p-3 sm:p-7 overflow-auto">
+        <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
+            <div>
+              <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">Upcoming Events</h1>
+              <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Discover and book your next unforgettable experience 🎉</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "grid" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                📱
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "list" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                📝
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="w-full sm:flex-1">
+              <input
+                type="text"
+                placeholder="🔍 Search events..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9]"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <input
+                type="date"
+                value={startDate?.toISOString().split("T")[0] || ""}
+                onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
+              />
+              <input
+                type="date"
+                value={endDate?.toISOString().split("T")[0] || ""}
+                onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
+              />
+              <button
+                onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] flex items-center gap-1 sm:gap-2 hover:bg-[#F4F6F0]">
+                <span className="text-xs sm:text-sm">Date</span>
+                {sortOrder === "asc" ? "↑" : "↓"}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {viewMode === "grid" ? (
+          <GridView
+            tickets={filteredAndSortedTickets}
+            handleTicketClick={handleTicketClick}
+            handleBuyTicket={handleBuyTicket}
+            calculateDiscountedPrice={calculateDiscountedPrice}
+          />
+        ) : (
+          <ListView
+            tickets={filteredAndSortedTickets}
+            handleTicketClick={handleTicketClick}
+            handleBuyTicket={handleBuyTicket}
+            calculateDiscountedPrice={calculateDiscountedPrice}
+            userSubscription={userSubscription}
+          />
+        )}
+      </div>
 
       <Dialog
         open={isModalOpen}
@@ -526,79 +642,46 @@ export default function Home() {
                     <option value="Student">Student ID</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Document</label>
+                <div className="space-y-3">
                   <div className="space-y-3">
-                    {showCamera ? (
+                    <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Verification</label>
+                    {buyerData.identityDetails ? (
                       <div className="relative">
-                        <Webcam
-                          ref={webcamRef}
-                          screenshotFormat="image/jpeg"
+                        <Image
+                          width={400}
+                          height={300}
+                          src={buyerData.identityDetails}
+                          alt="Identity verification photo"
                           className="w-full rounded-xl"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="border-2 border-white/70 rounded-lg w-[85%] h-[60%] relative">
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white">⎯⎯⎯ Align ID card ⎯⎯⎯</div>
-                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00F5A0]" />
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00F5A0]" />
-                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F5A0]" />
-                            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F5A0]" />
-                          </div>
-                        </div>
-                        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
-                          <button
-                            onClick={capture}
-                            className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity">
-                            Capture
-                          </button>
-                          <button
-                            onClick={() => setShowCamera(false)}
-                            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:opacity-90 transition-opacity">
-                            Cancel
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => {
+                            setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+                            setIsIdentityVerified(false);
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors">
+                          ✕
+                        </button>
                       </div>
                     ) : (
-                      <div className="space-y-3">
-                        {buyerData.identityDetails ? (
-                          <div className="relative">
-                            <Image
-                              width={200}
-                              height={200}
-                              src={buyerData.identityDetails}
-                              alt="Identity document"
-                              className="w-full rounded-xl"
-                            />
-                            <button
-                              onClick={() => setBuyerData((prev) => ({ ...prev, identityDetails: "" }))}
-                              className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors">
-                              ✕
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => setShowCamera(true)}
-                              className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700">
-                              Open Camera
-                            </button>
-                            <label className="flex-1">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                              />
-                              <span className="block px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 text-center cursor-pointer">
-                                Upload File
-                              </span>
-                            </label>
-                          </div>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => setShowCamera(true)}
+                        className="w-full px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors">
+                        Take Verification Photo
+                      </button>
                     )}
+
+                    <div className="text-sm text-gray-600">Please take a photo of yourself holding your ID card. Make sure both your face and the ID photo are clearly visible.</div>
+
+                    {isIdentityVerified && <div className="p-3 bg-green-50 text-green-700 rounded-xl">✓ Identity verified successfully</div>}
                   </div>
                 </div>
+                {isVerifying && (
+                  <div className="text-center py-4 bg-[#F4F6F0] rounded-xl">
+                    <div className="animate-spin h-8 w-8 border-4 border-[#4A5043] border-t-transparent rounded-full mx-auto mb-3"></div>
+                    <p className="text-sm text-[#4A5043]">{verificationMessage}</p>
+                  </div>
+                )}
                 <div className="flex gap-3 mt-8 sticky bottom-0 bg-white pt-4">
                   <button
                     onClick={() => setIsModalOpen(false)}
@@ -607,10 +690,95 @@ export default function Home() {
                   </button>
                   <button
                     onClick={handleSubmitPurchase}
-                    disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityDetails}
+                    disabled={!isIdentityVerified || !buyerData.email || !buyerData.name || !buyerData.phone || isVerifying}
                     className="flex-1 px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    Continue to Payment
+                    {isVerifying ? "Verifying..." : "Continue to Payment"}
                   </button>
+                </div>
+              </div>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+      <Dialog
+        open={showCamera}
+        onClose={() => setShowCamera(false)}
+        className="relative z-50">
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+          aria-hidden="true"
+        />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <DialogPanel className="bg-white rounded-3xl w-full max-w-md shadow-xl">
+            <div className="p-6">
+              <DialogTitle className="text-xl font-bold text-[#2C3228] mb-4">Identity Verification</DialogTitle>
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">Please position your face on the left and your ID card on the right</p>
+
+                <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
+                  {!buyerData.identityDetails ? (
+                    <>
+                      <Webcam
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Guide overlay */}
+                      <div className="absolute inset-0 flex">
+                        <div className="w-1/2 border-r-2 border-white/50">
+                          <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">Face</div>
+                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
+                        </div>
+                        <div className="w-1/2">
+                          <div className="absolute top-2 right-2 text-white text-sm bg-black/50 px-2 py-1 rounded">ID Card</div>
+                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
+                        </div>
+                      </div>
+                      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
+                        <button
+                          onClick={handleCapturePhoto}
+                          disabled={isVerifying}
+                          className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
+                          {isVerifying ? "Verifying..." : "Capture Photo"}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <Image
+                        src={buyerData.identityDetails}
+                        alt="Verification photo"
+                        width={400}
+                        height={300}
+                        className="w-full rounded-xl"
+                      />
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+                            setIsIdentityVerified(false);
+                          }}
+                          className="px-6 py-2 border border-[#8E2DE2] text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2] hover:text-white transition-all">
+                          Retake Photo
+                        </button>
+                        <button
+                          onClick={() => setShowCamera(false)}
+                          className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity">
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  Instructions:
+                  <ul className="list-disc ml-5 mt-1">
+                    <li>Position your face clearly in the left box</li>
+                    <li>Hold your ID card in the right box</li>
+                    <li>Ensure good lighting and clear visibility</li>
+                    <li>Keep steady while taking the photo</li>
+                  </ul>
                 </div>
               </div>
             </div>
