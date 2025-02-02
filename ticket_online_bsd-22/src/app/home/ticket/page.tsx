@@ -9,6 +9,7 @@ import { TicketPurchase } from "@/db/models/ticket";
 import Webcam from "react-webcam";
 import { useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
+import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
 
 export default function Home() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -64,16 +66,33 @@ export default function Home() {
 
   const fetchTickets = async () => {
     try {
+      setIsLoading(true);
       const res = await fetch("/api/ticket", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+        cache: 'no-store'
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const json = await res.json();
-      setTickets(json?.data);
+      
+      if (!json?.data) {
+        throw new Error('Data tidak ditemukan');
+      }
+
+      setTickets(json.data);
+      
     } catch (error) {
       console.error("Error fetching tickets:", error);
+      toast.error("Gagal mengambil data tiket, coba refresh halaman ya! 😅");
+      setTickets([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -206,210 +225,115 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">
-      <div className="flex-1 p-3 sm:p-7 overflow-auto">
-        {/* Header Section - Even Smaller on Mobile */}
-        <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-            <div>
-              <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">Upcoming Events</h1>
-              <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Discover and book your next unforgettable experience 🎉</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "grid" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
-                📱
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "list" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
-                📝
-              </button>
-            </div>
-          </div>
-
-          {/* Compact Search & Filters for Mobile */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <div className="w-full sm:flex-1">
-              <input
-                type="text"
-                placeholder="🔍 Search events..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9]"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              <input
-                type="date"
-                value={startDate?.toISOString().split("T")[0] || ""}
-                onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
-                className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
-              />
-              <input
-                type="date"
-                value={endDate?.toISOString().split("T")[0] || ""}
-                onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
-                className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
-              />
-              <button
-                onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] flex items-center gap-1 sm:gap-2 hover:bg-[#F4F6F0]">
-                <span className="text-xs sm:text-sm">Date</span>
-                {sortOrder === "asc" ? "↑" : "↓"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Grid View - More Compact on Mobile */}
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
-            {filteredAndSortedTickets.map((ticket) => (
-              <div
-                key={ticket._id.toString()}
-                className="group h-full">
-                <div
-                  onClick={() => handleTicketClick(ticket._id.toString())}
-                  className="bg-white rounded-lg sm:rounded-[24px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#D3D9C9] h-full">
-                  {/* Compact Image Section */}
-                  <div className="relative">
-                    <div className="relative h-[100px] sm:h-[180px]">
-                      <Image
-                        src={ticket.image}
-                        alt={ticket.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                    </div>
-
-                    {/* Updated Event Info for Mobile */}
-                    <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-4">
-                      <div className="flex items-end justify-between gap-1 sm:gap-4">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-[11px] sm:text-xl font-bold text-white leading-tight line-clamp-2 mb-0.5 sm:mb-2">{ticket.name}</h3>
-                          <div className="flex items-start sm:items-center gap-0.5 sm:gap-2 text-[9px] sm:text-sm text-gray-200">
-                            <span className="flex-shrink-0">📍</span>
-                            <span className="line-clamp-2 sm:line-clamp-1 break-words">{ticket.venue}</span>
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0 bg-white rounded-md sm:rounded-xl p-1 sm:p-2 text-center min-w-[35px] sm:min-w-[60px]">
-                          <p className="text-sm sm:text-xl font-bold text-[#2C3228] leading-none">{new Date(ticket.date).getDate()}</p>
-                          <p className="text-[8px] sm:text-xs font-medium text-[#4A5043] mt-0.5">{new Date(ticket.date).toLocaleDateString("id-ID", { month: "short" })}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Compact Status Bar */}
-                  <div className="bg-[#F4F6F0] px-1.5 sm:px-4 py-1 sm:py-3 flex items-center justify-between text-[10px] sm:text-sm">
-                    <div className="flex items-center gap-1 sm:gap-1.5">
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                      <span className="font-medium text-[#2C3228]">Live</span>
-                    </div>
-                    <div className="flex items-center gap-1 sm:gap-3">
-                      <div className="flex items-center gap-1 bg-[#2C3228] text-white px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full">
-                        <span className="text-[8px] sm:text-xs">🎭</span>
-                        <span className="text-[8px] sm:text-sm font-medium">{ticket.time}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Compact Categories */}
-                  <div className="p-1.5 sm:p-3 grid gap-1 sm:gap-2">
-                    {ticket.seatCategories.map((category) => (
-                      <button
-                        key={category.name}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleBuyTicket(ticket._id.toString(), category.name);
-                        }}
-                        disabled={category.availableSeats <= 0}
-                        className={`w-full p-1.5 sm:p-3 rounded-md sm:rounded-xl text-left transition-all ${
-                          category.availableSeats > 0 ? "hover:bg-[#F4F6F0] border border-[#D3D9C9]" : "bg-gray-50 cursor-not-allowed opacity-60"
-                        }`}>
-                        <div className="flex items-center gap-1.5 sm:gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1 sm:gap-2 mb-0.5">
-                              <span className="font-medium text-[#2C3228] text-[10px] sm:text-sm truncate">{category.name}</span>
-                              {category.availableSeats <= 20 && (
-                                <span className="px-1 py-0.5 text-[8px] sm:text-[10px] font-medium bg-red-100 text-red-600 rounded-full animate-pulse whitespace-nowrap">
-                                  {category.availableSeats}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-baseline gap-1 sm:gap-2">
-                              <div className="flex items-baseline gap-0.5 min-w-0">
-                                <span className="text-[8px] sm:text-[10px] font-normal text-[#4A5043]">Rp</span>
-                                <span className="text-[10px] sm:text-sm font-semibold text-[#2C3228] truncate">{Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className={`
-                            h-[25px] w-[25px] sm:h-[40px] sm:w-[40px] rounded-md sm:rounded-lg flex flex-col items-center justify-center flex-shrink-0
-                            ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
-                          `}>
-                            <span className={`text-[10px] sm:text-sm font-semibold ${category.availableSeats <= 20 ? "text-red-600" : "text-[#2C3228]"}`}>{category.availableSeats}</span>
-                            <span className={`text-[6px] sm:text-[8px] font-medium ${category.availableSeats <= 20 ? "text-red-500" : "text-[#4A5043]"}`}>seats</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+      {isLoading ? (
+        <TicketsSkeleton viewMode={viewMode} />
+      ) : (
+        <div className="flex-1 p-3 sm:p-7 overflow-auto">
+          <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
+              <div>
+                <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">Upcoming Events</h1>
+                <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Discover and book your next unforgettable experience 🎉</p>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredAndSortedTickets.map((ticket) => (
-              <div
-                key={ticket._id.toString()}
-                onClick={() => handleTicketClick(ticket._id.toString())}
-                className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-[#D3D9C9] hover:shadow-lg transition-all cursor-pointer">
-                <div className="flex flex-col sm:flex-row">
-                  {/* Mobile-optimized Image Section */}
-                  <div className="relative w-full sm:w-[280px] h-[180px] sm:h-auto flex-shrink-0">
-                    <div className="relative h-full">
-                      <Image
-                        src={ticket.image}
-                        alt={ticket.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black/50 to-transparent" />
-                    </div>
-                    <div className="absolute bottom-3 left-3 bg-white rounded-xl p-2 text-center min-w-[50px]">
-                      <p className="text-lg font-semibold text-[#2C3228] leading-none">{new Date(ticket.date).getDate()}</p>
-                      <p className="text-xs font-medium text-[#4A5043] mt-0.5">{new Date(ticket.date).toLocaleDateString("id-ID", { month: "short" })}</p>
-                    </div>
-                  </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "grid" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                  📱
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "list" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                  📝
+                </button>
+              </div>
+            </div>
 
-                  {/* Mobile-optimized Content Section */}
-                  <div className="flex-1 p-3 sm:p-4">
-                    <div className="mb-3">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <div className="flex items-center gap-1.5 bg-[#2C3228] text-white px-2 py-1 rounded-full text-xs">
-                          <span>🎭</span>
-                          <span>{ticket.time}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                          <span className="text-xs font-medium text-[#2C3228]">Live Sales</span>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <div className="w-full sm:flex-1">
+                <input
+                  type="text"
+                  placeholder="🔍 Search events..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9]"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                <input
+                  type="date"
+                  value={startDate?.toISOString().split("T")[0] || ""}
+                  onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                  className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
+                />
+                <input
+                  type="date"
+                  value={endDate?.toISOString().split("T")[0] || ""}
+                  onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                  className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
+                />
+                <button
+                  onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] flex items-center gap-1 sm:gap-2 hover:bg-[#F4F6F0]">
+                  <span className="text-xs sm:text-sm">Date</span>
+                  {sortOrder === "asc" ? "↑" : "↓"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
+              {filteredAndSortedTickets.map((ticket) => (
+                <div
+                  key={ticket._id.toString()}
+                  className="group h-full">
+                  <div
+                    onClick={() => handleTicketClick(ticket._id.toString())}
+                    className="bg-white rounded-lg sm:rounded-[24px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#D3D9C9] h-full">
+                    <div className="relative">
+                      <div className="relative h-[100px] sm:h-[180px]">
+                        <Image
+                          src={ticket.image}
+                          alt={ticket.name}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                      </div>
+
+                      <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-4">
+                        <div className="flex items-end justify-between gap-1 sm:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-[11px] sm:text-xl font-bold text-white leading-tight line-clamp-2 mb-0.5 sm:mb-2">{ticket.name}</h3>
+                            <div className="flex items-start sm:items-center gap-0.5 sm:gap-2 text-[9px] sm:text-sm text-gray-200">
+                              <span className="flex-shrink-0">📍</span>
+                              <span className="line-clamp-2 sm:line-clamp-1 break-words">{ticket.venue}</span>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 bg-white rounded-md sm:rounded-xl p-1 sm:p-2 text-center min-w-[35px] sm:min-w-[60px]">
+                            <p className="text-sm sm:text-xl font-bold text-[#2C3228] leading-none">{new Date(ticket.date).getDate()}</p>
+                            <p className="text-[8px] sm:text-xs font-medium text-[#4A5043] mt-0.5">{new Date(ticket.date).toLocaleDateString("id-ID", { month: "short" })}</p>
+                          </div>
                         </div>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-semibold text-[#2C3228] mb-1 line-clamp-2">{ticket.name}</h3>
-                      <p className="text-[#4A5043] flex items-center gap-1.5 text-sm">
-                        <span>📍</span>
-                        <span className="line-clamp-1">{ticket.venue}</span>
-                      </p>
                     </div>
 
-                    {/* Mobile-optimized Categories */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="bg-[#F4F6F0] px-1.5 sm:px-4 py-1 sm:py-3 flex items-center justify-between text-[10px] sm:text-sm">
+                      <div className="flex items-center gap-1 sm:gap-1.5">
+                        <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                        <span className="font-medium text-[#2C3228]">Live</span>
+                      </div>
+                      <div className="flex items-center gap-1 sm:gap-3">
+                        <div className="flex items-center gap-1 bg-[#2C3228] text-white px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full">
+                          <span className="text-[8px] sm:text-xs">🎭</span>
+                          <span className="text-[8px] sm:text-sm font-medium">{ticket.time}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-1.5 sm:p-3 grid gap-1 sm:gap-2">
                       {ticket.seatCategories.map((category) => (
                         <button
                           key={category.name}
@@ -418,32 +342,33 @@ export default function Home() {
                             handleBuyTicket(ticket._id.toString(), category.name);
                           }}
                           disabled={category.availableSeats <= 0}
-                          className={`p-3 rounded-xl text-left transition-all ${
+                          className={`w-full p-1.5 sm:p-3 rounded-md sm:rounded-xl text-left transition-all ${
                             category.availableSeats > 0 ? "hover:bg-[#F4F6F0] border border-[#D3D9C9]" : "bg-gray-50 cursor-not-allowed opacity-60"
                           }`}>
-                          <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-1.5 sm:gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-[#2C3228] text-sm truncate">{category.name}</span>
+                              <div className="flex items-center gap-1 sm:gap-2 mb-0.5">
+                                <span className="font-medium text-[#2C3228] text-[10px] sm:text-sm truncate">{category.name}</span>
                                 {category.availableSeats <= 20 && (
-                                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-red-600 rounded-full animate-pulse whitespace-nowrap">{category.availableSeats} left!</span>
+                                  <span className="px-1 py-0.5 text-[8px] sm:text-[10px] font-medium bg-red-100 text-red-600 rounded-full animate-pulse whitespace-nowrap">
+                                    {category.availableSeats}
+                                  </span>
                                 )}
                               </div>
-                              <div className="flex items-baseline gap-2">
-                                {userSubscription !== "free" && <span className="text-xs text-gray-400 line-through font-normal truncate">Rp {category.price.toLocaleString("id-ID")}</span>}
+                              <div className="flex items-baseline gap-1 sm:gap-2">
                                 <div className="flex items-baseline gap-0.5 min-w-0">
-                                  <span className="text-[10px] font-normal text-[#4A5043]">Rp</span>
-                                  <span className="text-sm font-semibold text-[#2C3228] truncate">{Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</span>
+                                  <span className="text-[8px] sm:text-[10px] font-normal text-[#4A5043]">Rp</span>
+                                  <span className="text-[10px] sm:text-sm font-semibold text-[#2C3228] truncate">{Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</span>
                                 </div>
                               </div>
                             </div>
                             <div
                               className={`
-                                            h-[40px] w-[40px] rounded-lg flex flex-col items-center justify-center flex-shrink-0
-                                            ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
-                                        `}>
-                              <span className={`text-sm font-semibold ${category.availableSeats <= 20 ? "text-red-600" : "text-[#2C3228]"}`}>{category.availableSeats}</span>
-                              <span className={`text-[8px] font-medium ${category.availableSeats <= 20 ? "text-red-500" : "text-[#4A5043]"}`}>seats</span>
+                              h-[25px] w-[25px] sm:h-[40px] sm:w-[40px] rounded-md sm:rounded-lg flex flex-col items-center justify-center flex-shrink-0
+                              ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
+                            `}>
+                              <span className={`text-[10px] sm:text-sm font-semibold ${category.availableSeats <= 20 ? "text-red-600" : "text-[#2C3228]"}`}>{category.availableSeats}</span>
+                              <span className={`text-[6px] sm:text-[8px] font-medium ${category.availableSeats <= 20 ? "text-red-500" : "text-[#4A5043]"}`}>seats</span>
                             </div>
                           </div>
                         </button>
@@ -451,11 +376,99 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredAndSortedTickets.map((ticket) => (
+                <div
+                  key={ticket._id.toString()}
+                  onClick={() => handleTicketClick(ticket._id.toString())}
+                  className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-[#D3D9C9] hover:shadow-lg transition-all cursor-pointer">
+                  <div className="flex flex-col sm:flex-row">
+                    <div className="relative w-full sm:w-[280px] h-[180px] sm:h-auto flex-shrink-0">
+                      <div className="relative h-full">
+                        <Image
+                          src={ticket.image}
+                          alt={ticket.name}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black/50 to-transparent" />
+                      </div>
+                      <div className="absolute bottom-3 left-3 bg-white rounded-xl p-2 text-center min-w-[50px]">
+                        <p className="text-lg font-semibold text-[#2C3228] leading-none">{new Date(ticket.date).getDate()}</p>
+                        <p className="text-xs font-medium text-[#4A5043] mt-0.5">{new Date(ticket.date).toLocaleDateString("id-ID", { month: "short" })}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 p-3 sm:p-4">
+                      <div className="mb-3">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <div className="flex items-center gap-1.5 bg-[#2C3228] text-white px-2 py-1 rounded-full text-xs">
+                            <span>🎭</span>
+                            <span>{ticket.time}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <span className="text-xs font-medium text-[#2C3228]">Live Sales</span>
+                          </div>
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-semibold text-[#2C3228] mb-1 line-clamp-2">{ticket.name}</h3>
+                        <p className="text-[#4A5043] flex items-center gap-1.5 text-sm">
+                          <span>📍</span>
+                          <span className="line-clamp-1">{ticket.venue}</span>
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {ticket.seatCategories.map((category) => (
+                          <button
+                            key={category.name}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleBuyTicket(ticket._id.toString(), category.name);
+                            }}
+                            disabled={category.availableSeats <= 0}
+                            className={`p-3 rounded-xl text-left transition-all ${
+                              category.availableSeats > 0 ? "hover:bg-[#F4F6F0] border border-[#D3D9C9]" : "bg-gray-50 cursor-not-allowed opacity-60"
+                            }`}>
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium text-[#2C3228] text-sm truncate">{category.name}</span>
+                                  {category.availableSeats <= 20 && (
+                                    <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-red-600 rounded-full animate-pulse whitespace-nowrap">{category.availableSeats} left!</span>
+                                  )}
+                                </div>
+                                <div className="flex items-baseline gap-2">
+                                  {userSubscription !== "free" && <span className="text-xs text-gray-400 line-through font-normal truncate">Rp {category.price.toLocaleString("id-ID")}</span>}
+                                  <div className="flex items-baseline gap-0.5 min-w-0">
+                                    <span className="text-[10px] font-normal text-[#4A5043]">Rp</span>
+                                    <span className="text-sm font-semibold text-[#2C3228] truncate">{Math.round(calculateDiscountedPrice(category.price)).toLocaleString("id-ID")}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                className={`
+                                              h-[40px] w-[40px] rounded-lg flex flex-col items-center justify-center flex-shrink-0
+                                              ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
+                                          `}>
+                                <span className={`text-sm font-semibold ${category.availableSeats <= 20 ? "text-red-600" : "text-[#2C3228]"}`}>{category.availableSeats}</span>
+                                <span className={`text-[8px] font-medium ${category.availableSeats <= 20 ? "text-red-500" : "text-[#4A5043]"}`}>seats</span>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <Dialog
         open={isModalOpen}
