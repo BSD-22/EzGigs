@@ -81,9 +81,9 @@ export default function ListView({ tickets, handleTicketClick, handleBuyTicket, 
                       </div>
                       <div
                         className={`
-                          h-[40px] w-[40px] rounded-lg flex flex-col items-center justify-center flex-shrink-0
-                          ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
-                      `}>
+                                    h-[40px] w-[40px] rounded-lg flex flex-col items-center justify-center flex-shrink-0
+                                    ${category.availableSeats <= 20 ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#F4F6F0] text-[#2C3228] border border-[#D3D9C9]"}
+                                `}>
                         <span className={`text-sm font-semibold ${category.availableSeats <= 20 ? "text-red-600" : "text-[#2C3228]"}`}>{category.availableSeats}</span>
                         <span className={`text-[8px] font-medium ${category.availableSeats <= 20 ? "text-red-500" : "text-[#4A5043]"}`}>seats</span>
                       </div>

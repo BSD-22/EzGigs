@@ -8,6 +8,7 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import Webcam from "react-webcam";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { toast } from "react-hot-toast";
+import { TicketDetailSkeleton } from "@/components/skeletons/TicketDetailSkeleton";
 
 const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -25,6 +26,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
     identityType: "KTP" as "KTP" | "Passport" | "SIM" | "Student",
     identityDetails: "",
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUserData = async () => {
     try {
@@ -58,11 +60,16 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const fetchTicket = async () => {
     try {
+      setIsLoading(true);
       const res = await fetch(`/api/ticket/${id}`);
       const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to fetch ticket');
       setTicket(json?.data);
     } catch (error) {
       console.error("Error fetching ticket:", error);
+      toast.error("Gagal mengambil data tiket 😢");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,7 +105,6 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleSubmitPurchase = async () => {
     if (!selectedCategory || !ticket) return;
 
@@ -151,6 +157,10 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
       </GoogleMap>
     );
   }, [isLoaded, ticket]);
+
+  if (isLoading) {
+    return <TicketDetailSkeleton />;
+  }
 
   if (!ticket) {
     return (
@@ -272,7 +282,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
 
-            {/* Purchase Modal - Updated for Mobile */}
+            {/* Purchase Modal - Updated Design */}
             <Dialog
               open={isModalOpen}
               onClose={() => setIsModalOpen(false)}
@@ -282,101 +292,143 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                 aria-hidden="true"
               />
               <div className="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel className="w-full max-w-md bg-[#1A1A1A] rounded-2xl p-4 sm:p-6 shadow-xl">
-                  <DialogTitle className="text-lg sm:text-xl font-bold mb-4 text-white">Enter Your Details</DialogTitle>
-                  <div className="space-y-3 sm:space-y-4">
-                    {/* Form Fields */}
-                    <div>
-                      <label className="block text-xs sm:text-sm text-gray-400 mb-1">Name</label>
-                      <input
-                        type="text"
-                        value={buyerData.name}
-                        onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
-                        className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs sm:text-sm text-gray-400 mb-1">Email</label>
-                      <input
-                        type="email"
-                        value={buyerData.email}
-                        onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
-                        className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs sm:text-sm text-gray-400 mb-1">Phone</label>
-                      <input
-                        type="tel"
-                        value={buyerData.phone}
-                        onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
-                        className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white"
-                        placeholder="Your phone number"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs sm:text-sm text-gray-400 mb-1">Identity Type</label>
-                      <select
-                        value={buyerData.identityType}
-                        onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as typeof buyerData.identityType }))}
-                        className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-3 py-2 text-sm sm:text-base text-white">
-                        <option value="KTP">KTP</option>
-                        <option value="Passport">Passport</option>
-                        <option value="SIM">SIM</option>
-                        <option value="Student">Student ID</option>
-                      </select>
-                    </div>
-                    {/* Camera/Upload Section */}
-                    <div>
-                      <label className="block text-xs sm:text-sm text-gray-400 mb-1">Identity Document</label>
-                      <div className="space-y-2">
-                        {showCamera ? (
-                          <div className="relative rounded-lg overflow-hidden">
-                            <Webcam
-                              ref={webcamRef}
-                              screenshotFormat="image/jpeg"
-                              className="w-full"
-                            />
-                            <button
-                              onClick={capture}
-                              className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-[#8E2DE2] rounded-lg text-sm text-white">
-                              Capture
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
-                              onClick={() => setShowCamera(true)}
-                              className="px-3 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-xs sm:text-sm text-white transition-colors">
-                              Take Photo
-                            </button>
+                <DialogPanel className="bg-white rounded-3xl w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+                  <div className="p-8">
+                    <DialogTitle className="text-2xl font-bold text-[#2C3228] mb-6 sticky top-0 bg-white">Complete Your Booking</DialogTitle>
+
+                    <div className="space-y-5">
+                      <div>
+                        <label className="block text-sm font-medium text-[#4A5043] mb-2">Name</label>
+                        <input
+                          type="text"
+                          value={buyerData.name}
+                          onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
+                          className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-[#4A5043] mb-2">Email</label>
+                        <input
+                          type="email"
+                          value={buyerData.email}
+                          onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
+                          className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#4A5043] mb-2">Phone</label>
+                        <input
+                          type="tel"
+                          value={buyerData.phone}
+                          onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
+                          className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                          placeholder="Enter your phone number"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Type</label>
+                        <select
+                          value={buyerData.identityType}
+                          onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as typeof buyerData.identityType }))}
+                          className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all">
+                          <option value="KTP">KTP</option>
+                          <option value="Passport">Passport</option>
+                          <option value="SIM">SIM</option>
+                          <option value="Student">Student ID</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Document</label>
+                        <div className="space-y-3">
+                          {showCamera ? (
                             <div className="relative">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="identity-upload"
+                              <Webcam
+                                ref={webcamRef}
+                                screenshotFormat="image/jpeg"
+                                className="w-full rounded-xl"
                               />
-                              <label
-                                htmlFor="identity-upload"
-                                className="block w-full px-3 py-2 bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] rounded-lg text-xs sm:text-sm text-white transition-colors text-center cursor-pointer">
-                                Upload Photo
-                              </label>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="border-2 border-white/70 rounded-lg w-[85%] h-[60%] relative">
+                                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white">⎯⎯⎯ Align ID card ⎯⎯⎯</div>
+                                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00F5A0]" />
+                                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00F5A0]" />
+                                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F5A0]" />
+                                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F5A0]" />
+                                </div>
+                              </div>
+                              <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
+                                <button
+                                  onClick={capture}
+                                  className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity">
+                                  Capture
+                                </button>
+                                <button
+                                  onClick={() => setShowCamera(false)}
+                                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                                  Cancel
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="space-y-3">
+                              {buyerData.identityDetails ? (
+                                <div className="relative">
+                                  <img
+                                    src={buyerData.identityDetails}
+                                    alt="Identity document"
+                                    className="w-full h-auto rounded-xl object-cover"
+                                  />
+                                  <button
+                                    onClick={() => setBuyerData((prev) => ({ ...prev, identityDetails: "" }))}
+                                    className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors">
+                                    ✕
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex gap-3">
+                                  <button
+                                    onClick={() => setShowCamera(true)}
+                                    className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700">
+                                    Open Camera
+                                  </button>
+                                  <label className="flex-1">
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={handleFileUpload}
+                                      className="hidden"
+                                    />
+                                    <span className="block px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 text-center cursor-pointer">
+                                      Upload File
+                                    </span>
+                                  </label>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 mt-8 sticky bottom-0 bg-white pt-4">
+                        <button
+                          onClick={() => setIsModalOpen(false)}
+                          className="flex-1 px-4 py-3 border border-[#D3D9C9] rounded-xl text-[#4A5043] hover:bg-[#F4F6F0] transition-colors">
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSubmitPurchase}
+                          disabled={!buyerData.email || !buyerData.name || !buyerData.phone || !buyerData.identityDetails}
+                          className="flex-1 px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                          Continue to Payment
+                        </button>
                       </div>
                     </div>
-
-                    {/* Submit Button */}
-                    <button
-                      onClick={handleSubmitPurchase}
-                      className="w-full px-4 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] rounded-xl text-sm sm:text-base text-white font-medium hover:opacity-90 transition-opacity">
-                      Proceed to Payment
-                    </button>
                   </div>
                 </DialogPanel>
               </div>
