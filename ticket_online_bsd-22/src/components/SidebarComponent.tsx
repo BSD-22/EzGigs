@@ -5,7 +5,8 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import ProfileSection from "./ProfileSection";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { Ticket, Target, History, Crown, Star, Store, MessageCircle, Heart, ShoppingCart, ChevronLeft } from "lucide-react";
+import { Ticket, Target, History, Crown, Star, Store, MessageCircle, Heart, ShoppingCart, ChevronLeft, LogOut } from "lucide-react";
+import LogoutButton from "./LogoutButton";
 
 interface SideBarProps {
   userData: {
@@ -165,6 +166,9 @@ const SideBar = ({ userData }: SideBarProps) => {
               </Link>
             </li>
           ))}
+          <li className="mt-8">
+            <LogoutButton isOpen={isOpen}/>
+          </li>
         </ul>
       </div>
     </div>
