@@ -101,13 +101,13 @@ const checkAndSendReminders = async (): Promise<void> => {
 
 // Function untuk start notification service
 export const startNotificationService = (): void => {
-  // Schedule untuk jam 23:39 (testing)
-  morningInterval = scheduleAtTime(23, 40, checkAndSendReminders);
+  // Schedule untuk pagi jam 09:00 WIB
+  morningInterval = scheduleAtTime(9, 0, checkAndSendReminders);
   
-  // Schedule untuk jam 23:39 (testing)
-  eveningInterval = scheduleAtTime(23, 40, checkAndSendReminders);
+  // Schedule untuk sore jam 17:00 WIB
+  eveningInterval = scheduleAtTime(17, 0, checkAndSendReminders);
   
-  console.log("Notification service started! 🔔");
+  console.log("Notification service started! ��");
 };
 
 // Function untuk stop notification service
