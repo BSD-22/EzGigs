@@ -30,28 +30,110 @@ const SideBar = ({ userData }: SideBarProps) => {
     }
   };
 
+  // Helper function untuk check active menu
+  const isActiveMenu = (path: string) => {
+    // Normalize pathname dengan menghapus trailing slash
+    const currentPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+    const menuPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    
+    return currentPath.startsWith(menuPath);
+  };
+
   return (
-    <div className={`${isOpen ? "w-64" : "w-20"} bg-[#2C3228] backdrop-blur-xl border-r border-[#4A5043]/20 p-5 pt-20 relative duration-300 z-[100]`}>
-      <div
-        className="absolute cursor-pointer left-[26px] top-8 w-7 h-7 bg-[#4A5043] hover:bg-[#656D5D] rounded-full flex items-center justify-center transition-colors shadow-md"
-        onClick={() => setIsOpen(!isOpen)}>
-        <ChevronLeft className={`w-4 h-4 text-white transition-transform duration-300 ${!isOpen ? "rotate-180" : ""}`} />
+    <div className={`
+      ${isOpen ? "w-64" : "w-20"} 
+      relative
+      bg-[#0D0D0D]
+      backdrop-blur-xl 
+      border-r border-[#00D2FF]/20
+      p-5 pt-20 
+      duration-300 
+      z-[40]
+      overflow-hidden
+    `}>
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF] via-[#3A7BD5] to-[#FFD200] opacity-30  z-0"></div>
+      <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#00D2FF] opacity-40 rounded-full blur-[128px] animate-pulse z-0"></div>
+      <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-[#FFD200] opacity-40 rounded-full blur-[128px] animate-pulse z-0"></div>
+
+      {/* Toggle button */}
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute cursor-pointer left-[26px] top-8 w-7 h-7 
+        bg-[#00D2FF]
+        rounded-full flex items-center justify-center 
+        transition-all duration-300
+        hover:scale-110
+        hover:brightness-110
+        group
+        z-20">
+        <ChevronLeft className={`w-4 h-4 text-white 
+          transition-all duration-300 
+          group-hover:rotate-12
+          ${!isOpen ? "rotate-180 group-hover:rotate-[192deg]" : ""}`} 
+        />
       </div>
 
-      <div className="mt-4">
-        <ProfileSection
-          isOpen={isOpen}
-          userData={userData}
-        />
+      {/* Content wrapper */}
+      <div className="relative z-10">
+        {/* Enhanced Profile Section */}
+        <div className="relative z-20 mb-6">
+          {isOpen ? (
+            <div className="space-y-4">
+              {/* Profile Info */}
+              <div className="bg-white/5 rounded-xl p-3 backdrop-blur-sm
+                border border-white/10 hover:border-[#00D2FF]/30
+                transition-all duration-300
+                group">
+                <div className="flex items-center gap-3">
+                  {/* Profile Initial */}
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5]
+                    flex items-center justify-center text-white font-semibold
+                    shadow-lg shadow-[#00D2FF]/20
+                    group-hover:scale-105 transition-transform duration-300">
+                    {userData?.name?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  {/* Name & Email */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-medium truncate">
+                      {userData?.name || 'User'}
+                    </h3>
+                    <p className="text-white/60 text-sm truncate">
+                      {userData?.email || 'user@email.com'}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        {userData && isOpen && (
-          <div className="mt-6 mb-4 px-2 py-1.5 bg-[#4A5043]/20 rounded-lg flex items-center gap-2 text-[#E8EDE1]">
-            {getSubscriptionIcon(subscription)}
-            <span className="capitalize text-sm">{subscription} Plan</span>
-          </div>
-        )}
+              {/* Subscription Badge */}
+              <div className="bg-white/5 rounded-lg px-3 py-2
+                border border-white/10 hover:border-[#00D2FF]/30
+                transition-all duration-300
+                flex items-center gap-2
+                group">
+                <div className="text-[#00D2FF] group-hover:scale-110 transition-transform duration-300">
+                  {getSubscriptionIcon(subscription)}
+                </div>
+                <span className="text-white/80 text-sm capitalize">
+                  {subscription} Plan
+                </span>
+              </div>
+            </div>
+          ) : (
+            // Collapsed state
+            <div className="flex justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5]
+                flex items-center justify-center text-white font-semibold
+                shadow-lg shadow-[#00D2FF]/20
+                hover:scale-105 transition-transform duration-300">
+                {userData?.name?.[0]?.toUpperCase() || 'U'}
+              </div>
+            </div>
+          )}
+        </div>
 
-        <ul className="pt-6">
+        {/* Menu Items */}
+        <ul className="pt-4 relative z-20 border-t border-white/10">
           {[
             { href: "/home/ticket", icon: <Ticket className="w-5 h-5" />, label: "Tickets" },
             { href: "/home/my-tickets", icon: <Target className="w-5 h-5" />, label: "Your Tickets" },
@@ -62,16 +144,24 @@ const SideBar = ({ userData }: SideBarProps) => {
             { href: "/home/wishlist", icon: <Heart className="w-5 h-5" />, label: "Wishlist" },
             { href: "/home/cart", icon: <ShoppingCart className="w-5 h-5" />, label: "Cart" },
           ].map((item) => (
-            <li
-              key={item.href}
-              className="mb-2">
+            <li key={item.href} className="mb-2">
               <Link
                 href={item.href}
-                className={`flex items-center gap-x-4 p-2 rounded-lg transition-all duration-200 ${
-                  pathname === item.href ? "bg-[#4A5043] text-white" : "text-[#E8EDE1] hover:bg-[#4A5043]/20 hover:text-white"
-                }`}>
-                {item.icon}
-                <span className={`${!isOpen && "hidden"} origin-left duration-200`}>{item.label}</span>
+                className={`flex items-center gap-x-4 p-2 rounded-lg 
+                  transition-all duration-300 
+                  hover:scale-[1.02]
+                  group
+                  relative
+                  ${pathname === item.href || pathname.startsWith(`${item.href}/`)
+                    ? "bg-gradient-to-r from-[#00D2FF] to-[#FFD200] text-white shadow-[0_0_20px_-5px_#00D2FF]" 
+                    : "text-white/80 hover:bg-white/5 hover:text-white hover:shadow-[0_0_15px_-5px_#00D2FF]"
+                  }`}>
+                <div className="transition-transform duration-300 group-hover:scale-110">
+                  {item.icon}
+                </div>
+                <span className={`${!isOpen && "hidden"} origin-left duration-200`}>
+                  {item.label}
+                </span>
               </Link>
             </li>
           ))}

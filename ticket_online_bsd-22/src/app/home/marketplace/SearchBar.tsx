@@ -21,10 +21,10 @@ const SearchBar = () => {
       className="relative">
       <input
         type="text"
-        placeholder="Search tickets by name, venue, or date..."
+        placeholder=" Search events..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#00F5A0]/50"
+        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9]"
       />
       <button
         type="submit"

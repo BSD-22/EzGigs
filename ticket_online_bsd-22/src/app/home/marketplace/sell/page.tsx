@@ -110,68 +110,80 @@ const MarketplaceSell = () => {
   console.log(ownedTickets, "ownedTickets");
 
   return (
-    <div className="flex-1 p-7 overflow-auto">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Sell Your Tickets 🎫</h1>
-        <p className="text-gray-400 mt-2">Select the tickets you want to sell in the marketplace</p>
+    <div className="flex-1 p-3 sm:p-7 overflow-auto">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-xl sm:text-4xl font-black text-[#2C3228]">Sell Your Tickets 🎫</h1>
+        <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Select the tickets you want to sell in the marketplace</p>
       </div>
 
       {ownedTickets?.length === 0 ? (
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-400">No Tickets Available</h2>
-          <p className="text-gray-500 mt-2">You don&apos;t have any tickets to sell at the moment.</p>
+          <h2 className="text-2xl font-bold text-[#2C3228]">No Tickets Available</h2>
+          <p className="text-[#4A5043] mt-2">You don&apos;t have any tickets to sell at the moment.</p>
           <Link
             href="/home/marketplace"
-            className="inline-block mt-4 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity">
+            className="inline-block mt-4 px-6 py-3 bg-[#2C3228] text-white rounded-xl hover:bg-[#4A5043] transition-colors">
             Browse Marketplace
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
           {ownedTickets?.map((ticket) => (
             <div
               key={ticket.ticketId.toString() + Math.floor(Math.random() * 1000)}
-              className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300 group">
-              <div className="relative h-48 w-full">
-                <Image
-                  src={ticket?.ticketDetails?.image}
-                  alt={ticket?.ticketDetails?.name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <p className="text-[#00F5A0] font-bold">Rp {ticket?.ticketDetails?.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}</p>
+              className="bg-white rounded-lg sm:rounded-2xl overflow-hidden border border-[#D3D9C9] hover:shadow-lg transition-all h-full">
+              <div className="relative">
+                <div className="relative h-[120px] sm:h-[180px]">
+                  <Image
+                    src={ticket?.ticketDetails?.image}
+                    alt={ticket?.ticketDetails?.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                </div>
+
+                <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-4">
+                  <div className="flex items-end justify-between gap-1 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-[11px] sm:text-xl font-bold text-white leading-tight line-clamp-2 mb-0.5 sm:mb-2">
+                        {ticket?.ticketDetails?.name}
+                      </h3>
+                      <div className="flex items-start sm:items-center gap-0.5 sm:gap-2 text-[9px] sm:text-sm text-gray-200">
+                        <span className="flex-shrink-0">📍</span>
+                        <span className="line-clamp-1 break-words">{ticket?.ticketDetails?.venue}</span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 bg-white rounded-md sm:rounded-xl p-1 sm:p-2 text-center min-w-[35px] sm:min-w-[60px]">
+                      <p className="text-sm sm:text-xl font-bold text-[#2C3228] leading-none">
+                        {new Date(ticket?.ticketDetails?.date).getDate()}
+                      </p>
+                      <p className="text-[8px] sm:text-xs font-medium text-[#4A5043] mt-0.5">
+                        {new Date(ticket?.ticketDetails?.date).toLocaleDateString("id-ID", { month: "short" })}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-[#00F5A0] transition-colors">{ticket?.ticketDetails?.name}</h3>
-                <div className="space-y-2 text-sm text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <span>📍</span>
-                    <span>{ticket?.ticketDetails?.venue}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>📅</span>
-                    <span>
-                      {new Date(ticket?.ticketDetails?.date).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>💺</span>
-                    <span>
-                      {ticket.categoryName} - Seat {ticket.seatNumber}
-                    </span>
-                  </div>
+
+              <div className="p-2 sm:p-4">
+                <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3 text-[9px] sm:text-sm text-[#4A5043]">
+                  <span>💺</span>
+                  <span>
+                    {ticket.categoryName} - {ticket.seatNumber}
+                  </span>
+                </div>
+                <div className="mb-2 sm:mb-3">
+                  <p className="text-[#4A5043] text-[9px] sm:text-sm mb-0.5">Current Price</p>
+                  <p className="text-[#2C3228] font-semibold text-sm sm:text-lg">
+                    Rp {ticket?.ticketDetails?.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
+                  </p>
                 </div>
                 <button
                   onClick={() => handleSellTicket(ticket?.ticketId?.toString())}
-                  className="mt-4 w-full bg-[#8E2DE2]/20 hover:bg-[#8E2DE2] text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                  className="w-full bg-[#2C3228] hover:bg-[#4A5043] text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-[10px] sm:text-sm">
                   List for Sale
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  <span>→</span>
                 </button>
               </div>
             </div>
@@ -188,27 +200,27 @@ const MarketplaceSell = () => {
         />
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-sm">
-            <Dialog.Title className="text-xl font-bold text-white mb-4">List Ticket for Sale</Dialog.Title>
+          <Dialog.Panel className="bg-[#F4F6F0] rounded-2xl p-6 w-full max-w-sm">
+            <Dialog.Title className="text-2xl font-bold text-[#2C3228] mb-6 sticky top-0">List Ticket for Sale</Dialog.Title>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Price (Rp)</label>
+                <label className="block text-sm font-medium text-[#4A5043] mb-2">Price (Rp)</label>
                 <input
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white"
+                  className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
                   placeholder="Enter price"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Description (Optional)</label>
+                <label className="block text-sm font-medium text-[#4A5043] mb-2">Description (Optional)</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-black/40 border border-[#8E2DE2]/20 rounded-lg px-4 py-2 text-white h-24 resize-none"
+                  className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all resize-none"
                   placeholder="Add a note about your ticket"
                 />
               </div>
@@ -216,13 +228,13 @@ const MarketplaceSell = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-[#8E2DE2]/20 rounded-lg text-white hover:bg-[#8E2DE2]/20 transition-colors">
+                  className="flex-1 px-4 py-2 bg-red-600 border border-red-800/20 rounded-lg text-white hover:bg-red-800 transition-colors">
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitSale}
                   disabled={!price}
-                  className="flex-1 px-4 py-2 bg-[#8E2DE2] rounded-lg text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="flex-1 px-4 py-2 bg-green-600 border border-green-800/20 rounded-lg text-white hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                   List for Sale
                 </button>
               </div>
