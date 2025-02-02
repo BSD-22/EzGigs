@@ -10,6 +10,7 @@ import Webcam from "react-webcam";
 import { useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
+import { startNotificationService, stopNotificationService } from '@/services/notification';
 
 export default function Home() {
   const router = useRouter();
@@ -19,6 +20,12 @@ export default function Home() {
   const [showCamera, setShowCamera] = useState(false);
   const [userSubscription, setUserSubscription] = useState<"free" | "premium" | "vip">("free");
   const webcamRef = useRef<Webcam | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [isLoading, setIsLoading] = useState(true);
   const [buyerData, setBuyerData] = useState({
     email: "",
     name: "",
@@ -26,12 +33,15 @@ export default function Home() {
     identityType: "KTP" as "KTP" | "Passport" | "SIM" | "Student",
     identityDetails: "",
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    startNotificationService();
+
+    return () => {
+      stopNotificationService();
+    };
+  }, []);
+
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
