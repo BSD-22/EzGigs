@@ -1,13 +1,30 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
 
-const NavigationGuard = async ({ children }: { children: React.ReactNode }) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-  if (!token || token.value.length <= 0) {
-    return redirect("/login?error=Please%20Login%20First");
-  }
+const NavigationGuard = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/user/me", {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          router.replace("/login?error=Please%20Login%20First");
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        router.replace("/login?error=Please%20Login%20First");
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
   return <>{children}</>;
 };
 
