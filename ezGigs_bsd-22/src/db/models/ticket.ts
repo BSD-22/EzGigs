@@ -218,7 +218,30 @@ export const updateTicketPurchaseStatus = async (purchaseId: string, status: "pa
   };
 };
 
+export const deleteExpiredTickets = async (): Promise<void> => {
+  const db = await getDb();
+  const ticketsCollection: Collection<TicketModel> = db.collection("Ticket");
+  const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
+
+  const currentDate = new Date();
+  
+  const expiredTickets = await ticketsCollection.find({}).toArray();
+  
+  for (const ticket of expiredTickets) {
+    const ticketDate = new Date(`${ticket.date} ${ticket.time}`);
+    
+    if (ticketDate < currentDate) {
+      await ticketsCollection.deleteOne({ _id: ticket._id });
+      await purchasesCollection.deleteMany({ ticketId: ticket._id });
+      
+      await redis.del("tickets");
+    }
+  }
+};
+
 export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> => {
+  await deleteExpiredTickets();
+  
   const db = await getDb();
   const collection: Collection<TicketModel> = db.collection("Ticket");
 
@@ -251,6 +274,16 @@ export const getTicketById = async (id: string): Promise<CustomResponse<TicketMo
     return {
       statusCode: 404,
       message: "Ticket not found",
+    };
+  }
+
+  // Cek apakah tiket sudah kadaluwarsa
+  const ticketDate = new Date(`${ticket.date} ${ticket.time}`);
+  if (ticketDate < new Date()) {
+    await deleteExpiredTickets(); // Hapus tiket kadaluwarsa
+    return {
+      statusCode: 404,
+      message: "Ticket has expired",
     };
   }
 

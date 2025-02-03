@@ -19,7 +19,10 @@ export default function Home() {
   const [tickets, setTickets] = useState<TicketModel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState<{ id: string; category: string } | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<{
+    id: string;
+    category: string;
+  } | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState<string>("");
@@ -255,7 +258,9 @@ export default function Home() {
 
   const filteredAndSortedTickets = tickets
     .filter((ticket) => {
-      const matchesSearch = ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
       if (!startDate && !endDate) return matchesSearch;
 
@@ -268,7 +273,9 @@ export default function Home() {
     .sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return sortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      return sortOrder === "asc"
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime();
     });
 
   useEffect(() => {
@@ -307,18 +314,32 @@ export default function Home() {
           <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
               <div>
-                <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">Upcoming Events</h1>
-                <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Discover and book your next unforgettable experience 🎉</p>
+                <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">
+                  Upcoming Events
+                </h1>
+                <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">
+                  Discover and book your next unforgettable experience 🎉
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "grid" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                  className={`p-1.5 sm:p-2 rounded-lg ${
+                    viewMode === "grid"
+                      ? "bg-[#4A5043] text-white"
+                      : "bg-gray-100"
+                  }`}
+                >
                   📱
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-1.5 sm:p-2 rounded-lg ${viewMode === "list" ? "bg-[#4A5043] text-white" : "bg-gray-100"}`}>
+                  className={`p-1.5 sm:p-2 rounded-lg ${
+                    viewMode === "list"
+                      ? "bg-[#4A5043] text-white"
+                      : "bg-gray-100"
+                  }`}
+                >
                   📝
                 </button>
               </div>
@@ -339,18 +360,27 @@ export default function Home() {
                 <input
                   type="date"
                   value={startDate?.toISOString().split("T")[0] || ""}
-                  onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                  onChange={(e) =>
+                    setStartDate(
+                      e.target.value ? new Date(e.target.value) : null
+                    )
+                  }
                   className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
                 />
                 <input
                   type="date"
                   value={endDate?.toISOString().split("T")[0] || ""}
-                  onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                  onChange={(e) =>
+                    setEndDate(e.target.value ? new Date(e.target.value) : null)
+                  }
                   className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] min-w-[100px] sm:min-w-[120px]"
                 />
                 <button
-                  onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] flex items-center gap-1 sm:gap-2 hover:bg-[#F4F6F0]">
+                  onClick={() =>
+                    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                  }
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-[#D3D9C9] flex items-center gap-1 sm:gap-2 hover:bg-[#F4F6F0]"
+                >
                   <span className="text-xs sm:text-sm">Date</span>
                   {sortOrder === "asc" ? "↑" : "↓"}
                 </button>
@@ -381,7 +411,8 @@ export default function Home() {
       <Dialog
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        className="relative z-50">
+        className="relative z-50"
+      >
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm"
           aria-hidden="true"
@@ -389,45 +420,77 @@ export default function Home() {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <DialogPanel className="bg-white rounded-3xl w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
             <div className="p-8">
-              <DialogTitle className="text-2xl font-bold text-[#2C3228] mb-6 sticky top-0 bg-white">Complete Your Booking</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-[#2C3228] mb-6 sticky top-0 bg-white">
+                Complete Your Booking
+              </DialogTitle>
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-[#4A5043] mb-2">Name</label>
+                  <label className="block text-sm font-medium text-[#4A5043] mb-2">
+                    Name
+                  </label>
                   <input
                     type="text"
                     value={buyerData.name}
-                    onChange={(e) => setBuyerData((prev) => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setBuyerData((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
                     placeholder="Enter your full name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4A5043] mb-2">Email</label>
+                  <label className="block text-sm font-medium text-[#4A5043] mb-2">
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={buyerData.email}
-                    onChange={(e) => setBuyerData((prev) => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setBuyerData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
                     placeholder="Enter your email"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4A5043] mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-[#4A5043] mb-2">
+                    Phone
+                  </label>
                   <input
                     type="tel"
                     value={buyerData.phone}
-                    onChange={(e) => setBuyerData((prev) => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setBuyerData((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
                     className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
                     placeholder="Enter your phone number"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Type</label>
+                  <label className="block text-sm font-medium text-[#4A5043] mb-2">
+                    Identity Type
+                  </label>
                   <select
                     value={buyerData.identityType}
-                    onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as TicketPurchase["identityType"] }))}
-                    className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all">
+                    onChange={(e) =>
+                      setBuyerData((prev) => ({
+                        ...prev,
+                        identityType: e.target
+                          .value as TicketPurchase["identityType"],
+                      }))
+                    }
+                    className="w-full bg-[#F4F6F0] border border-[#D3D9C9] rounded-xl px-4 py-3 text-[#2C3228] focus:ring-2 focus:ring-[#4A5043] focus:border-transparent transition-all"
+                  >
                     <option value="KTP">KTP</option>
                     <option value="Passport">Passport</option>
                     <option value="SIM">SIM</option>
@@ -436,7 +499,9 @@ export default function Home() {
                 </div>
                 <div className="space-y-3">
                   <div className="space-y-3">
-                    <label className="block text-sm font-medium text-[#4A5043] mb-2">Identity Verification</label>
+                    <label className="block text-sm font-medium text-[#4A5043] mb-2">
+                      Identity Verification
+                    </label>
                     {buyerData.identityDetails ? (
                       <div className="relative">
                         <Image
@@ -448,10 +513,14 @@ export default function Home() {
                         />
                         <button
                           onClick={() => {
-                            setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+                            setBuyerData((prev) => ({
+                              ...prev,
+                              identityDetails: "",
+                            }));
                             setIsIdentityVerified(false);
                           }}
-                          className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors">
+                          className="absolute top-2 right-2 bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-colors"
+                        >
                           ✕
                         </button>
                       </div>
@@ -464,27 +533,44 @@ export default function Home() {
                       </button>
                     )}
 
-                    <div className="text-sm text-gray-600">Please take a photo of yourself holding your ID card. Make sure both your face and the ID photo are clearly visible.</div>
+                    <div className="text-sm text-gray-600">
+                      Please take a photo of yourself holding your ID card. Make
+                      sure both your face and the ID photo are clearly visible.
+                    </div>
 
-                    {isIdentityVerified && <div className="p-3 bg-green-50 text-green-700 rounded-xl">✓ Identity verified successfully</div>}
+                    {isIdentityVerified && (
+                      <div className="p-3 bg-green-50 text-green-700 rounded-xl">
+                        ✓ Identity verified successfully
+                      </div>
+                    )}
                   </div>
                 </div>
                 {isVerifying && (
                   <div className="text-center py-4 bg-[#F4F6F0] rounded-xl">
                     <div className="animate-spin h-8 w-8 border-4 border-[#4A5043] border-t-transparent rounded-full mx-auto mb-3"></div>
-                    <p className="text-sm text-[#4A5043]">{verificationMessage}</p>
+                    <p className="text-sm text-[#4A5043]">
+                      {verificationMessage}
+                    </p>
                   </div>
                 )}
                 <div className="flex gap-3 mt-8 sticky bottom-0 bg-white pt-4">
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 px-4 py-3 border border-[#D3D9C9] rounded-xl text-[#4A5043] hover:bg-[#F4F6F0] transition-colors">
+                    className="flex-1 px-4 py-3 border border-[#D3D9C9] rounded-xl text-[#4A5043] hover:bg-[#F4F6F0] transition-colors"
+                  >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitPurchase}
-                    disabled={!isIdentityVerified || !buyerData.email || !buyerData.name || !buyerData.phone || isVerifying}
-                    className="flex-1 px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    disabled={
+                      !isIdentityVerified ||
+                      !buyerData.email ||
+                      !buyerData.name ||
+                      !buyerData.phone ||
+                      isVerifying
+                    }
+                    className="flex-1 px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     {isVerifying ? "Verifying..." : "Continue to Payment"}
                   </button>
                 </div>
@@ -496,7 +582,8 @@ export default function Home() {
       <Dialog
         open={showCamera}
         onClose={() => setShowCamera(false)}
-        className="relative z-50">
+        className="relative z-50"
+      >
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm"
           aria-hidden="true"
@@ -504,9 +591,14 @@ export default function Home() {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <DialogPanel className="bg-white rounded-3xl w-full max-w-md shadow-xl">
             <div className="p-6">
-              <DialogTitle className="text-xl font-bold text-[#2C3228] mb-4">Identity Verification</DialogTitle>
+              <DialogTitle className="text-xl font-bold text-[#2C3228] mb-4">
+                Identity Verification
+              </DialogTitle>
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">Please position your face on the left and your ID card on the right</p>
+                <p className="text-sm text-gray-600">
+                  Please position your face on the left and your ID card on the
+                  right
+                </p>
 
                 <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
                   {!buyerData.identityDetails ? (
@@ -516,10 +608,20 @@ export default function Home() {
                         screenshotFormat="image/jpeg"
                         className="w-full h-full object-cover"
                       />
-                      {/* Single guide overlay */}
-                      <div className="absolute inset-0">
-                        <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">{captureStep === "face" ? "Face Photo" : "ID Card Photo"}</div>
-                        <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
+                      {/* Guide overlay */}
+                      <div className="absolute inset-0 flex">
+                        <div className="w-1/2 border-r-2 border-white/50">
+                          <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">
+                            Face
+                          </div>
+                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
+                        </div>
+                        <div className="w-1/2">
+                          <div className="absolute top-2 right-2 text-white text-sm bg-black/50 px-2 py-1 rounded">
+                            ID Card
+                          </div>
+                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
+                        </div>
                       </div>
                       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
                         <button
@@ -542,15 +644,20 @@ export default function Home() {
                       <div className="flex justify-center gap-3">
                         <button
                           onClick={() => {
-                            setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+                            setBuyerData((prev) => ({
+                              ...prev,
+                              identityDetails: "",
+                            }));
                             setIsIdentityVerified(false);
                           }}
-                          className="px-6 py-2 border border-[#8E2DE2] text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2] hover:text-white transition-all">
+                          className="px-6 py-2 border border-[#8E2DE2] text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2] hover:text-white transition-all"
+                        >
                           Retake Photo
                         </button>
                         <button
                           onClick={() => setShowCamera(false)}
-                          className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity">
+                          className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity"
+                        >
                           Done
                         </button>
                       </div>
