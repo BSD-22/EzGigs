@@ -31,6 +31,8 @@ async function MyTicketsPage() {
 
   const payload = await verifyToken<JosePayload>(token.value);
   const { data: userTickets } = await getUserTickets(payload.email);
+  console.log('user ticket >>>>>>>',userTickets);
+  
   const { data: marketplaceListings } = await getAllMarketplace();
 
   if (!userTickets) {
@@ -51,9 +53,9 @@ async function MyTicketsPage() {
             My Tickets
             <span className="ml-2 inline-block">🎫</span>
           </h1>
-          <div className="text-sm sm:text-base text-gray-600">
-            {activeTickets.length} {activeTickets.length === 1 ? "ticket" : "tickets"}
-          </div>
+          {/* <div className="text-sm sm:text-base text-gray-600"> */}
+            {/* {activeTickets.length} {activeTickets.length === 1 ? "ticket" : "tickets"} */}
+          {/* </div> */}
         </div>
 
         {!activeTickets.length ? (

@@ -147,7 +147,29 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
   const db = await getDb();
   const collection = db.collection("User");
 
-  const user = (await collection
+  const user = await collection.findOne({ email });
+  if (user && user.ownedTickets) {
+    const ticketCollection = db.collection("Ticket");
+    const validTickets = [];
+
+    for (const ticket of user.ownedTickets) {
+      const ticketExists = await ticketCollection.findOne({ _id: ticket.ticketId });
+      if (ticketExists) {
+        validTickets.push(ticket);
+      }
+    }
+
+    // Update user jika ada tiket yang tidak valid
+    if (validTickets.length !== user.ownedTickets.length) {
+      await collection.updateOne(
+        { email },
+        { $set: { ownedTickets: validTickets } }
+      );
+    }
+  }
+
+  // Lanjutkan dengan aggregation pipeline yang sudah ada
+  const userWithTickets = (await collection
     .aggregate([
       {
         $match: { email },
@@ -200,8 +222,8 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
     ])
     .next()) as UserTicketsResponse;
 
-  user.soldTickets = user.soldTickets.map((ticket) => {
-    const eventDetail = user.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId));
+  userWithTickets.soldTickets = userWithTickets.soldTickets.map((ticket) => {
+    const eventDetail = userWithTickets.eventDetails.find((event: TicketModel) => event._id.equals(ticket.ticketId));
     return {
       ...ticket,
       Event: {
@@ -212,7 +234,7 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
 
   return {
     statusCode: 200,
-    data: user,
+    data: userWithTickets,
   };
 };
 
