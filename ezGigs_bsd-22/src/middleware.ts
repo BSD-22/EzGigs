@@ -8,13 +8,16 @@ export const middleware = async (request: NextRequest) => {
   const token = cookieStore.get("token");
 
   if (!token || token.value.length <= 0) {
-    return NextResponse.json<CustomResponse<unknown>>(
-      {
-        statusCode: 401,
-        message: "Unauthorized: Please login first",
-      },
-      { status: 401 }
-    );
+    if (request.nextUrl.pathname.startsWith("/api")) {
+      return NextResponse.json<CustomResponse<unknown>>(
+        {
+          statusCode: 401,
+          message: "Unauthorized: Please login first",
+        },
+        { status: 401 }
+      );
+    }
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const payload = await verifyToken<JosePayload>(token.value);
