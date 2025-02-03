@@ -44,9 +44,9 @@ const SideBar = ({ userData }: SideBarProps) => {
       overflow-hidden
     `}>
       {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF] via-[#3A7BD5] to-[#FFD200] opacity-30  z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF] via-[#3A7BD5] to-transparent opacity-30 z-0"></div>
       <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#00D2FF] opacity-40 rounded-full blur-[128px] animate-pulse z-0"></div>
-      <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-[#FFD200] opacity-40 rounded-full blur-[128px] animate-pulse z-0"></div>
+      <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-[#3A7BD5] opacity-40 rounded-full blur-[128px] animate-pulse z-0"></div>
 
       {/* Toggle button */}
       <div
@@ -145,7 +145,7 @@ const SideBar = ({ userData }: SideBarProps) => {
                   relative
                   ${
                     pathname === item.href || pathname.startsWith(`${item.href}/`)
-                      ? "bg-gradient-to-r from-[#00D2FF] to-[#FFD200] text-white shadow-[0_0_20px_-5px_#00D2FF]"
+                      ? "bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] text-white shadow-[0_0_20px_-5px_#00D2FF]"
                       : "text-white/80 hover:bg-white/5 hover:text-white hover:shadow-[0_0_15px_-5px_#00D2FF]"
                   }`}>
                 <div className="transition-transform duration-300 group-hover:scale-110">{item.icon}</div>
