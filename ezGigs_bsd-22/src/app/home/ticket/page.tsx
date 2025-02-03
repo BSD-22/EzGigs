@@ -80,8 +80,6 @@ export default function Home() {
       });
 
       const result = await verifyRes.json();
-      console.log("Verification result:", result);
-
       if (!verifyRes.ok) {
         throw new Error("API request failed");
       }

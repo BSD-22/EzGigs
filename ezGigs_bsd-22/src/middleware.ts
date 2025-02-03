@@ -7,7 +7,9 @@ export const middleware = async (request: NextRequest) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
 
-  if (!token || token.value.length <= 0) {
+  const isProtectedRoute = request.nextUrl.pathname.startsWith("/home") || request.nextUrl.pathname.startsWith("/api/ticket") || request.nextUrl.pathname.startsWith("/seller");
+
+  if (isProtectedRoute && (!token || token.value.length <= 0)) {
     if (request.nextUrl.pathname.startsWith("/api")) {
       return NextResponse.json<CustomResponse<unknown>>(
         {
@@ -17,10 +19,10 @@ export const middleware = async (request: NextRequest) => {
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/login?error=Please%20login%20first", request.url));
   }
 
-  const payload = await verifyToken<JosePayload>(token.value);
+  const payload = await verifyToken<JosePayload>(token?.value as string);
 
   if (request.nextUrl.pathname.startsWith("/seller") && payload.role !== "seller") {
     return NextResponse.redirect(new URL("/home/ticket", request.url));
@@ -37,5 +39,10 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/home/:path*", "/api/:path*", "/seller/:path*"],
+  matcher: [
+    "/home/:path*",
+    "/api/:path*",
+    "/seller/:path*",
+    // Add any other protected routes here
+  ],
 };
