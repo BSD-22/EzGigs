@@ -42,6 +42,10 @@ export default function Chat({ params }: { params: Promise<{ sellerId: string }>
   };
 
   useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const res = await fetch("/api/user/me", {
