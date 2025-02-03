@@ -25,6 +25,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
+    "react-masonry-css": "^1.0.16",
     "react-toastify": "^11.0.3",
     "react-webcam": "^7.2.0",
     "stripe": "^17.5.0",
