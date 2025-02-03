@@ -297,8 +297,9 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="absolute bottom-0 inset-x-0 p-4 sm:p-8">
                   <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <div className="px-3 py-1 bg-[#8E2DE2] rounded-full text-xs sm:text-sm text-white">
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                        <div className="px-3 py-1.5 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] rounded-full text-xs sm:text-sm text-white font-medium flex items-center gap-2 shadow-lg shadow-[#8E2DE2]/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                           {new Date(ticket.date).toLocaleDateString("id-ID", {
                             weekday: "long",
                             year: "numeric",
@@ -306,7 +307,11 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                             day: "numeric",
                           })}
                         </div>
-                        <div className="px-3 py-1 bg-[#00F5A0] rounded-full text-xs sm:text-sm text-black">{ticket.time}</div>
+                        <div className="px-3 py-1.5 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] rounded-full text-xs sm:text-sm text-white font-medium flex items-center gap-2 shadow-lg shadow-[#8E2DE2]/20">
+                          <span>⌚</span>
+                          <span>{ticket.time}</span>
+                          <span className="text-white/80">WIB</span>
+                        </div>
                       </div>
                       <h1 className="text-2xl sm:text-5xl font-bold text-white mb-2">{ticket.name}</h1>
                       <p className="text-gray-300 text-sm sm:text-base flex items-center gap-2">
