@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import GridView from "./_components/GridView";
 import ListView from "./_components/ListView";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
 
 export default function Home() {

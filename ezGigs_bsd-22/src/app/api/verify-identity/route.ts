@@ -65,9 +65,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       isMatch: isConfident && facesMatch,
       message:
-        isConfident && facesMatch
-          ? "Identity verified successfully"
-          : "Face verification failed. The face in the photo does not match the ID photo. Please ensure you&apos;re using your own valid ID.",
+        isConfident && facesMatch ? "Identity verified successfully" : "Face verification failed. The face in the photo does not match the ID photo. Please ensure you're using your own valid ID.",
     });
   } catch (error) {
     console.error("Verification error:", {
