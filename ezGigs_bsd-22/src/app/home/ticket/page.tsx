@@ -11,8 +11,8 @@ import { toast } from "react-toastify";
 import GridView from "./_components/GridView";
 import ListView from "./_components/ListView";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
+import { startNotificationService } from "./_utils/ticketNotifications";
 
 export default function Home() {
   const router = useRouter();
@@ -256,6 +256,14 @@ export default function Home() {
     fetchTickets();
     fetchUserData();
 
+    let cleanup: (() => void) | undefined;
+
+    const initNotifications = async () => {
+      cleanup = await startNotificationService();
+    };
+
+    initNotifications();
+
     const urlParams = new URLSearchParams(window.location.search);
     const isSuccess = urlParams.get("success");
     const sessionId = urlParams.get("session_id");
@@ -264,6 +272,10 @@ export default function Home() {
     if (isSuccess && sessionId && purchaseId) {
       verifyPayment(sessionId, purchaseId);
     }
+
+    return () => {
+      if (cleanup) cleanup();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
