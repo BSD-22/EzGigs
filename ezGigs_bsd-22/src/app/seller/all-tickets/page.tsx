@@ -8,7 +8,6 @@ import { baseUrl } from "@/constants/baseUrl";
 import { ref, onValue, off } from "firebase/database";
 import { database } from "@/services/firebase";
 
-// Add interface for user data from API
 interface TicketWithUser extends TicketModel {
   userId: string;
 }
@@ -37,7 +36,7 @@ const SellerAllTicketsPage = () => {
           setCurrentUserId(userData.data._id);
         }
 
-        const ticketRes = await fetch(baseUrl + "/api/ticket"); // Changed to fetch all tickets
+        const ticketRes = await fetch(baseUrl + "/api/ticket");
         const ticketData = await ticketRes.json();
         if (ticketData.statusCode === 200) {
           const mappedTickets = ticketData.data.map((ticket: TicketModel) => ({
