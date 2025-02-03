@@ -8,7 +8,7 @@ export const middleware = async (request: NextRequest) => {
   const token = cookieStore.get("token");
 
   if (!token || token.value.length <= 0) {
-    if (request.nextUrl.pathname.startsWith('/api')) {
+    if (request.nextUrl.pathname.startsWith("/api")) {
       return NextResponse.json<CustomResponse<unknown>>(
         {
           statusCode: 401,
