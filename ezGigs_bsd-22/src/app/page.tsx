@@ -1,107 +1,77 @@
-import Link from "next/link"
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const LandingPage = () => {
+export default function LandingPage() {
   return (
     <>
-    <div className="min-h-screen flex flex-col justify-center bg-gradient-to-br from-[#F4F6F0] via-[#E8EDE1] to-[#F4F6F0] relative overflow-hidden">
-      <nav className="flex items-center justify-between p-4">
-        {/* Left Section */}
-        <div className="flex items-center space-x-12">
-        <div className="flex items-center space-x-2">
-          <Link href="/">
-            <img
-              src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20G.png?updatedAt=1738307050316"
-              alt="Logo"
-              className="w-10"
-            />
-          </Link>
-          <span className="text-xl font-bold text-[#3b4135]">EzGigs</span>
-        </div>
-        <div className="flex items-center space-x-6">
-        <Link href="/home" className="flex space-x-2 text-[#3b4135] font-semibols ">All-tickets</Link>
-        <Link href="/home" className="flex space-x-2 text-[#3b4135] font-semibols ">Category</Link>
-        <Link href="/home" className="flex space-x-2 text-[#3b4135] font-semibols ">Event</Link>
-        <Link href="/home" className="flex space-x-2 text-[#3b4135] font-semibols ">Pricing</Link>
-        <Link href="/home" className="flex space-x-2 text-[#3b4135] font-semibols ">Subscription</Link>
-        </div>
-
-          </div>
-
-        {/* Right Section */}
-        <div className="flex items-center space-x-4">
-        <a href="/contactUs" className="text-[#3b4135] font-semibols ">
-        Contact Us
-        </a>
-        <span className="text-gray-300 text-3xl ">|</span>
-          <a
-            href="/login"
-            className="text-[#3b4135] font-bold "
-          >
-            Sign in
-          </a>
-          <a
-            href="/register"
-            className="px-4 py-2 bg-[#3b4135] text-white rounded-md font-bold text-sm"
-          >
-            Get Ticket free
-          </a>
-        </div>
-      </nav>
-      {/* Hero Section */}
-      <div className="flex-1 flex justify-center items-center">
-        <div className="flex flex-col md:flex-row px-6 py-16 space-y-8 md:space-y-0 md:space-x-8">
-          <div className="max-w-4xl mx-auto text-center md:text-left md:mr-8">
-            <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-            All in one place  
+      <Navbar />
+      <div className="min-h-screen flex flex-col justify-center bg-white relative overflow-hidden">
+        {/* Hero Section */}
+        <div className="max-w-6xl w-full bg-white rounded-2xl shadow-lg p-12 text-center my-12 mx-auto">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-bold text-gray-900">
+              All in one place to production
             </h1>
-            <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-            for all event ticketing online
+            <h1 className="text-3xl font-semibold text-gray-800 mt-2">
+              or selling ticket online
             </h1>
-            <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-            selling & production
-            </h1>
-           
-            <p className="mt-4 text-lg text-gray-600">
-              Discover 1000+ Ticket online for all event, <br /> 
-              get or create one now!
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover 30+ Ticket online to organize work and life, saving you
+              valuable time.
             </p>
-            <div className="mt-8 flex justify-center space-x-4 md:justify-start">
-              <Link href={"/home"}  className="px-6 py-3 bg-[#3b4135] text-white border border-[#3b4135] font-bold rounded-md hover:border-white">
-              Get Started
-              </Link>
-              <Link href={"/home"}  className="px-6 py-3 bg-white text-[#3b4135] border border-white font-bold rounded-md hover:border-gray-300">
-              Event
-              </Link>
+            <div className="mt-8 flex gap-4 justify-center">
+              <button className="bg-[#7aa3a9] border border-gray-300 px-8 py-4 rounded-xl text-black hover:bg-gray-100 font-bold">
+                Get Started
+              </button>
             </div>
           </div>
-          <div className="mt-12 md:mt-0 self-center">
+
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12 justify-items-center">
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="font-semibold text-xl mb-3">Journal</h3>
+              <p className="text-sm text-gray-500">
+                Organize your thoughts & reflections.
+              </p>
+            </div>
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="font-semibold text-xl mb-3">Habit Tracker</h3>
+              <p className="text-sm text-gray-500">
+                Build better habits and stay consistent.
+              </p>
+            </div>
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="font-semibold text-xl mb-3">Book Tracker</h3>
+              <p className="text-sm text-gray-500">
+                Keep track of your reading progress.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-4xl w-full bg-white rounded-2xl shadow-lg p-8 text-center my-12 mx-auto">
+          <h1 className="text-4xl font-bold mb-4">Your Second Brain</h1>
+          <p className="text-gray-600 text-lg mb-6">
+            An all-in-one Notion system to organize your tasks, projects, goals,
+            notes, and references.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <button className="bg-black border border-gray-300 px-6 py-3 rounded-xl text-white hover:bg-gray-800 font-bold">
+              Learn More
+            </button>
+            <button className="bg-white border border-gray-300 px-6 py-3 rounded-xl text-black hover:bg-gray-100 font-bold">
+              Get Ticket
+            </button>
+          </div>
+          <div className="mt-8">
             <img
-              src="https://ik.imagekit.io/3a0xukows/ticket.png?updatedAt=1738314771948"
-              alt="Illustration"
-              className="mx-auto w-96 max-w-3xl"
+              src="your-image-url.png"
+              alt="Second Brain UI"
+              className="rounded-xl shadow-lg mx-auto w-full max-w-lg"
             />
           </div>
         </div>
+        <Footer />
       </div>
-      </div>
-      <footer className="bg-[#3b4135] border border-white/20 text-white py-4 flex flex-col items-center">
-      <div className="flex justify-center">
-        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-2 backdrop-blur-sm border border-white/20">
-          <Link href="/">
-            <img
-              src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20size.png?updatedAt=1738307076179"
-              alt="Logo"
-              className="w-8"
-            />
-          </Link>
-        </div>
-      </div>
-        <span className="text-sm hover:underline text-white">
-        © 2025, EzGigs.com, Inc. or its tickets
-        </span>
-      </footer>
     </>
   );
-};
-
-export default LandingPage;
+}
