@@ -34,8 +34,6 @@ export async function POST(request: NextRequest) {
       };
 
       if (status === "paid" || status === "complete") {
-        // Update ticket purchase status with payment details
-        // Update the type for the options parameter
         await updateTicketPurchaseStatus(
           purchaseId,
           "paid",
@@ -52,7 +50,6 @@ export async function POST(request: NextRequest) {
           },
         });
       } else {
-        // Update status to failed if payment wasn't successful
         await updateTicketPurchaseStatus(purchaseId, "failed", undefined, { userId: metadata.userId });
         return NextResponse.json<CustomResponse<unknown>>(
           {

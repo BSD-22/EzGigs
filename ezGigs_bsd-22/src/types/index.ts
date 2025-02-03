@@ -19,5 +19,5 @@ export type ActionResponse<T> = {
   error?: {
     [k in keyof T]?: string[];
   };
-  input?: T | string;
+  input?: T;
 };
