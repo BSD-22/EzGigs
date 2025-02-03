@@ -11,8 +11,8 @@ import { toast } from "react-toastify";
 import GridView from "./_components/GridView";
 import ListView from "./_components/ListView";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
+import { startNotificationService } from "./_utils/ticketNotifications";
 
 export default function Home() {
   const router = useRouter();
@@ -38,6 +38,11 @@ export default function Home() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [userSubscription, setUserSubscription] = useState<"free" | "premium" | "vip">("free");
+  const [captureStep, setCaptureStep] = useState<"face" | "id" | null>(null);
+  const [verificationImages, setVerificationImages] = useState({
+    face: "",
+    identity: "",
+  });
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -80,8 +85,6 @@ export default function Home() {
       });
 
       const result = await verifyRes.json();
-      console.log("Verification result:", result);
-
       if (!verifyRes.ok) {
         throw new Error("API request failed");
       }
@@ -93,6 +96,14 @@ export default function Home() {
     }
   };
 
+  // Modify the camera open handler
+  const handleOpenCamera = () => {
+    setShowCamera(true);
+    setCaptureStep("face");
+    setVerificationImages({ face: "", identity: "" });
+  };
+
+  // Update handleCapturePhoto
   const handleCapturePhoto = async () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (!imageSrc) {
@@ -100,34 +111,42 @@ export default function Home() {
       return;
     }
 
-    setIsVerifying(true);
-    setVerificationMessage("Verifying your identity...");
+    if (captureStep === "face") {
+      setVerificationImages((prev) => ({ ...prev, face: imageSrc }));
+      setCaptureStep("id");
+      toast.info("Great! Now please show your ID card");
+      return;
+    }
 
-    try {
-      setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
-      const result = await verifyIdentity(imageSrc, imageSrc);
+    if (captureStep === "id") {
+      setIsVerifying(true);
+      setVerificationMessage("Verifying your identity...");
 
-      setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
+      try {
+        const result = await verifyIdentity(verificationImages.face, imageSrc);
 
-      if (result.isMatch) {
-        setIsIdentityVerified(true);
-        setBuyerData((prev) => ({ ...prev, identityDetails: imageSrc }));
-        toast.success("Identity verified successfully!");
-        setShowCamera(false);
-      } else {
+        if (result.isMatch) {
+          setIsIdentityVerified(true);
+          setBuyerData((prev) => ({ ...prev, identityDetails: verificationImages.face }));
+          toast.success("Identity verified successfully!");
+          setShowCamera(false);
+          setCaptureStep(null);
+        } else {
+          setIsIdentityVerified(false);
+          setVerificationImages({ face: "", identity: "" });
+          setCaptureStep("face");
+          toast.error(result.message || "Verification failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during verification:", error);
         setIsIdentityVerified(false);
-        toast.error(result.message || "Verification failed. Please try again.", {
-          autoClose: 5000,
-        });
+        setVerificationImages({ face: "", identity: "" });
+        setCaptureStep("face");
+        toast.error("Verification failed. Please try again.");
+      } finally {
+        setIsVerifying(false);
+        setVerificationMessage("");
       }
-    } catch (error) {
-      console.error("Error during verification:", error);
-      setIsIdentityVerified(false);
-      setBuyerData((prev) => ({ ...prev, identityDetails: "" }));
-      toast.error("Verification failed. Please try again.");
-    } finally {
-      setIsVerifying(false);
-      setVerificationMessage("");
     }
   };
 
@@ -256,6 +275,14 @@ export default function Home() {
     fetchTickets();
     fetchUserData();
 
+    let cleanup: (() => void) | undefined;
+
+    const initNotifications = async () => {
+      cleanup = await startNotificationService();
+    };
+
+    initNotifications();
+
     const urlParams = new URLSearchParams(window.location.search);
     const isSuccess = urlParams.get("success");
     const sessionId = urlParams.get("session_id");
@@ -264,6 +291,10 @@ export default function Home() {
     if (isSuccess && sessionId && purchaseId) {
       verifyPayment(sessionId, purchaseId);
     }
+
+    return () => {
+      if (cleanup) cleanup();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -425,8 +456,9 @@ export default function Home() {
                         </button>
                       </div>
                     ) : (
+                      // Replace this button's onClick handler
                       <button
-                        onClick={() => setShowCamera(true)}
+                        onClick={handleOpenCamera} // Changed from setShowCamera(true)
                         className="w-full px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors">
                         Take Verification Photo
                       </button>
@@ -484,23 +516,17 @@ export default function Home() {
                         screenshotFormat="image/jpeg"
                         className="w-full h-full object-cover"
                       />
-                      {/* Guide overlay */}
-                      <div className="absolute inset-0 flex">
-                        <div className="w-1/2 border-r-2 border-white/50">
-                          <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">Face</div>
-                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
-                        </div>
-                        <div className="w-1/2">
-                          <div className="absolute top-2 right-2 text-white text-sm bg-black/50 px-2 py-1 rounded">ID Card</div>
-                          <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
-                        </div>
+                      {/* Single guide overlay */}
+                      <div className="absolute inset-0">
+                        <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">{captureStep === "face" ? "Face Photo" : "ID Card Photo"}</div>
+                        <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>
                       </div>
                       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
                         <button
                           onClick={handleCapturePhoto}
                           disabled={isVerifying}
                           className="px-6 py-2 bg-[#8E2DE2] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
-                          {isVerifying ? "Verifying..." : "Capture Photo"}
+                          {isVerifying ? "Verifying..." : captureStep === "face" ? "Capture Face" : "Capture ID"}
                         </button>
                       </div>
                     </>
