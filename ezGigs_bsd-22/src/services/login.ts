@@ -60,16 +60,6 @@ export const actionLoginHandler = async (_prevState: unknown, formData: FormData
   const cookieStore = await cookies();
   cookieStore.set("token", token);
 
-  // Add test mode check
-  const testMode = formData.get("testMode");
-  if (testMode === "true") {
-    return {
-      success: true,
-      message: "Login successful - use this token in testing",
-      input: token,
-    };
-  }
-
   if (foundUser.data.role === "seller") {
     return redirect("/seller");
   }
