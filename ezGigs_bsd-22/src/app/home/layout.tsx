@@ -36,6 +36,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     fetchUserMe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
