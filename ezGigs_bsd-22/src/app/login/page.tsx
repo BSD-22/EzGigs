@@ -7,6 +7,8 @@ import FlashErrorComponents from "@/components/FlashErrorComponents";
 import Image from "next/image";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 const initialState = {
   success: false,
   message: "",
@@ -17,15 +19,14 @@ export default function LoginPage() {
 
   return (
     <>
-      <FlashErrorComponents>
-        <div className="min-h-screen bg-[#E8EBE4] relative overflow-hidden">
-          {/* Background effects - sedikit lebih gelap */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF]/20 via-[#3A7BD5]/10 to-transparent"></div>
-          <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#00D2FF]/30 rounded-full blur-[128px] animate-pulse"></div>
-          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3A7BD5]/30 rounded-full blur-[128px] animate-pulse"></div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <FlashErrorComponents>
+          <div className="min-h-screen bg-[#E8EBE4] relative overflow-hidden">
+            {/* Background effects - sedikit lebih gelap */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF]/20 via-[#3A7BD5]/10 to-transparent"></div>
+            <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#00D2FF]/30 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3A7BD5]/30 rounded-full blur-[128px] animate-pulse"></div>
 
-          <Suspense fallback={<div>Loading...</div>}>
-            {/* Main Content */}
             <div className="relative min-h-screen flex items-center justify-center p-4">
               <div className="bg-white/70 backdrop-blur-xl rounded-3xl w-full max-w-5xl overflow-hidden flex shadow-2xl border border-[#00D2FF]/20">
                 {/* Left Side - Hero Image */}
@@ -145,9 +146,9 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
-          </Suspense>
-        </div>
-      </FlashErrorComponents>
+          </div>
+        </FlashErrorComponents>
+      </Suspense>
     </>
   );
 }
