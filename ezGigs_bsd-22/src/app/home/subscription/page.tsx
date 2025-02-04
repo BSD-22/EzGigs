@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
 import { toast } from "react-hot-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import Header from "@/components/Header";
 
 const SubscriptionPage = () => {
   const router = useRouter();
@@ -147,8 +148,7 @@ const SubscriptionPage = () => {
 
       <div className="relative py-20 px-4">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-black text-[#2C3228] mb-4">Choose Your Subscription Plan</h1>
-          <p className="text-[#4A5043] text-lg">Get special benefits for every concert ticket purchase</p>
+          <Header title="Choose Your Subscription Plan" description="Get special benefits for every concert ticket purchase" />
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">

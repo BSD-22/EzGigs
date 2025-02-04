@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 import { TicketModel } from "@/db/models/ticket";
 import { getAllMarketplace } from "@/db/models/marketplace";
 import BrowseTicketsButton from "@/components/BrowseTicketsButton";
+import Header from "@/components/Header";
 
 type TicketWithStatus = {
   ticketId: ObjectId;
@@ -49,11 +50,9 @@ async function MyTicketsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex-1 p-4 sm:p-7 overflow-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl sm:text-4xl font-black text-gray-800">
-            My Tickets
-            <span className="ml-2 inline-block">🎫</span>
-          </h1>
+          <Header title="My Tickets🎫" description="View your purchased tickets here" />
           {/* <div className="text-sm sm:text-base text-gray-600"> */}
+
             {/* {activeTickets.length} {activeTickets.length === 1 ? "ticket" : "tickets"} */}
           {/* </div> */}
         </div>

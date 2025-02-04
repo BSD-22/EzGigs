@@ -13,6 +13,7 @@ import ListView from "./_components/ListView";
 import { ToastContainer } from "react-toastify";
 import { TicketsSkeleton } from "@/components/skeletons/TicketsSkeleton";
 import { startNotificationService } from "./_utils/ticketNotifications";
+import Header from "@/components/Header";
 
 export default function Home() {
   const router = useRouter();
@@ -306,10 +307,7 @@ export default function Home() {
         <div className="flex-1 p-3 sm:p-7 overflow-auto">
           <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-              <div>
-                <h1 className="text-xl sm:text-5xl font-black text-[#2C3228]">Upcoming Events</h1>
-                <p className="text-[#4A5043] mt-0.5 sm:mt-2 text-[10px] sm:text-base">Discover and book your next unforgettable experience 🎉</p>
-              </div>
+              <Header title="Upcoming Events" description="Discover and book your next unforgettable experience 🎉" />
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode("grid")}
