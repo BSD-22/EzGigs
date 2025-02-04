@@ -28,16 +28,15 @@ export const createPaymentSession = async (
       };
     }
 
-    // Calculate discount based on subscription type
     let finalPrice = category.price;
     let discountPercentage = 0;
 
     if (subscriptionType === "premium") {
       discountPercentage = 5;
-      finalPrice = category.price * 0.95; // 5% discount
+      finalPrice = category.price * 0.95;
     } else if (subscriptionType === "vip") {
       discountPercentage = 8;
-      finalPrice = category.price * 0.92; // 8% discount
+      finalPrice = category.price * 0.92;
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -134,7 +133,7 @@ export const createSubscriptionPaymentSession = async (planName: string, userId:
               name: `${planName} Subscription`,
               description: `${planName} membership subscription`,
             },
-            unit_amount: price * 100, // Convert to cents
+            unit_amount: price * 100,
           },
           quantity: 1,
         },

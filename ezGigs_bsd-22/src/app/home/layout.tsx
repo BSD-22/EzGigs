@@ -47,7 +47,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
   }
 
   if (!isAuthenticated) {
-    return null; // Router will handle the redirect
+    return null;
   }
 
   return (
