@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { baseUrl } from "@/constants/baseUrl";
 import { ref, onValue, off } from "firebase/database";
 import { database } from "@/services/firebase";
+import Masonry from 'react-masonry-css';
 
 interface TicketWithUser extends TicketModel {
   userId: string;
@@ -81,6 +82,12 @@ const SellerAllTicketsPage = () => {
     return matchesSearch && matchesDate && (showOwnTickets ? ticket.sellerId?.toString() === currentUserId : true);
   });
 
+  const breakpointColumnsObj = {
+    default: 3,
+    1024: 2,
+    640: 1
+  };
+
   if (loading) {
     return (
       <div className="flex-1 p-7 bg-[#FFF8F3]">
@@ -148,11 +155,14 @@ const SellerAllTicketsPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="flex -ml-4 w-auto"
+        columnClassName="pl-4 bg-clip-padding">
         {filteredTickets.map((ticket) => (
           <div
             key={ticket._id.toString()}
-            className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-[#FF8008]/30 transition-all">
+            className="mb-4 md:mb-6 bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-[#FF8008]/30 transition-all">
             <div className="relative h-40 sm:h-48 w-full">
               <Image
                 src={ticket.image}
@@ -214,7 +224,7 @@ const SellerAllTicketsPage = () => {
             </div>
           </div>
         ))}
-      </div>
+      </Masonry>
 
       {filteredTickets.length === 0 && (
         <div className="text-center py-12">
