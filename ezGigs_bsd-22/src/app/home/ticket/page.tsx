@@ -43,6 +43,9 @@ export default function Home() {
     face: "",
     identity: "",
   });
+  const isSubmittingRef = useRef(false);
+  const hasVerifiedPaymentRef = useRef(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -96,14 +99,12 @@ export default function Home() {
     }
   };
 
-  // Modify the camera open handler
   const handleOpenCamera = () => {
     setShowCamera(true);
     setCaptureStep("face");
     setVerificationImages({ face: "", identity: "" });
   };
 
-  // Update handleCapturePhoto
   const handleCapturePhoto = async () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (!imageSrc) {
@@ -161,6 +162,12 @@ export default function Home() {
       return;
     }
 
+    if (isSubmittingRef.current) {
+      toast.info("Processing is already in progress. Please wait.");
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setIsVerifying(true);
     setVerificationMessage("Processing your purchase...");
 
@@ -194,6 +201,7 @@ export default function Home() {
       console.error("Error processing payment:", error);
       toast.error("Payment processing failed. Please try again.");
     } finally {
+      isSubmittingRef.current = false;
       setIsVerifying(false);
     }
   };
@@ -222,6 +230,7 @@ export default function Home() {
   };
 
   const verifyPayment = async (sessionId: string, purchaseId: string) => {
+    console.log("Verifying payment for sessionId:", sessionId, "and purchaseId:", purchaseId);
     try {
       const verifyRes = await fetch("/api/ticket/verify-payment", {
         method: "POST",
@@ -248,14 +257,22 @@ export default function Home() {
     } catch (error) {
       console.error("Error verifying payment:", error);
       toast.error("Error verifying payment");
-    } finally {
-      router.replace("/home/ticket");
     }
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const filteredAndSortedTickets = tickets
     .filter((ticket) => {
-      const matchesSearch = ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = ticket.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
 
       if (!startDate && !endDate) return matchesSearch;
 
@@ -288,8 +305,11 @@ export default function Home() {
     const sessionId = urlParams.get("session_id");
     const purchaseId = urlParams.get("purchase_id");
 
-    if (isSuccess && sessionId && purchaseId) {
+    console.log("useEffect triggered with isSuccess:", isSuccess, "sessionId:", sessionId, "purchaseId:", purchaseId, "hasVerifiedPayment:", hasVerifiedPaymentRef.current);
+
+    if (isSuccess && sessionId && purchaseId && !hasVerifiedPaymentRef.current) {
       verifyPayment(sessionId, purchaseId);
+      hasVerifiedPaymentRef.current = true;
     }
 
     return () => {
@@ -456,9 +476,8 @@ export default function Home() {
                         </button>
                       </div>
                     ) : (
-                      // Replace this button's onClick handler
                       <button
-                        onClick={handleOpenCamera} // Changed from setShowCamera(true)
+                        onClick={handleOpenCamera}
                         className="w-full px-4 py-3 bg-[#4A5043] text-white rounded-xl hover:bg-[#2C3228] transition-colors">
                         Take Verification Photo
                       </button>
@@ -516,7 +535,6 @@ export default function Home() {
                         screenshotFormat="image/jpeg"
                         className="w-full h-full object-cover"
                       />
-                      {/* Single guide overlay */}
                       <div className="absolute inset-0">
                         <div className="absolute top-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">{captureStep === "face" ? "Face Photo" : "ID Card Photo"}</div>
                         <div className="h-full border-2 border-dashed border-white/50 m-2 rounded"></div>

@@ -47,22 +47,60 @@ const SellerPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-7">
+      <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
         <div className="mb-8">
-          <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Seller Dashboard 🎯</h1>
+          <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
         </div>
+        {/* Stats Grid Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-              <div className="h-4 bg-[#8E2DE2]/20 rounded animate-pulse mb-2 w-20"></div>
-              <div className="h-8 bg-[#8E2DE2]/20 rounded animate-pulse mb-2"></div>
-              <div className="h-3 bg-[#8E2DE2]/20 rounded animate-pulse w-24"></div>
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
+            >
+              <div className="h-4 bg-[#FF8008]/10 rounded animate-pulse mb-2 w-20"></div>
+              <div className="h-8 bg-[#FF8008]/10 rounded animate-pulse mb-2"></div>
+              <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-24"></div>
             </div>
           ))}
         </div>
-        <div className="text-center text-gray-400">AI is analyzing your dashboard data...</div>
+
+        {/* Quick Actions Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-[#FF8008]/10 rounded animate-pulse mb-2 w-24"></div>
+                  <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-32"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Recent Activity Skeleton */}
+        <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+          <div className="h-6 bg-[#FF8008]/10 rounded animate-pulse mb-6 w-32"></div>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between py-4 border-b border-[#FF8008]/10 last:border-b-0">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-[#FF8008]/10 rounded-full animate-pulse"></div>
+                <div>
+                  <div className="h-4 bg-[#FF8008]/10 rounded animate-pulse mb-2 w-24"></div>
+                  <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-32"></div>
+                </div>
+              </div>
+              <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-16"></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center text-[#2D1810]/40 mt-4">AI is analyzing your dashboard data...</div>
       </div>
     );
   }
@@ -80,35 +118,35 @@ const SellerPage = () => {
   };
 
   return (
-    <div className="flex-1 p-7">
+    <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
       <div className="mb-8">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">Seller Dashboard 🎯</h1>
+        <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-          <p className="text-gray-400 text-sm">Total Tickets</p>
-          <p className="text-3xl font-bold mt-2">{stats.totalTickets}</p>
-          <div className="mt-2 text-xs text-[#00F5A0]">All time</div>
+        <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+          <p className="text-[#2D1810]/90 text-sm font-medium">Total Tickets</p>
+          <p className="text-3xl font-bold mt-2 text-[#2D1810]">{stats.totalTickets}</p>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">All time</div>
         </div>
-        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-          <p className="text-gray-400 text-sm">Tickets Sold</p>
-          <p className="text-3xl font-bold mt-2">{stats.ticketsSold}</p>
-          <div className="mt-2 text-xs text-[#00F5A0]">{stats.successRate}% success rate</div>
+        <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+          <p className="text-[#2D1810]/90 text-sm font-medium">Tickets Sold</p>
+          <p className="text-3xl font-bold mt-2 text-[#2D1810]">{stats.ticketsSold}</p>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">{stats.successRate}% success rate</div>
         </div>
-        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-          <p className="text-gray-400 text-sm">Total Revenue</p>
-          <p className="text-3xl font-bold mt-2">Rp {stats.revenue.toLocaleString("id-ID")}</p>
-          <div className="mt-2 text-xs text-[#00F5A0]">
+        <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+          <p className="text-[#2D1810]/90 text-sm font-medium">Total Revenue</p>
+          <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.revenue.toLocaleString("id-ID")}</p>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">
             {stats.revenueGrowth > 0 ? "+" : ""}
             {stats.revenueGrowth}% from last month
           </div>
         </div>
-        <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-          <p className="text-gray-400 text-sm">Average Price</p>
-          <p className="text-3xl font-bold mt-2">Rp {stats.averagePrice.toLocaleString("id-ID")}</p>
-          <div className="mt-2 text-xs text-[#00F5A0]">Per ticket</div>
+        <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+          <p className="text-[#2D1810]/90 text-sm font-medium">Average Price</p>
+          <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.averagePrice.toLocaleString("id-ID")}</p>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">Per ticket</div>
         </div>
       </div>
 
@@ -117,12 +155,12 @@ const SellerPage = () => {
         <Link
           href="/seller/manage-tickets"
           className="group">
-          <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6 hover:border-[#8E2DE2]/40 transition-all">
+          <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 hover:border-[#FF8008]/30 transition-all shadow-sm">
             <div className="flex items-center gap-4">
               <span className="text-3xl">🎫</span>
               <div>
-                <h3 className="font-semibold group-hover:text-[#00F5A0] transition-colors">Manage Tickets</h3>
-                <p className="text-sm text-gray-400">View and edit your tickets</p>
+                <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">Manage Tickets</h3>
+                <p className="text-sm text-[#2D1810]/60">View and edit your tickets</p>
               </div>
             </div>
           </div>
@@ -130,12 +168,12 @@ const SellerPage = () => {
         <Link
           href="/seller/analytics"
           className="group">
-          <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6 hover:border-[#8E2DE2]/40 transition-all">
+          <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 hover:border-[#FF8008]/30 transition-all shadow-sm">
             <div className="flex items-center gap-4">
               <span className="text-3xl">📊</span>
               <div>
-                <h3 className="font-semibold group-hover:text-[#00F5A0] transition-colors">Sales Analytics</h3>
-                <p className="text-sm text-gray-400">Track your performance</p>
+                <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">Sales Analytics</h3>
+                <p className="text-sm text-[#2D1810]/60">Track your performance</p>
               </div>
             </div>
           </div>
@@ -143,12 +181,12 @@ const SellerPage = () => {
         <Link
           href="/seller/settings"
           className="group">
-          <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6 hover:border-[#8E2DE2]/40 transition-all">
+          <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 hover:border-[#FF8008]/30 transition-all shadow-sm">
             <div className="flex items-center gap-4">
               <span className="text-3xl">⚙️</span>
               <div>
-                <h3 className="font-semibold group-hover:text-[#00F5A0] transition-colors">Settings</h3>
-                <p className="text-sm text-gray-400">Configure your account</p>
+                <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">Settings</h3>
+                <p className="text-sm text-[#2D1810]/60">Configure your account</p>
               </div>
             </div>
           </div>
@@ -156,28 +194,28 @@ const SellerPage = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
+      <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl font-bold mb-4 text-[#2D1810]">Recent Activity</h2>
         <div className="space-y-4">
           {stats.recentActivities.length > 0 ? (
             stats.recentActivities.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between py-3 border-b border-[#8E2DE2]/10 last:border-b-0">
+                className="flex items-center justify-between py-3 border-b border-[#FF8008]/10 last:border-b-0">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#00F5A0]/10 flex items-center justify-center">💰</div>
+                  <div className="w-10 h-10 rounded-full bg-[#FF8008]/10 flex items-center justify-center">💰</div>
                   <div>
-                    <p className="font-medium">Ticket Sold</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="font-medium text-[#2D1810]">Ticket Sold</p>
+                    <p className="text-sm text-[#2D1810]/70">
                       {activity.eventName} - Rp {activity.price.toLocaleString("id-ID")}
                     </p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">{formatTimeAgo(activity.date)}</span>
+                <span className="text-sm text-[#2D1810]/60">{formatTimeAgo(activity.date)}</span>
               </div>
             ))
           ) : (
-            <div className="text-center text-gray-400 py-4">No recent activities</div>
+            <div className="text-center text-[#2D1810]/60 py-4">No recent activities</div>
           )}
         </div>
       </div>

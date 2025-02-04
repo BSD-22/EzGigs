@@ -51,7 +51,7 @@ export default function HomeLayout({
   }
 
   if (!isAuthenticated) {
-    return null; // Router will handle the redirect
+    return null;
   }
 
   return (

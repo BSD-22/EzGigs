@@ -8,13 +8,23 @@ const Navbar = () => {
   const [isEventOpen, setIsEventOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const ticketRef = useRef<HTMLDivElement>(null);
+  const eventRef = useRef<HTMLDivElement>(null);
+  const subscriptionRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsTicketOpen(false), setIsEventOpen(false);
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        ticketRef.current &&
+        !ticketRef.current.contains(event.target as Node) &&
+        eventRef.current &&
+        !eventRef.current.contains(event.target as Node) &&
+        subscriptionRef.current &&
+        !subscriptionRef.current.contains(event.target as Node)
+      ) {
+        setIsTicketOpen(false);
+        setIsEventOpen(false);
         setIsSubscriptionOpen(false);
         setIsContactOpen(false);
       }
@@ -60,7 +70,7 @@ const Navbar = () => {
             {/* Feature dropdown */}
             <div
               className="relative inline-block text-left"
-              ref={dropdownRef}
+              ref={ticketRef}
               onMouseEnter={() => setIsTicketOpen(true)}
               onMouseLeave={() => setIsTicketOpen(false)}
             >
@@ -182,7 +192,7 @@ const Navbar = () => {
             {/* Events dropdown */}
             <div
               className="relative inline-block text-left"
-              ref={dropdownRef}
+              ref={eventRef}
               onMouseEnter={() => setIsEventOpen(true)}
               onMouseLeave={() => setIsEventOpen(false)}
             >
@@ -240,7 +250,7 @@ const Navbar = () => {
             {/* Subscription dropdown */}
             <div
               className="relative inline-block text-left"
-              ref={dropdownRef}
+              ref={subscriptionRef}
               onMouseEnter={() => setIsSubscriptionOpen(true)}
               onMouseLeave={() => setIsSubscriptionOpen(false)}
             >

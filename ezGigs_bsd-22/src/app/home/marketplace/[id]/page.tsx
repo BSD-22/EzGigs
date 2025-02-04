@@ -24,7 +24,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
       <div className="min-h-screen bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1] flex items-center justify-center p-4">
         <div className="text-center space-y-4">
           <div className="text-6xl">😢</div>
-          <h1 className="text-2xl sm:text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">
+          <h1 className="text-2xl sm:text-4xl font-black bg-gradient-to-r from-[#bc4e9c] to-[#f80759] text-transparent bg-clip-text">
             Listing Not Found
           </h1>
           <p className="text-[#4A5043]">The ticket listing you're looking for doesn't exist or has been removed.</p>
@@ -70,7 +70,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
           <div className="absolute bottom-0 inset-x-0 p-6 sm:p-10">
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-wrap items-center gap-2 mb-4">
-                <div className="px-3 py-1.5 bg-[#8E2DE2] rounded-full text-xs sm:text-sm text-white font-medium flex items-center gap-2">
+                <div className="px-3 py-1.5 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] rounded-full text-xs sm:text-sm text-white font-medium flex items-center gap-2 shadow-lg shadow-[#8E2DE2]/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                   {new Date(listing.ticket.date).toLocaleDateString("id-ID", {
                     weekday: "long",
@@ -79,8 +79,10 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                     day: "numeric",
                   })}
                 </div>
-                <div className="px-3 py-1.5 bg-[#00F5A0] rounded-full text-xs sm:text-sm text-black font-medium">
-                  {listing.ticket.time}
+                <div className="px-3 py-1.5 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] rounded-full text-xs sm:text-sm text-white font-medium flex items-center gap-2 shadow-lg shadow-[#8E2DE2]/20">
+                  <span>⌚</span>
+                  <span>{listing.ticket.time}</span>
+                  <span className="text-white/80">WIB</span>
                 </div>
               </div>
               <h1 className="text-3xl sm:text-6xl font-bold text-white mb-4 leading-tight">
@@ -114,7 +116,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                 {/* Seller Card - Enhanced */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#8E2DE2] to-[#00F5A0] flex items-center justify-center text-xl font-bold text-white">
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5] flex items-center justify-center text-xl font-bold text-white">
                       {listing.user.name[0].toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -130,7 +132,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                     </div>
                   </div>
                   {listing.description && (
-                    <div className="mt-6 p-4 bg-[#F4F6F0] rounded-xl">
+                    <div className="mt-6 p-4 bg-gradient-to-r from-[#00D2FF]/5 to-[#3A7BD5]/5 rounded-xl">
                       <p className="text-[#4A5043] italic">{listing.description}</p>
                     </div>
                   )}
@@ -145,7 +147,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                     Event Details
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="p-4 bg-[#F4F6F0] rounded-xl flex items-center gap-4">
+                    <div className="p-4 bg-gradient-to-r from-[#00D2FF]/5 to-[#3A7BD5]/5 rounded-xl flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-xl">
                         📅
                       </div>
@@ -161,7 +163,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                         </p>
                       </div>
                     </div>
-                    <div className="p-4 bg-[#F4F6F0] rounded-xl flex items-center gap-4">
+                    <div className="p-4 bg-gradient-to-r from-[#00D2FF]/5 to-[#3A7BD5]/5 rounded-xl flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-xl">
                         ⌚
                       </div>
@@ -178,7 +180,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
               <div className="lg:col-span-1">
                 <div className="bg-white rounded-2xl p-6 shadow-sm sticky top-4 z-10">
                   <div className="space-y-6">
-                    <div className="p-4 rounded-xl bg-[#F4F6F0]">
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-[#00D2FF]/5 to-[#3A7BD5]/5">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-xl">
                           💺
@@ -228,7 +230,7 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
                       isOwner={currentUserId === listing.user._id.toString()}
                     />
 
-                    <div className="p-4 bg-[#F4F6F0] rounded-xl">
+                    <div className="p-4 bg-gradient-to-r from-[#00D2FF]/5 to-[#3A7BD5]/5 rounded-xl">
                       <div className="flex items-center gap-2 text-sm text-[#4A5043]">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />

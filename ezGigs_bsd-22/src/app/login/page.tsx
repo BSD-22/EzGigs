@@ -16,9 +16,9 @@ export default function LoginPage() {
   return (
     <>
       <FlashErrorComponents>
-        <div className="min-h-screen bg-[#E8EBE4] relative overflow-hidden">
+        <div className="min-h-screen bg-white relative overflow-hidden">
           {/* Background effects - sedikit lebih gelap */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#00D2FF]/20 via-[#3A7BD5]/10 to-transparent"></div>
+          <div className="absolute bg-white"></div>
           <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#00D2FF]/30 rounded-full blur-[128px] animate-pulse"></div>
           <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3A7BD5]/30 rounded-full blur-[128px] animate-pulse"></div>
 
@@ -43,8 +43,12 @@ export default function LoginPage() {
                         />
                       </Link>
                     </div>
-                    <h2 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">Your Gateway to Live Entertainment</h2>
-                    <p className="text-lg text-white/80">Experience the magic of live performances ✨</p>
+                    <h2 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                      Your Gateway to Live Entertainment
+                    </h2>
+                    <p className="text-lg text-white/80">
+                      Experience the magic of live performances ✨
+                    </p>
                   </div>
                 </div>
               </div>
@@ -54,7 +58,9 @@ export default function LoginPage() {
                 <div className="max-w-md mx-auto">
                   <div className="text-center mb-8">
                     <h1 className="text-3xl font-black mb-2">
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1E4D8C] to-[#0A2A5E]">Welcome Back!</span>
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1E4D8C] to-[#0A2A5E]">
+                        Welcome Back!
+                      </span>
                       <span className="text-black ml-2">👋</span>
                     </h1>
                     <p className="text-[#1E4D8C]">Let's get you signed in</p>
@@ -62,17 +68,18 @@ export default function LoginPage() {
 
                   {state.message && (
                     <div className="mb-6 p-4 bg-red-50/50 backdrop-blur-sm border border-red-100 rounded-xl">
-                      <p className="text-center text-red-500">{state.message}</p>
+                      <p className="text-center text-red-500">
+                        {state.message}
+                      </p>
                     </div>
                   )}
 
-                  <form
-                    action={dispatch}
-                    className="space-y-6">
+                  <form action={dispatch} className="space-y-6">
                     <div className="space-y-2">
                       <label
                         htmlFor="email"
-                        className="text-[#1E4D8C] text-sm font-medium flex items-center">
+                        className="text-[#1E4D8C] text-sm font-medium flex items-center"
+                      >
                         Email
                       </label>
                       <input
@@ -89,7 +96,8 @@ export default function LoginPage() {
                     <div className="space-y-2">
                       <label
                         htmlFor="password"
-                        className="text-[#1E4D8C] text-sm font-medium flex items-center">
+                        className="text-[#1E4D8C] text-sm font-medium flex items-center"
+                      >
                         Password
                       </label>
                       <input
@@ -105,13 +113,15 @@ export default function LoginPage() {
 
                     <button
                       type="submit"
-                      className="w-full py-4 bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#3A7BD5]/25 flex items-center justify-center group">
+                      className="w-full py-4 bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#3A7BD5]/25 flex items-center justify-center group"
+                    >
                       <span>Sign In</span>
                       <svg
                         className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform"
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24">
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -126,13 +136,16 @@ export default function LoginPage() {
                         <div className="w-full border-t border-[#00D2FF]/20"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white/80 text-[#1E4D8C]">New to EzGigs?</span>
+                        <span className="px-4 bg-white/80 text-[#1E4D8C]">
+                          New to EzGigs?
+                        </span>
                       </div>
                     </div>
 
                     <Link
                       href="/register"
-                      className="block w-full py-3 px-4 border-2 border-[#00D2FF] text-[#3A7BD5] font-bold rounded-xl hover:bg-gradient-to-r hover:from-[#00D2FF] hover:to-[#3A7BD5] hover:text-white transition-all text-center">
+                      className="block w-full py-3 px-4 border-2 border-[#00D2FF] text-[#3A7BD5] font-bold rounded-xl hover:bg-gradient-to-r hover:from-[#00D2FF] hover:to-[#3A7BD5] hover:text-white transition-all text-center"
+                    >
                       Create an Account
                     </Link>
                   </form>
