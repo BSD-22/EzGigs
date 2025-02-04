@@ -44,6 +44,22 @@ export type TicketPurchase = {
   purchaseDate: Date;
 };
 
+export type SerializedTicket = {
+    _id: string;
+    name: string;
+    venue: string;
+    date: string;
+    time: string;
+    description: string;
+    image: string;
+    sellerId?: string;
+    seatCategories: SeatCategory[];
+    location?: {
+        latitude: number;
+        longitude: number;
+    };
+};
+
 export const purchaseTicket = async (
   ticketId: string,
   categoryName: string,
@@ -369,5 +385,20 @@ export const getTicketByPurchaseId = async (purchaseId: string): Promise<CustomR
       seatNumber: purchase.seatNumber,
       price: purchase.price,
     },
+  };
+};
+
+
+export const updateTicket = async (ticketId: string, updateData: Partial<TicketModel>): Promise<CustomResponse<unknown>> => {
+  const db = await getDb();
+  const collection: Collection<TicketModel> = db.collection("Ticket");
+
+  const result = await collection.updateOne({ _id: ObjectId.createFromHexString(ticketId) }, { $set: updateData });
+
+  await redis.del("tickets");
+
+  return {
+    statusCode: 200,
+    data: result.acknowledged,
   };
 };
