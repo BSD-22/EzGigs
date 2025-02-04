@@ -45,6 +45,7 @@ export default function Home() {
   });
   const isSubmittingRef = useRef(false);
   const hasVerifiedPaymentRef = useRef(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
   const handleTicketClick = (ticketId: string) => {
     router.push(`/home/ticket/${ticketId}`);
@@ -259,9 +260,19 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const filteredAndSortedTickets = tickets
     .filter((ticket) => {
-      const matchesSearch = ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = ticket.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) || ticket.venue.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
 
       if (!startDate && !endDate) return matchesSearch;
 
