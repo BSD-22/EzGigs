@@ -4,6 +4,7 @@ import { actionLoginHandler } from "@/services/login";
 import { useActionState } from "react";
 import Link from "next/link";
 import FlashErrorComponents from "@/components/FlashErrorComponents";
+import Image from "next/image";
 
 const initialState = {
   success: false,
@@ -36,7 +37,9 @@ export default function LoginPage() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12 text-center">
                     <div className="w-40 h-40 bg-white/10 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm border border-white/20 hover:scale-105 transition-all duration-300">
                       <Link href={"/"}>
-                        <img
+                        <Image
+                          width={200}
+                          height={200}
                           src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20size.png?updatedAt=1738307076179"
                           alt="Logo"
                           className="w-32"
@@ -57,7 +60,7 @@ export default function LoginPage() {
                       <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1E4D8C] to-[#0A2A5E]">Welcome Back!</span>
                       <span className="text-black ml-2">👋</span>
                     </h1>
-                    <p className="text-[#1E4D8C]">Let's get you signed in</p>
+                    <p className="text-[#1E4D8C]">Let&apos;s get you signed in</p>
                   </div>
 
                   {state.message && (
