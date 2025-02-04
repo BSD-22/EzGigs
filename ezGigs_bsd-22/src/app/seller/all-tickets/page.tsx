@@ -83,20 +83,47 @@ const SellerAllTicketsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex-1 p-7 flex items-center justify-center">
-        <div className="w-24 h-24 rounded-full border-4 border-[#8E2DE2] border-t-transparent animate-spin"></div>
+      <div className="flex-1 p-7 bg-[#FFF8F3]">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-4xl font-black text-[#2D1810]">All Tickets 🎫</h1>
+          <div className="w-32 h-10 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
+        </div>
+        <div className="flex gap-4 mb-6">
+          <div className="flex-1 h-10 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
+          <div className="w-48 h-10 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl overflow-hidden shadow-sm">
+              <div className="h-48 bg-[#FF8008]/10 animate-pulse"></div>
+              <div className="p-6">
+                <div className="h-6 bg-[#FF8008]/10 rounded animate-pulse mb-4 w-3/4"></div>
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, j) => (
+                    <div key={j} className="h-4 bg-[#FF8008]/10 rounded animate-pulse w-2/3"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   // Modify the return statement, add the toggle button before the search inputs
   return (
-    <div className="flex-1 p-7">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text">All Tickets 🎫</h1>
+    <div className="flex-1 p-7 bg-[#FFF8F3]">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-black text-[#2D1810]">All Tickets 🎫</h1>
         <button
           onClick={() => setShowOwnTickets(!showOwnTickets)}
-          className={`px-4 py-2 rounded-lg transition-colors ${showOwnTickets ? "bg-[#8E2DE2] text-white" : "bg-[#8E2DE2]/10 text-[#8E2DE2]"}`}>
+          className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${
+            showOwnTickets 
+              ? "bg-[#FF8008] text-white" 
+              : "bg-[#FF8008]/10 text-[#FF8008] hover:bg-[#FF8008]/20"
+          }`}
+        >
           {showOwnTickets ? "Show All Tickets" : "Show My Tickets"}
         </button>
       </div>
@@ -108,7 +135,7 @@ const SellerAllTicketsPage = () => {
             placeholder="Search tickets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+            className="w-full px-4 py-2 bg-white/80 border border-[#FF8008]/10 rounded-lg focus:outline-none focus:border-[#FF8008] text-[#2D1810] placeholder-[#2D1810]/40"
           />
         </div>
         <div className="w-48">
@@ -116,7 +143,7 @@ const SellerAllTicketsPage = () => {
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+            className="w-full px-4 py-2 bg-white/80 border border-[#FF8008]/10 rounded-lg focus:outline-none focus:border-[#FF8008] text-[#2D1810]"
           />
         </div>
       </div>
@@ -125,7 +152,7 @@ const SellerAllTicketsPage = () => {
         {filteredTickets.map((ticket) => (
           <div
             key={ticket._id.toString()}
-            className="bg-black/40 backdrop-blur-xl border border-[#8E2DE2]/20 rounded-xl overflow-hidden">
+            className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-[#FF8008]/30 transition-all">
             <div className="relative h-48 w-full">
               <Image
                 src={ticket.image}
@@ -135,8 +162,8 @@ const SellerAllTicketsPage = () => {
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-bold mb-2 text-white">{ticket.name}</h3>
-              <div className="space-y-2 text-sm text-gray-400">
+              <h3 className="text-xl font-bold mb-2 text-[#2D1810]">{ticket.name}</h3>
+              <div className="space-y-2 text-[#2D1810]/70">
                 <div className="flex items-center gap-2">
                   <span>📍</span>
                   <span>{ticket.venue}</span>
@@ -169,19 +196,19 @@ const SellerAllTicketsPage = () => {
                   <>
                     <button
                       onClick={() => router.push(`/seller/edit-ticket/${ticket._id}`)}
-                      className="flex-1 px-4 py-2 bg-[#8E2DE2]/10 text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2]/20 transition-colors">
+                      className="flex-1 px-4 py-2 bg-[#FF8008]/10 text-[#2D1810] rounded-lg hover:bg-[#FF8008]/20 transition-colors">
                       Edit
                     </button>
                     <button
                       onClick={() => router.push(`/seller/ticket/${ticket._id}`)}
-                      className="flex-1 px-4 py-2 bg-[#00F5A0]/10 text-[#00F5A0] rounded-lg hover:bg-[#00F5A0]/20 transition-colors">
+                      className="flex-1 px-4 py-2 bg-[#FF8008] text-white rounded-lg hover:bg-[#FF8008]/90 transition-colors shadow-lg shadow-[#FF8008]/20">
                       View Details
                     </button>
                   </>
                 ) : (
                   <button
                     onClick={() => router.push(`/seller/ticket/${ticket._id}`)}
-                    className="w-full px-4 py-2 bg-[#00F5A0]/10 text-[#00F5A0] rounded-lg hover:bg-[#00F5A0]/20 transition-colors">
+                    className="w-full px-4 py-2 bg-[#FF8008] text-white rounded-lg hover:bg-[#FF8008]/90 transition-colors shadow-lg shadow-[#FF8008]/20">
                     View Details
                   </button>
                 )}
@@ -193,11 +220,11 @@ const SellerAllTicketsPage = () => {
 
       {filteredTickets.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#8E2DE2]/10 flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#FF8008]/10 flex items-center justify-center">
             <span className="text-4xl">🎫</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-400">No Tickets Found</h2>
-          <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
+          <h2 className="text-2xl font-bold text-[#2D1810]">No Tickets Found</h2>
+          <p className="text-[#2D1810]/60 mt-2">Try adjusting your search or filter criteria</p>
         </div>
       )}
     </div>

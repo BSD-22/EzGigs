@@ -9,8 +9,8 @@ const SellerCreateTicket = async () => {
 
   if (!token) {
     return (
-      <div className="flex-1 p-7">
-        <div className="text-center text-red-500">Unauthorized access. Please login first.</div>
+      <div className="flex-1 p-7 bg-[#FFF8F3]">
+        <div className="text-center text-[#FF8008]">Unauthorized access. Please login first.</div>
       </div>
     );
   }
@@ -23,15 +23,15 @@ const SellerCreateTicket = async () => {
 
   if (!userId) {
     return (
-      <div className="flex-1 p-7">
-        <div className="text-center text-red-500">Unauthorized access. Please login first.</div>
+      <div className="flex-1 p-7 bg-[#FFF8F3]">
+        <div className="text-center text-[#FF8008]">Unauthorized access. Please login first.</div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-7">
-      <h1 className="text-4xl font-black bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-transparent bg-clip-text mb-6">Create New Ticket 🎫</h1>
+    <div className="flex-1 p-7 bg-[#FFF8F3]">
+      <h1 className="text-4xl font-black text-[#2D1810] mb-6">Create New Ticket 🎫</h1>
       <CreateTicketForm sellerId={userId} />
     </div>
   );
