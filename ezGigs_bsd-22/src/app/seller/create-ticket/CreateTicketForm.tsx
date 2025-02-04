@@ -123,160 +123,163 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
     }
   };
 
+  const inputClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/20 focus:border-[#FF8008] focus:ring-2 focus:ring-[#FF8008]/20 outline-none transition-colors bg-white/80 backdrop-blur-sm shadow-sm text-[#2D1810] placeholder-gray-400";
+  const labelClasses = "block text-[#2D1810]/80 font-medium mb-2 text-sm";
+  const buttonClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/30 text-[#FF8008] hover:bg-[#FF8008]/5 active:bg-[#FF8008]/10 transition-colors";
+  const submitButtonClasses = "w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#FF8008] to-[#FFA03C] text-white font-medium hover:opacity-90 active:opacity-80 transition-all shadow-lg shadow-[#FF8008]/10";
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-2xl space-y-6">
+      className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Event Name</label>
+        <label className={labelClasses}>Event Name</label>
         <input
           type="text"
+          name="name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+          className={inputClasses}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Venue</label>
+        <label className={labelClasses}>Venue</label>
         <input
           type="text"
+          name="venue"
           value={formData.venue}
           onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-          className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+          className={inputClasses}
+          required
+        />
+      </div>
+
+      <div>
+        <label className={labelClasses}>Description</label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className={`${inputClasses} min-h-[100px]`}
           required
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Date</label>
+          <label className={labelClasses}>Date</label>
           <input
             type="date"
+            name="date"
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+            className={inputClasses}
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Time</label>
+          <label className={labelClasses}>Time</label>
           <input
             type="time"
+            name="time"
             value={formData.time}
             onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-            className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+            className={inputClasses}
             required
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2] h-32"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Image URL</label>
+        <label className={labelClasses}>Image URL</label>
         <input
           type="url"
+          name="image"
           value={formData.image}
           onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-          className="w-full px-4 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg focus:outline-none focus:border-[#8E2DE2]"
+          className={inputClasses}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-400 mb-1">Event Location</label>
+        <label className={labelClasses}>Event Location</label>
         <p className="text-sm text-gray-400 mb-2">Click on the map to set the event location</p>
         <div className="rounded-lg overflow-hidden border border-[#8E2DE2]/20">{googleMapsScript}</div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <label className="text-sm font-medium text-gray-400">Seat Categories</label>
-          <button
-            type="button"
-            onClick={addSeatCategory}
-            className="px-3 py-1 bg-[#8E2DE2]/20 text-[#8E2DE2] rounded-lg hover:bg-[#8E2DE2]/30">
-            Add Category
-          </button>
-        </div>
-
+      <div>
+        <label className={labelClasses}>Ticket Categories</label>
         {formData.seatCategories.map((category, index) => (
-          <div
-            key={index}
-            className="p-4 bg-black/20 rounded-lg space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium">Category {index + 1}</h3>
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeSeatCategory(index)}
-                  className="text-red-500 hover:text-red-400">
-                  Remove
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
+          <div key={index} className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
+            <div className="flex flex-col gap-4 mb-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Name</label>
+                <label className={labelClasses}>Category Name</label>
                 <input
                   type="text"
                   value={category.name}
                   onChange={(e) => handleSeatCategoryChange(index, "name", e.target.value)}
-                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  className={inputClasses}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Price (Rp)</label>
+                <label className={labelClasses}>Price</label>
                 <input
                   type="number"
                   value={category.price}
-                  onChange={(e) => handleSeatCategoryChange(index, "price", e.target.value)}
-                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  onChange={(e) => handleSeatCategoryChange(index, "price", Number(e.target.value))}
+                  className={inputClasses}
                   required
-                  min="0"
                 />
               </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Total Seats</label>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className={labelClasses}>Total Seats</label>
                 <input
                   type="number"
                   value={category.totalSeats}
                   onChange={(e) => handleSeatCategoryChange(index, "totalSeats", Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-black/40 border border-[#8E2DE2]/20 rounded-lg"
+                  className={inputClasses}
                   required
-                  min="1"
                 />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={() => removeSeatCategory(index)}
+                  className={`${buttonClasses} w-full sm:w-32 py-2.5`}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           </div>
         ))}
+        <button
+          type="button"
+          onClick={addSeatCategory}
+          className={buttonClasses}
+        >
+          Add Category
+        </button>
       </div>
 
       <div className="flex gap-4">
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex-1 py-3 bg-black/40 text-white font-semibold rounded-lg hover:bg-black/60 transition-colors">
+          className="flex-1 p-3 bg-black/40 text-white font-semibold rounded-lg hover:bg-black/60 transition-colors">
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className={`flex-1 py-3 bg-gradient-to-r from-[#8E2DE2] to-[#00F5A0] text-white font-semibold rounded-lg transition-opacity ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
-          }`}>
+          className={submitButtonClasses}
+        >
           {loading ? "Creating..." : "Create Ticket"}
         </button>
       </div>
