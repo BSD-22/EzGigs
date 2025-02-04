@@ -34,12 +34,7 @@ export async function POST(request: NextRequest) {
       };
 
       if (status === "paid" || status === "complete") {
-        await updateTicketPurchaseStatus(
-          purchaseId,
-          "paid",
-          payment_intent,
-          { userId: metadata.userId } // Remove discountApplied from here
-        );
+        await updateTicketPurchaseStatus(purchaseId, "paid", payment_intent, { userId: metadata.userId });
 
         return NextResponse.json<CustomResponse<unknown>>({
           statusCode: 200,
