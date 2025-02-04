@@ -214,7 +214,7 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
         <label className={labelClasses}>Ticket Categories</label>
         {formData.seatCategories.map((category, index) => (
           <div key={index} className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-col gap-4 mb-4">
               <div>
                 <label className={labelClasses}>Category Name</label>
                 <input
@@ -236,8 +236,8 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
                 <label className={labelClasses}>Total Seats</label>
                 <input
                   type="number"
@@ -251,7 +251,7 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
                 <button
                   type="button"
                   onClick={() => removeSeatCategory(index)}
-                  className={buttonClasses}
+                  className={`${buttonClasses} w-full sm:w-32 py-2.5`}
                 >
                   Remove
                 </button>

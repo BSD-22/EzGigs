@@ -126,27 +126,27 @@ const SellerPage = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
-          <p className="text-[#2D1810]/70 text-sm">Total Tickets</p>
+          <p className="text-[#2D1810]/90 text-sm font-medium">Total Tickets</p>
           <p className="text-3xl font-bold mt-2 text-[#2D1810]">{stats.totalTickets}</p>
-          <div className="mt-2 text-xs text-[#FF8008]">All time</div>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">All time</div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
-          <p className="text-[#2D1810]/70 text-sm">Tickets Sold</p>
+          <p className="text-[#2D1810]/90 text-sm font-medium">Tickets Sold</p>
           <p className="text-3xl font-bold mt-2 text-[#2D1810]">{stats.ticketsSold}</p>
-          <div className="mt-2 text-xs text-[#FF8008]">{stats.successRate}% success rate</div>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">{stats.successRate}% success rate</div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
-          <p className="text-[#2D1810]/70 text-sm">Total Revenue</p>
+          <p className="text-[#2D1810]/90 text-sm font-medium">Total Revenue</p>
           <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.revenue.toLocaleString("id-ID")}</p>
-          <div className="mt-2 text-xs text-[#FF8008]">
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">
             {stats.revenueGrowth > 0 ? "+" : ""}
             {stats.revenueGrowth}% from last month
           </div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
-          <p className="text-[#2D1810]/70 text-sm">Average Price</p>
+          <p className="text-[#2D1810]/90 text-sm font-medium">Average Price</p>
           <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.averagePrice.toLocaleString("id-ID")}</p>
-          <div className="mt-2 text-xs text-[#FF8008]">Per ticket</div>
+          <div className="mt-2 text-xs text-[#FF8008] font-medium">Per ticket</div>
         </div>
       </div>
 
@@ -205,8 +205,8 @@ const SellerPage = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-[#FF8008]/10 flex items-center justify-center">💰</div>
                   <div>
-                    <p className="font-medium">Ticket Sold</p>
-                    <p className="text-sm text-[#2D1810]/60">
+                    <p className="font-medium text-[#2D1810]">Ticket Sold</p>
+                    <p className="text-sm text-[#2D1810]/70">
                       {activity.eventName} - Rp {activity.price.toLocaleString("id-ID")}
                     </p>
                   </div>
