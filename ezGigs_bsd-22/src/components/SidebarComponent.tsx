@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { Ticket, Target, History, Crown, Star, Store, MessageCircle, Heart, ShoppingCart, ChevronLeft } from "lucide-react";
+import { Ticket, Target, History, Crown, Star, Store, MessageCircle, ChevronLeft } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 
 interface SideBarProps {
@@ -130,8 +130,6 @@ const SideBar = ({ userData }: SideBarProps) => {
             { href: "/home/subscription", icon: <Crown className="w-5 h-5" />, label: "Subscription" },
             { href: "/home/marketplace", icon: <Store className="w-5 h-5" />, label: "Marketplace" },
             { href: "/home/chats", icon: <MessageCircle className="w-5 h-5" />, label: "Chats" },
-            { href: "/home/wishlist", icon: <Heart className="w-5 h-5" />, label: "Wishlist" },
-            { href: "/home/cart", icon: <ShoppingCart className="w-5 h-5" />, label: "Cart" },
           ].map((item) => (
             <li
               key={item.href}

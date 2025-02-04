@@ -47,16 +47,17 @@ const SellerPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-7 bg-[#FFF8F3]">
+      <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
         <div className="mb-8">
-          <h1 className="text-4xl font-black text-[#2D1810]">Seller Dashboard 🎯</h1>
+          <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
         </div>
         {/* Stats Grid Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
+            >
               <div className="h-4 bg-[#FF8008]/10 rounded animate-pulse mb-2 w-20"></div>
               <div className="h-8 bg-[#FF8008]/10 rounded animate-pulse mb-2"></div>
               <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-24"></div>
@@ -69,7 +70,8 @@ const SellerPage = () => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
+            >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
                 <div className="flex-1">
@@ -85,9 +87,7 @@ const SellerPage = () => {
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
           <div className="h-6 bg-[#FF8008]/10 rounded animate-pulse mb-6 w-32"></div>
           {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between py-4 border-b border-[#FF8008]/10 last:border-b-0">
+            <div key={i} className="flex items-center justify-between py-4 border-b border-[#FF8008]/10 last:border-b-0">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-[#FF8008]/10 rounded-full animate-pulse"></div>
                 <div>
@@ -118,9 +118,9 @@ const SellerPage = () => {
   };
 
   return (
-    <div className="flex-1 p-7 bg-[#FFF8F3]">
+    <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
       <div className="mb-8">
-        <h1 className="text-4xl font-black text-[#2D1810]">Seller Dashboard 🎯</h1>
+        <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
       </div>
 
       {/* Stats Grid */}
