@@ -1,145 +1,230 @@
+import Link from "next/link";
+
 const Footer = () => {
   return (
     <>
-      <footer className="bg-white py-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-white py-10 border border-top-1">
+        <div className="max-w-7xl mx-auto px-28">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 ">
             {/* Logo and Social Media */}
             <div>
-              <h2 className="text-xl font-bold flex items-center text-black ">
-                <span className="mr-2">
-                  <img
-                    src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20G.png?updatedAt=1738307076179"
-                    alt="gigs"
-                    className="w-10"
-                  />
-                </span>{" "}
-                EzGigs
-              </h2>
+              <Link href={"/"}>
+                <img
+                  src="https://ik.imagekit.io/3a0xukows/y1.png?updatedAt=1738605688822"
+                  alt="gigs"
+                  className="w-32"
+                />
+              </Link>
+
               <div className="flex space-x-4 mt-4">
-                <a href="#" className="text-gray-600 hover:text-black">
-                  📸
-                </a>
-                <a href="#" className="text-gray-600 hover:text-black">
-                  ✖️
-                </a>
-                <a href="#" className="text-gray-600 hover:text-black">
-                  🔗
-                </a>
-                <a href="#" className="text-gray-600 hover:text-black">
-                  📘
-                </a>
-                <a href="#" className="text-gray-600 hover:text-black">
-                  ▶️
-                </a>
+                <Link href={"https://www.instagram.com/"}>
+                  <img
+                    src="https://ik.imagekit.io/3a0xukows/instagram%20(1).png?updatedAt=1738630399808"
+                    alt="instagram"
+                    className="w-5"
+                  />
+                </Link>
+                <Link href={"https://x.com/?lang=en&mx=2"}>
+                  <img
+                    src="https://ik.imagekit.io/3a0xukows/twitter%20(1).png?updatedAt=1738630399909"
+                    alt="X"
+                    className="w-5"
+                  />
+                </Link>
+                <Link href={"https://www.linkedin.com/home"}>
+                  <img
+                    src="https://ik.imagekit.io/3a0xukows/linkedin.png?updatedAt=1738630399804"
+                    alt="Linkedin"
+                    className="w-5"
+                  />
+                </Link>
+                <Link
+                  href={
+                    "https://www.facebook.com/login/?privacy_mutation_token=eyJ0eXBlIjowLCJjcmVhdGlvbl90aW1lIjoxNzM4NjUxOTY3LCJjYWxsc2l0ZV9pZCI6MjY5NTQ4NDUzMDcyMDk1MX0%3D"
+                  }
+                >
+                  <img
+                    src="https://ik.imagekit.io/3a0xukows/facebook.png?updatedAt=1738630399804"
+                    alt="facebook"
+                    className="w-5"
+                  />
+                </Link>
+                <Link href={"https://www.youtube.com/"}>
+                  <img
+                    src="https://ik.imagekit.io/3a0xukows/youtube.png?updatedAt=1738630399746"
+                    alt="youtube"
+                    className="w-5"
+                  />
+                </Link>
               </div>
-              <button className="mt-4 px-4 py-2 bg-gray-100 border rounded text-sm">
-                🌍 English ▼
+              <button className=" mt-14 px-4 py-2 bg-white border rounded text-sm">
+                <span className="text-sm flex items-center flex justify-center text-black font-semibold">
+                  <img
+                    className="w-5 mr-2"
+                    src="https://ik.imagekit.io/3a0xukows/language.png?updatedAt=1738630667978"
+                    alt="flag"
+                  />
+                  English
+                </span>
               </button>
+              <div className="mt-6 text-sm">
+                <p className="text-gray-600">Online Ticket Production</p>
+                <p className="text-gray-600">Cookie settings</p>
+                <p className="text-black mt-4 text-sm">
+                  {" "}
+                  © 2025, EzGigs.com, Inc.
+                </p>
+              </div>
             </div>
-            {/* Company */}
-            <div>
-              <h3 className="font-semibold mb-2">Company</h3>
+
+            {/* About Us */}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2 text-black">About Us</h3>
               <ul className="space-y-2 text-gray-600">
                 <li>
-                  <a href="#" className="hover:underline">
-                    About us
-                  </a>
+                  <Link href={"/login"} className="hover:underline text-sm">
+                    {" "}
+                    Sign in
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Security
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
                     Status
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Terms &amp; privacy
-                  </a>
-                </li>
-              </ul>
-            </div>
-            {/* Download */}
-            <div>
-              <h3 className="font-semibold mb-2">Download</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>
-                  <a href="#" className="hover:underline">
-                    iOS &amp; Android
-                  </a>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    View Events
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Mac &amp; Windows
-                  </a>
+                  <Link
+                    href={"/help-centre"}
+                    className="hover:underline text-sm"
+                  >
+                    {" "}
+                    FAQ
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Calendar
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Web Clipper
-                  </a>
+                  <Link
+                    href={"/help-centre"}
+                    className="hover:underline text-sm"
+                  >
+                    {" "}
+                    Terms & Privacy
+                  </Link>
                 </li>
               </ul>
             </div>
-            {/* Resources */}
-            <div>
-              <h3 className="font-semibold mb-2">Resources</h3>
+            {/* Featured */}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2 text-black">Featured</h3>
               <ul className="space-y-2 text-gray-600">
                 <li>
-                  <a href="#" className="hover:underline">
-                    Help center
-                  </a>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    AI
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Pricing
-                  </a>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    Face Recognation
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
-                    Blog
-                  </a>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Location
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    Transaction
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            {/* Events */}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2 text-black">Events</h3>
+
+              <ul className="space-y-2 text-gray-600">
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Festival
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Concert
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Sports
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Workshop
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    Teater & Drama
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/home"} className="hover:underline text-sm">
+                    {" "}
+                    All Category
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            {/* EzGigs for*/}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2 text-black">EzGigs for</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    Enterprise
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    Small Business
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
+                    Personal
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/"} className="hover:underline text-sm">
+                    {" "}
                     Community
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Integrations
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Templates
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Affiliates
-                  </a>
+                  </Link>
                 </li>
               </ul>
+              <div className="text-sm mt-20 text-black font-bold">
+                <Link href={"/home"}>Explore more →</Link>
+              </div>
             </div>
-          </div>
-          {/* Footer Bottom */}
-          <div className="mt-10 text-gray-500 text-sm text-center">
-            <p>Do Not Sell or Share My Info | Cookie settings</p>
-            <p> 2025 Notion Labs, Inc.</p>
           </div>
         </div>
       </footer>

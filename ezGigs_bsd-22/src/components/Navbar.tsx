@@ -40,15 +40,15 @@ const Navbar = () => {
   };
   return (
     <>
-      <nav className="flex items-center justify-evenly p-2.5 sticky top-0 bg-white z-50">
+      <nav className="flex items-center justify-evenly px-6 sticky top-0 bg-white z-50">
         {/* Left Section - Reduced padding */}
         <div className="flex items-center px-8">
           <div className="flex items-center space-x-4">
             <Link href="/">
               <img
-                src="https://ik.imagekit.io/3a0xukows/gigs%20rainbow.png?updatedAt=1738598363582"
+                src="https://ik.imagekit.io/3a0xukows/y1.png?updatedAt=1738605688822  "
                 alt="Logo"
-                className="w-8 h-8"
+                className="w-28"
               />
             </Link>
           </div>
@@ -80,7 +80,7 @@ const Navbar = () => {
                   onMouseLeave={() => setIsTicketOpen(false)}
                 >
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -96,7 +96,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -112,7 +112,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -128,7 +128,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -144,7 +144,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -160,7 +160,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -202,7 +202,7 @@ const Navbar = () => {
                   onMouseLeave={() => setIsEventOpen(false)}
                 >
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -218,7 +218,7 @@ const Navbar = () => {
                     </div>
                   </Link>
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -260,7 +260,7 @@ const Navbar = () => {
                   onMouseLeave={() => setIsSubscriptionOpen(false)}
                 >
                   <Link
-                    href={"/home"}
+                    href={"/login"}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 text-black font-semibold text-sm"
                   >
                     <img
@@ -278,13 +278,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
-            <Link
-              href={"contact-us"}
-              className="font-semibold text-black px-4 py-2"
-            >
-              About Us
-            </Link>
           </div>
         </div>
 
@@ -309,7 +302,7 @@ const Navbar = () => {
               className="w-5 h-5"
             />
           </Link>
-          <Link href={"/my-tickets"}>
+          <Link href={"/login"}>
             <img
               src="https://ik.imagekit.io/3a0xukows/heart%20(1).png?updatedAt=1738592202042"
               alt="love"

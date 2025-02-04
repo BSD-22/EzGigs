@@ -5,7 +5,11 @@ import SidebarWrapper from "@/components/SidebarWrapper";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function HomeLayout({ children }: { children: React.ReactNode }) {
+export default function HomeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();

@@ -8,7 +8,9 @@ const showNotification = (ticket: TicketModel) => {
 
   if (Notification.permission === "granted") {
     new Notification("Upcoming Event Reminder! 🎫", {
-      body: `${ticket.name} is starting in less than a week!\nDate: ${new Date(ticket.date).toLocaleDateString()}\nTime: ${ticket.time}\nVenue: ${ticket.venue}`,
+      body: `${ticket.name} is starting in less than a week!\nDate: ${new Date(
+        ticket.date
+      ).toLocaleDateString()}\nTime: ${ticket.time}\nVenue: ${ticket.venue}`,
       icon: ticket.image,
       tag: `event-reminder-${ticket._id}`,
     });

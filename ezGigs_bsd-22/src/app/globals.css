@@ -33,3 +33,8 @@ body {
 .animate-pulse-slow {
   animation: pulse-slow 4s ease-in-out infinite;
 }
+
+/* Add this to your existing global styles */
+html {
+  scroll-behavior: smooth;
+}
