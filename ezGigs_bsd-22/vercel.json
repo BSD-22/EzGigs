@@ -6,11 +6,5 @@
       "dest": "/$1"
     }
   ],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
   "outputDirectory": "build"
 }
