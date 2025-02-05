@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "EzGigs",
-  description: "All in one placefor all event ticketing online selling & production",
+  description:
+    "All in one placefor all event ticketing online selling & production",
 };
 
 export default function RootLayout({

@@ -135,7 +135,6 @@ export default function LoginPage() {
                           <span className="px-4 bg-white/80 text-[#1E4D8C]">New to EzGigs?</span>
                         </div>
                       </div>
-
                       <Link
                         href="/register"
                         className="block w-full py-3 px-4 border-2 border-[#00D2FF] text-[#3A7BD5] font-bold rounded-xl hover:bg-gradient-to-r hover:from-[#00D2FF] hover:to-[#3A7BD5] hover:text-white transition-all text-center">
