@@ -327,7 +327,10 @@ export default function Home() {
         <div className="flex-1 p-3 sm:p-7 overflow-auto">
           <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-10">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-              <Header title="Upcoming Events" description="Discover and book your next unforgettable experience 🎉" />
+              <Header
+                title="Upcoming Events"
+                description="Discover and book your next unforgettable experience 🎉"
+              />
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -554,6 +557,7 @@ export default function Home() {
                         width={400}
                         height={300}
                         className="w-full rounded-xl"
+                        unoptimized
                       />
                       <div className="flex justify-center gap-3">
                         <button

@@ -7,13 +7,16 @@ export const GET = async (_: never, { params }: { params: Promise<{ id: string }
     const { id } = await params;
 
     const user = await getUserById(id as string);
-    if (!user) {
+    if (!user.data) {
       throw new Error("User not found");
     }
 
     return NextResponse.json<CustomResponse<unknown>>({
       statusCode: 200,
-      data: user,
+      data: {
+        _id: user.data._id,
+        hiddenChats: user.data.hiddenChats || [],
+      },
     });
   } catch (err) {
     console.error(err);

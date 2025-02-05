@@ -28,7 +28,7 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
       latitude: -6.2088,
       longitude: 106.8456,
     },
-    seatCategories: initialData.seatCategories.map(cat => ({
+    seatCategories: initialData.seatCategories.map((cat) => ({
       name: cat.name,
       price: cat.price,
       totalSeats: cat.totalSeats,
@@ -116,8 +116,6 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      const data = await res.json();
-
       if (res.ok) {
         router.push("/seller/all-tickets");
         router.refresh();
@@ -130,13 +128,17 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
     }
   };
 
-  const inputClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/20 focus:border-[#FF8008] focus:ring-2 focus:ring-[#FF8008]/20 outline-none transition-colors bg-white/80 backdrop-blur-sm shadow-sm text-[#2D1810] placeholder-gray-400";
+  const inputClasses =
+    "w-full px-4 py-2 rounded-xl border border-[#FF8008]/20 focus:border-[#FF8008] focus:ring-2 focus:ring-[#FF8008]/20 outline-none transition-colors bg-white/80 backdrop-blur-sm shadow-sm text-[#2D1810] placeholder-gray-400";
   const labelClasses = "block text-[#2D1810]/80 font-medium mb-2 text-sm";
   const buttonClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/30 text-[#FF8008] hover:bg-[#FF8008]/5 active:bg-[#FF8008]/10 transition-colors";
-  const submitButtonClasses = "w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#FF8008] to-[#FFA03C] text-white font-medium hover:opacity-90 active:opacity-80 transition-all shadow-lg shadow-[#FF8008]/10";
+  const submitButtonClasses =
+    "w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#FF8008] to-[#FFA03C] text-white font-medium hover:opacity-90 active:opacity-80 transition-all shadow-lg shadow-[#FF8008]/10";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6">
       <div>
         <label className={labelClasses}>Nama Event</label>
         <input
@@ -206,15 +208,15 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
       <div>
         <label className={labelClasses}>Lokasi Event</label>
         <p className="text-sm text-gray-400 mb-2">Klik pada peta untuk mengatur lokasi event</p>
-        <div className="rounded-lg overflow-hidden border border-[#8E2DE2]/20">
-          {googleMapsScript}
-        </div>
+        <div className="rounded-lg overflow-hidden border border-[#8E2DE2]/20">{googleMapsScript}</div>
       </div>
 
       <div>
         <label className={labelClasses}>Kategori Tiket</label>
         {formData.seatCategories.map((category, index) => (
-          <div key={index} className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
+          <div
+            key={index}
+            className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
             <div className="flex flex-col gap-4 mb-4">
               <div>
                 <label className={labelClasses}>Nama Kategori</label>
@@ -250,8 +252,7 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
             <button
               type="button"
               onClick={() => removeSeatCategory(index)}
-              className={buttonClasses}
-            >
+              className={buttonClasses}>
               Hapus Kategori
             </button>
           </div>
@@ -259,8 +260,7 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
         <button
           type="button"
           onClick={addSeatCategory}
-          className={buttonClasses}
-        >
+          className={buttonClasses}>
           Tambah Kategori
         </button>
       </div>
@@ -275,8 +275,7 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
         <button
           type="submit"
           disabled={loading}
-          className={submitButtonClasses}
-        >
+          className={submitButtonClasses}>
           {loading ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
       </div>
@@ -284,4 +283,4 @@ const EditTicketForm = ({ sellerId, initialData }: EditTicketFormProps) => {
   );
 };
 
-export default EditTicketForm; 
+export default EditTicketForm;

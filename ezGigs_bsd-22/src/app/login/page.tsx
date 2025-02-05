@@ -132,7 +132,7 @@ export default function LoginPage() {
                           <div className="w-full border-t border-[#00D2FF]/20"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                          <span className="px-4 bg-white/80 text-[#1E4D8C]">New to EzGigs?</span>
+                          <span className="px-4 bg-transparent text-[#1E4D8C]">New to EzGigs?</span>
                         </div>
                       </div>
                       <Link

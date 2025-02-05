@@ -182,7 +182,10 @@ export default function RegisterPage() {
                     <div className="w-full border-t border-[#00D2FF]/20"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white/80 text-[#1E4D8C]">Already have an account?</span>
+                    <span className="px-4 text-[#1E4D8C]">Already have an account?</span>
+                  </div>
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#00D2FF]/20"></div>
                   </div>
                 </div>
 
