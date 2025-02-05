@@ -3,6 +3,7 @@
 import { actionRegisterHandler } from "@/services/register";
 import { useActionState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const initialState = {
   success: false,
@@ -33,7 +34,9 @@ export default function RegisterPage() {
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12 text-center">
                 <div className="w-40 h-40 bg-white/10 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm border border-white/20 hover:scale-105 transition-all duration-300">
                   <Link href={"/"}>
-                    <img
+                    <Image
+                      width={200}
+                      height={200}
                       src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20size.png?updatedAt=1738307076179"
                       alt="Logo"
                       className="w-32"
