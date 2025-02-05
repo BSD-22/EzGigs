@@ -16,6 +16,7 @@ export default function PaymentVerification() {
     if (success === "true" && sessionId && purchaseId) {
       verifyMarketplacePayment(sessionId, purchaseId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const verifyMarketplacePayment = async (sessionId: string, purchaseId: string) => {
