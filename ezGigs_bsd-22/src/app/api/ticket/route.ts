@@ -1,4 +1,9 @@
-import { getAllTickets, getTicketById, purchaseTicket, TicketModel } from "@/db/models/ticket";
+import {
+  getAllTickets,
+  getTicketById,
+  purchaseTicket,
+  TicketModel,
+} from "@/db/models/ticket";
 import { createPaymentSession } from "@/services/stripe";
 import { CustomResponse } from "@/types";
 import { ObjectId } from "mongodb";
@@ -31,9 +36,25 @@ export const GET = async () => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = (await request.json()) as PurchaseRequestBody;
-    const { ticketId, categoryName, email: buyerEmail, name: buyerName, phone: buyerPhone, identityType, identityDetails } = body;
+    const {
+      ticketId,
+      categoryName,
+      email: buyerEmail,
+      name: buyerName,
+      phone: buyerPhone,
+      identityType,
+      identityDetails,
+    } = body;
 
-    if (!ticketId || !categoryName || !buyerEmail || !buyerName || !buyerPhone || !identityType || !identityDetails) {
+    if (
+      !ticketId ||
+      !categoryName ||
+      !buyerEmail ||
+      !buyerName ||
+      !buyerPhone ||
+      !identityType ||
+      !identityDetails
+    ) {
       return NextResponse.json<CustomResponse<null>>(
         {
           statusCode: 400,
@@ -76,15 +97,25 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (purchaseResult.statusCode !== 201 || !purchaseResult.data) {
-      return NextResponse.json(purchaseResult, { status: purchaseResult.statusCode });
+      return NextResponse.json(purchaseResult, {
+        status: purchaseResult.statusCode,
+      });
     }
 
     const purchaseData = purchaseResult.data as PurchaseResponse;
 
-    const stripeSession = await createPaymentSession(ticket.data, categoryName, userId, purchaseData.purchaseId.toString(), purchaseData.seatNumber);
+    const stripeSession = await createPaymentSession(
+      ticket.data,
+      categoryName,
+      userId,
+      purchaseData.purchaseId.toString(),
+      purchaseData.seatNumber
+    );
 
     if (stripeSession.statusCode !== 200) {
-      return NextResponse.json(stripeSession, { status: stripeSession.statusCode });
+      return NextResponse.json(stripeSession, {
+        status: stripeSession.statusCode,
+      });
     }
 
     return NextResponse.json<CustomResponse<unknown>>({

@@ -5,6 +5,7 @@ import { verifyToken } from "@/utils/jose";
 import { JosePayload } from "@/types";
 
 import StartSellingButton from "@/components/StartSellingButton";
+import Header from "@/components/Header";
 
 const HistoryPage = async () => {
   const cookieStore = await cookies();
@@ -36,7 +37,8 @@ const HistoryPage = async () => {
 
   return (
     <div className="flex-1 p-7 overflow-auto">
-      <h1 className="text-4xl font-black text-[#2C3228] mb-6">Sales History 📊</h1>
+      <Header title="Sales History 📊" description="Track your sales history here" />
+
 
       {!tickets.data?.soldTickets?.length ? (
         <div className="text-center py-12 bg-white rounded-2xl border border-[#D3D9C9]">

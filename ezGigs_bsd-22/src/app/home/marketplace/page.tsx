@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar";
 import { cookies } from "next/headers";
 import { decodeToken } from "@/utils/jose";
 import { JosePayload } from "@/types";
+import Header from "@/components/Header";
 
 const Marketplace = async () => {
   const cookieStore = await cookies();
@@ -18,8 +19,7 @@ const Marketplace = async () => {
     <div className="flex-1 p-5 md:p-7 overflow-auto bg-gradient-to-br from-[#F4F6F0] via-white to-[#E8EDE1]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl md:text-5xl font-black text-[#2C3228]">Ticket Marketplace</h1>
-          <p className="text-[#4A5043] mt-2">Find and sell tickets for your favorite events 🎫</p>
+          <Header title="Ticket Marketplace" description="Find and sell tickets for your favorite events 🎫" />
         </div>
         <form action="/home/marketplace/sell" className="mt-4 md:mt-0">
           <button

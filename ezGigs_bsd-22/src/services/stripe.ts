@@ -20,7 +20,9 @@ export const createPaymentSession = async (
   subscriptionType: "free" | "premium" | "vip" = "free"
 ): Promise<CustomResponse<StripeResponse>> => {
   try {
-    const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
+    const category = ticket.seatCategories.find(
+      (cat) => cat.name === categoryName
+    );
     if (!category) {
       return {
         statusCode: 400,
@@ -47,7 +49,13 @@ export const createPaymentSession = async (
             currency: "idr",
             product_data: {
               name: `${ticket.name} - ${category.name}`,
-              description: `Event at ${ticket.venue} on ${ticket.date} ${ticket.time}${discountPercentage > 0 ? ` (${discountPercentage}% Subscription Discount Applied)` : ""}`,
+              description: `Event at ${ticket.venue} on ${ticket.date} ${
+                ticket.time
+              }${
+                discountPercentage > 0
+                  ? ` (${discountPercentage}% Subscription Discount Applied)`
+                  : ""
+              }`,
               images: [ticket.image],
             },
             unit_amount: Math.round(finalPrice * 100), // Round to avoid floating point issues
@@ -84,7 +92,9 @@ export const createPaymentSession = async (
   }
 };
 
-export const verifyPaymentSession = async (sessionId: string): Promise<CustomResponse<unknown>> => {
+export const verifyPaymentSession = async (
+  sessionId: string
+): Promise<CustomResponse<unknown>> => {
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["payment_intent"],
@@ -108,7 +118,10 @@ export const verifyPaymentSession = async (sessionId: string): Promise<CustomRes
   }
 };
 
-export const createSubscriptionPaymentSession = async (planName: string, userId: string): Promise<CustomResponse<StripeResponse>> => {
+export const createSubscriptionPaymentSession = async (
+  planName: string,
+  userId: string
+): Promise<CustomResponse<StripeResponse>> => {
   try {
     const prices = {
       Silver: 149999,

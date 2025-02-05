@@ -74,10 +74,14 @@ export const purchaseTicket = async (
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const ticketsCollection: Collection<TicketModel> = db.collection("Ticket");
-  const purchasesCollection: Collection<WithoutId<TicketPurchase>> = db.collection("TicketPurchase");
-  const usersCollection: Collection<UserModel> = db.collection<UserModel>("User");
+  const purchasesCollection: Collection<WithoutId<TicketPurchase>> =
+    db.collection("TicketPurchase");
+  const usersCollection: Collection<UserModel> =
+    db.collection<UserModel>("User");
 
-  const ticket = await ticketsCollection.findOne({ _id: ObjectId.createFromHexString(ticketId) });
+  const ticket = await ticketsCollection.findOne({
+    _id: ObjectId.createFromHexString(ticketId),
+  });
   if (!ticket) {
     return {
       statusCode: 404,
@@ -85,7 +89,9 @@ export const purchaseTicket = async (
     };
   }
 
-  const category = ticket.seatCategories.find((cat) => cat.name === categoryName);
+  const category = ticket.seatCategories.find(
+    (cat) => cat.name === categoryName
+  );
   if (!category) {
     return {
       statusCode: 400,
@@ -121,7 +127,13 @@ export const purchaseTicket = async (
     $inc: { "seatCategories.$.availableSeats": -1 },
   };
 
-  await ticketsCollection.updateOne({ _id: ObjectId.createFromHexString(ticketId), "seatCategories.name": categoryName }, updateOperation);
+  await ticketsCollection.updateOne(
+    {
+      _id: ObjectId.createFromHexString(ticketId),
+      "seatCategories.name": categoryName,
+    },
+    updateOperation
+  );
 
   await redis.del("tickets");
 
@@ -145,7 +157,10 @@ export const purchaseTicket = async (
         },
       },
     };
-    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(buyerData.userId) }, buyerUpdateDoc);
+    await usersCollection.updateOne(
+      { _id: ObjectId.createFromHexString(buyerData.userId) },
+      buyerUpdateDoc
+    );
   }
 
   return {
@@ -158,13 +173,21 @@ export const purchaseTicket = async (
   };
 };
 
-export const updateTicketPurchaseStatus = async (purchaseId: string, status: "paid" | "failed", paymentIntent: { id: string } | undefined, { userId }: { userId: string }) => {
+export const updateTicketPurchaseStatus = async (
+  purchaseId: string,
+  status: "paid" | "failed",
+  paymentIntent: { id: string } | undefined,
+  { userId }: { userId: string }
+) => {
   const db = await getDb();
   const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
   const ticketsCollection = db.collection<TicketModel>("Ticket");
-  const usersCollection: Collection<UserModel> = db.collection<UserModel>("User");
+  const usersCollection: Collection<UserModel> =
+    db.collection<UserModel>("User");
 
-  const purchase = await purchasesCollection.findOne({ _id: ObjectId.createFromHexString(purchaseId) });
+  const purchase = await purchasesCollection.findOne({
+    _id: ObjectId.createFromHexString(purchaseId),
+  });
   if (!purchase) {
     return {
       statusCode: 404,
@@ -225,7 +248,10 @@ export const updateTicketPurchaseStatus = async (purchaseId: string, status: "pa
       },
     };
 
-    await usersCollection.updateOne({ _id: ObjectId.createFromHexString(userId) }, buyerUpdateDoc); // Changed from metadata.userId to userId
+    await usersCollection.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      buyerUpdateDoc
+    ); // Changed from metadata.userId to userId
   }
 
   return {
@@ -234,7 +260,32 @@ export const updateTicketPurchaseStatus = async (purchaseId: string, status: "pa
   };
 };
 
-export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> => {
+export const deleteExpiredTickets = async (): Promise<void> => {
+  const db = await getDb();
+  const ticketsCollection: Collection<TicketModel> = db.collection("Ticket");
+  const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
+
+  const currentDate = new Date();
+
+  const expiredTickets = await ticketsCollection.find({}).toArray();
+
+  for (const ticket of expiredTickets) {
+    const ticketDate = new Date(`${ticket.date} ${ticket.time}`);
+
+    if (ticketDate < currentDate) {
+      await ticketsCollection.deleteOne({ _id: ticket._id });
+      await purchasesCollection.deleteMany({ ticketId: ticket._id });
+
+      await redis.del("tickets");
+    }
+  }
+};
+
+export const getAllTickets = async (): Promise<
+  CustomResponse<TicketModel[]>
+> => {
+  await deleteExpiredTickets();
+
   const db = await getDb();
   const collection: Collection<TicketModel> = db.collection("Ticket");
 
@@ -257,16 +308,30 @@ export const getAllTickets = async (): Promise<CustomResponse<TicketModel[]>> =>
   };
 };
 
-export const getTicketById = async (id: string): Promise<CustomResponse<TicketModel>> => {
+export const getTicketById = async (
+  id: string
+): Promise<CustomResponse<TicketModel>> => {
   const db = await getDb();
   const collection: Collection<TicketModel> = db.collection("Ticket");
 
-  const ticket = await collection.findOne({ _id: ObjectId.createFromHexString(id) });
+  const ticket = await collection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
 
   if (!ticket) {
     return {
       statusCode: 404,
       message: "Ticket not found",
+    };
+  }
+
+  // Cek apakah tiket sudah kadaluwarsa
+  const ticketDate = new Date(`${ticket.date} ${ticket.time}`);
+  if (ticketDate < new Date()) {
+    await deleteExpiredTickets(); // Hapus tiket kadaluwarsa
+    return {
+      statusCode: 404,
+      message: "Ticket has expired",
     };
   }
 
@@ -288,7 +353,8 @@ export const createTicket = async (
   location: { latitude: number; longitude: number }
 ): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
-  const collection: Collection<WithoutId<TicketModel>> = db.collection("Ticket");
+  const collection: Collection<WithoutId<TicketModel>> =
+    db.collection("Ticket");
 
   const formattedSeatCategories = seatCategories.map((category) => ({
     ...category,
@@ -322,12 +388,18 @@ export const createTicket = async (
   };
 };
 
-export const getTicketByPurchaseId = async (purchaseId: string): Promise<CustomResponse<TicketModel & { seatNumber: string; price: number }>> => {
+export const getTicketByPurchaseId = async (
+  purchaseId: string
+): Promise<
+  CustomResponse<TicketModel & { seatNumber: string; price: number }>
+> => {
   const db = await getDb();
   const purchasesCollection = db.collection<TicketPurchase>("TicketPurchase");
   const ticketsCollection = db.collection<TicketModel>("Ticket");
 
-  const purchase = await purchasesCollection.findOne({ _id: ObjectId.createFromHexString(purchaseId) });
+  const purchase = await purchasesCollection.findOne({
+    _id: ObjectId.createFromHexString(purchaseId),
+  });
 
   if (!purchase) {
     return {
@@ -355,11 +427,17 @@ export const getTicketByPurchaseId = async (purchaseId: string): Promise<CustomR
   };
 };
 
-export const updateTicket = async (ticketId: string, updateData: Partial<TicketModel>): Promise<CustomResponse<unknown>> => {
+export const updateTicket = async (
+  ticketId: string,
+  updateData: Partial<TicketModel>
+): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection: Collection<TicketModel> = db.collection("Ticket");
 
-  const result = await collection.updateOne({ _id: ObjectId.createFromHexString(ticketId) }, { $set: updateData });
+  const result = await collection.updateOne(
+    { _id: ObjectId.createFromHexString(ticketId) },
+    { $set: updateData }
+  );
 
   await redis.del("tickets");
   return {
