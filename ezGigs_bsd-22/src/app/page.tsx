@@ -1,134 +1,211 @@
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Image from "next/image";
 
-const LandingPage = () => {
+export default function LandingPage() {
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center bg-gradient-to-br from-[#F4F6F0] via-[#E8EDE1] to-[#F4F6F0] relative overflow-hidden">
-        <nav className="flex items-center justify-between p-4">
-          {/* Left Section */}
-          <div className="flex items-center space-x-12">
-            <div className="flex items-center space-x-2">
-              <Link href="/">
-                <img
-                  src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20G.png?updatedAt=1738307050316"
-                  alt="Logo"
-                  className="w-10"
-                />
-              </Link>
-              <span className="text-xl font-bold text-[#3b4135]">EzGigs</span>
-            </div>
-            <div className="flex items-center space-x-6">
-              <Link
-                href="/home"
-                className="flex space-x-2 text-[#3b4135] font-semibols "
-              >
-                All-tickets
-              </Link>
-              <Link
-                href="/home"
-                className="flex space-x-2 text-[#3b4135] font-semibols "
-              >
-                Category
-              </Link>
-              <Link
-                href="/home"
-                className="flex space-x-2 text-[#3b4135] font-semibols "
-              >
-                Event
-              </Link>
-              <Link
-                href="/home"
-                className="flex space-x-2 text-[#3b4135] font-semibols "
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/home"
-                className="flex space-x-2 text-[#3b4135] font-semibols "
-              >
-                Subscription
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center space-x-4">
-            <a href="/contactUs" className="text-[#3b4135] font-semibols ">
-              Contact Us
-            </a>
-            <span className="text-gray-300 text-3xl ">|</span>
-            <a href="/login" className="text-[#3b4135] font-bold ">
-              Sign in
-            </a>
-            <a
-              href="/register"
-              className="px-4 py-2 bg-[#3b4135] text-white rounded-md font-bold text-sm"
-            >
-              Get Ticket free
-            </a>
-          </div>
-        </nav>
-        {/* Hero Section */}
-        <div className="flex-1 flex justify-center items-center">
-          <div className="flex flex-col md:flex-row px-6 py-16 space-y-8 md:space-y-0 md:space-x-8">
-            <div className="max-w-4xl mx-auto text-center md:text-left md:mr-8">
-              <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-                All in one place
-              </h1>
-              <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-                for all event ticketing online
-              </h1>
-              <h1 className="text-5xl font-bold text-gray-900 md:text-5xl">
-                selling & production
-              </h1>
-
-              <p className="mt-4 text-lg text-gray-600">
-                Discover 1000+ Ticket online for all event, <br />
-                get or create one now!
-              </p>
-              <div className="mt-8 flex justify-center space-x-4 md:justify-start">
-                <Link
-                  href={"/home"}
-                  className="px-6 py-3 bg-[#3b4135] text-white border border-[#3b4135] font-bold rounded-md hover:border-white"
-                >
-                  Get Started
-                </Link>
-                <Link
-                  href={"/home"}
-                  className="px-6 py-3 bg-white text-[#3b4135] border border-white font-bold rounded-md hover:border-gray-300"
-                >
-                  Event
-                </Link>
-              </div>
-            </div>
-            <div className="mt-12 md:mt-0 self-center">
-              <img
-                src="https://ik.imagekit.io/3a0xukows/ticket.png?updatedAt=1738314771948"
-                alt="Illustration"
-                className="mx-auto w-96 max-w-3xl"
-              />
-            </div>
-          </div>
+      <div className="py-2 bg-white">
+        <div className="flex items-center justify-end gap-3 max-w-6xl mx-auto">
+          <Link href={"/about-us"} className="text-black font-semibold text-xs">
+            About Us
+          </Link>
+          <span>|</span>
+          <Link
+            href={"/help-centre"}
+            className="text-black font-semibold text-xs"
+          >
+            Help
+          </Link>
+          <span>|</span>
+          <Link href={"/register"} className="text-black font-semibold text-xs">
+            Join Us
+          </Link>
+          <span>|</span>
+          <Link href={"/login"} className="text-black font-semibold text-xs">
+            Sign In
+          </Link>
         </div>
       </div>
-      <footer className="bg-[#3b4135] border border-white/20 text-white py-4 flex flex-col items-center">
-        <div className="flex justify-center">
-          <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-2 backdrop-blur-sm border border-white/20">
-            <Link href="/">
-              <img
-                src="https://ik.imagekit.io/3a0xukows/gigs%20fix%20full%20size.png?updatedAt=1738307076179"
-                alt="Logo"
-                className="w-8"
+      <Navbar />
+      <div className="min-h-screen flex flex-col justify-center bg-white relative overflow-hidden">
+        {/* Hero Section */}
+        <div className="max-w-6xl w-full border border-1 rounded-2xl shadow-lg p-12 my-12 mx-auto">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            {/* Text Content */}
+            <div className="flex-1 text-center md:text-left mb-8 md:mb-0">
+              <h1 className="text-[50px] font-bold text-gray-900">
+                All in one place to production & selling ticket online
+              </h1>
+
+              <p className="mt-4 text-lg text-gray-600 font-semibold">
+                Discover more than 100+ Ticket online, to manage your ticket
+                production, and ease of getting an event ticket.
+              </p>
+              <div className="mt-8 flex gap-4 justify-center md:justify-start">
+                <a
+                  href="#production-section"
+                  className="bg-[#7aa3a9] border border-gray-300 px-8 py-3 rounded-xl text-white font-bold text-center"
+                >
+                  Get Started
+                </a>
+                <a
+                  href="#see-more"
+                  className="bg-white border border-gray-300 px-4 py-3 rounded-xl text-black hover:bg-gray-100 font-bold"
+                >
+                  See More
+                </a>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="flex-1">
+              <Image
+                width={200}
+                height={200}
+                src="https://ik.imagekit.io/3a0xukows/poster%20fix.jpg?updatedAt=1738613982757"
+                alt="poster"
+                className="w-full h-auto rounded-xl"
               />
-            </Link>
+            </div>
+          </div>
+
+          {/* Features Grid */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12 justify-items-center">
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="flex items-center font-semibold text-xl mb-3 text-white">
+                <Image
+                  width={200}
+                  height={200}
+                  src="https://ik.imagekit.io/3a0xukows/ai%20(1).png?updatedAt=1738636951973"
+                  alt="AI"
+                  className="w-6 h-6 mr-2"
+                />
+                AI Assistance
+              </h3>
+              <p className="text-sm text-black">
+                The AI Smart Assistant is your intelligent companion within the
+                web app, Whether you need help finding information, completing
+                finding a ticket event, or getting recommendations.
+              </p>
+            </div>
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="flex items-center font-semibold text-xl mb-3 text-white">
+                <Image
+                  width={200}
+                  height={200}
+                  src="https://ik.imagekit.io/3a0xukows/face-recognition.png?updatedAt=1738637304014"
+                  alt="Face Recognition"
+                  className="w-6 h-6 mr-2"
+                />
+                Face Recognition
+              </h3>
+              <p className="text-sm text-black">
+                The Face Recognition feature brings a new level of convenience
+                and security to your web app experience. identity confirmation
+                process so that the ticket production process is safe.
+              </p>
+            </div>
+            <div className="bg-[#7aa3a9] shadow-lg rounded-2xl p-8 w-full max-w-sm">
+              <h3 className="flex items-center font-semibold text-xl mb-3 text-whihte">
+                <Image
+                  width={200}
+                  height={200}
+                  src="https://ik.imagekit.io/3a0xukows/google-maps.png?updatedAt=1738636974442"
+                  alt="gps"
+                  className="w-6 h-6 mr-2"
+                />
+                GPS
+              </h3>
+              <p className="text-sm text-black">
+                The Real-Time GPS Tracking feature empowers you to navigate the
+                world with confidence. directs you to the place you want to go
+                according to your ticket order.
+              </p>
+            </div>
           </div>
         </div>
-        <span className="text-sm hover:underline text-white">
-          © 2025, EzGigs.com, Inc. or its tickets
-        </span>
-      </footer>
+        <div
+          id="production-section"
+          className="max-w-6xl w-full border border-1 rounded-2xl shadow-lg p-10 my-12 mx-auto scroll mt-[-10]"
+        >
+          <h1 className="flex justify-center text-[50px] font-bold text-black">
+            Your Ticket Online
+          </h1>
+          <h1 className="flex justify-center text-[50px] font-bold text-black mb-2">
+            Production
+          </h1>
+          <p className="flex justify-center text-gray-600 text-lg">
+            Find festival, concert, and workshop or Make own
+          </p>
+          <p className="flex justify-center text-gray-600 text-lg mb-6">
+            ticket production to manage your event.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link href={"/login"}>
+              <button className="bg-[#7aa3a9] border border-gray-300 px-8 py-3 rounded-xl text-white font-bold">
+                Start Here
+              </button>
+            </Link>
+          </div>
+          <div className="mt-8">
+            <Image
+              width={200}
+              height={200}
+              src="https://ik.imagekit.io/3a0xukows/iphone-gigs.png?updatedAt=1738649997632"
+              alt="iphone-gigs"
+              className=" mx-auto w-80"
+            />
+          </div>
+        </div>
+        <div
+          id="see-more"
+          className="max-w-6xl w-full border border-1 rounded-2xl shadow-lg p-10 my-12 mx-auto scroll mt-[-10]"
+        >
+          <h1 className="flex justify-center text-[50px] font-bold text-black">
+            Looking for Upcoming
+          </h1>
+          <h1 className="flex justify-center text-[50px] font-bold text-black">
+            events
+          </h1>
+          <p className="flex justify-center text-gray-600 text-lg">
+            See all lists of upcoming and ongoing events
+          </p>
+          <p className="flex justify-center text-gray-600 text-lg">
+            on your home page.
+          </p>
+          <Image
+            width={200}
+            height={200}
+            src="https://ik.imagekit.io/3a0xukows/home%20jpg.jpg?updatedAt=1738654384612"
+            alt="home"
+            className=" mx-auto w-[600px]"
+          />
+        </div>
+        <div className="max-w-6xl w-full border border-1 rounded-2xl shadow-lg p-10 my-12 mx-auto scroll mt-[-10]">
+          <h1 className="flex justify-center text-[50px] font-bold text-black">
+            Sell your tickets on the
+          </h1>
+          <h1 className="flex justify-center text-[50px] font-bold text-black">
+            marketplace
+          </h1>
+          <p className="flex justify-center text-gray-600 text-lg">
+            Create your own event tickets or
+          </p>
+          <p className="flex justify-center text-gray-600 text-lg">
+            sell concert tickets you own to others.
+          </p>
+          <Image
+            width={200}
+            height={200}
+            src="https://ik.imagekit.io/3a0xukows/fix.jpg?updatedAt=1738661044352"
+            alt="marketplace"
+            className=" mx-auto w-[700px]"
+          />
+        </div>
+        <Footer />
+      </div>
     </>
   );
-};
-
-export default LandingPage;
+}

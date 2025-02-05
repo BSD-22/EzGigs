@@ -47,9 +47,9 @@ const SellerPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-7 bg-[#FFF8F3]">
+      <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
         <div className="mb-8">
-          <h1 className="text-4xl font-black text-[#2D1810]">Seller Dashboard 🎯</h1>
+          <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
         </div>
         {/* Stats Grid Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -118,9 +118,9 @@ const SellerPage = () => {
   };
 
   return (
-    <div className="flex-1 p-7 bg-[#FFF8F3]">
+    <div className="flex-1 p-7 bg-[#FFF8F3] min-h-screen">
       <div className="mb-8">
-        <h1 className="text-4xl font-black text-[#2D1810]">Seller Dashboard 🎯</h1>
+        <h1 className="text-4xl font-black text-[#2D1810]">Dashboard 📊</h1>
       </div>
 
       {/* Stats Grid */}

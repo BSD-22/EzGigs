@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTicketById, updateTicket } from "@/db/models/ticket";
 import { CustomResponse } from "@/types";
 
-export const GET = async (_: never, { params }: { params: Promise<{ id: string }> }) => {
+export const GET = async (
+  _: never,
+  { params }: { params: Promise<{ id: string }> }
+) => {
   try {
     const { id } = await params;
     const result = await getTicketById(id);
@@ -20,11 +23,15 @@ export const GET = async (_: never, { params }: { params: Promise<{ id: string }
   }
 };
 
-export const PUT = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const PUT = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
   try {
     const updateData = await req.json();
-    const result = await updateTicket(params.id, updateData);
+    const { id } = await params;
 
+    const result = await updateTicket(id, updateData);
     return NextResponse.json<CustomResponse<unknown>>(result);
   } catch (error) {
     console.error("Update Ticket Error:", error);

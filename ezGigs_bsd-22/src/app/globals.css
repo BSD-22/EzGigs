@@ -34,12 +34,7 @@ body {
   animation: pulse-slow 4s ease-in-out infinite;
 }
 
-.masonry-grid {
-    display: flex;
-    width: auto;
+/* Add this to your existing global styles */
+html {
+  scroll-behavior: smooth;
 }
-
-.masonry-grid_column {
-    background-clip: padding-box;
-}
-

@@ -19,6 +19,7 @@ const SubscriptionPage = () => {
     if (success && sessionId) {
       verifySubscription(sessionId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [success, sessionId]);
 
   const verifySubscription = async (sessionId: string) => {
