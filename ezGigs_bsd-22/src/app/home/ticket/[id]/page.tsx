@@ -284,6 +284,7 @@ const TicketDetail = ({ params }: { params: Promise<{ id: string }> }) => {
                   alt={ticket.name}
                   fill
                   className="object-cover"
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
 

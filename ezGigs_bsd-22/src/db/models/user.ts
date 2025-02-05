@@ -40,6 +40,7 @@ export type UserModel = {
   subscriptionType: "free" | "premium" | "vip";
   ownedTickets: UserTicket[];
   soldTickets: SoldTicket[];
+  hiddenChats?: string[]; // Add this field
 };
 
 export type UserTicketsResponse = {
@@ -117,7 +118,7 @@ export const getUserById = async (id: string): Promise<CustomResponse<UserModel>
   const db = await getDb();
   const collection = db.collection("User");
 
-  const user = (await collection.findOne({ _id: ObjectId.createFromHexString(id) })) as UserModel;
+  const user = (await collection.findOne({ _id: ObjectId.createFromHexString(id) }, { projection: { password: 0 } })) as UserModel;
 
   return {
     statusCode: 200,
@@ -161,10 +162,7 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
 
     // Update user jika ada tiket yang tidak valid
     if (validTickets.length !== user.ownedTickets.length) {
-      await collection.updateOne(
-        { email },
-        { $set: { ownedTickets: validTickets } }
-      );
+      await collection.updateOne({ email }, { $set: { ownedTickets: validTickets } });
     }
   }
 
