@@ -1,9 +1,4 @@
-import {
-  getAllTickets,
-  getTicketById,
-  purchaseTicket,
-  TicketModel,
-} from "@/db/models/ticket";
+import { getAllTickets, getTicketById, purchaseTicket, TicketModel } from "@/db/models/ticket";
 import { createPaymentSession } from "@/services/stripe";
 import { CustomResponse } from "@/types";
 import { ObjectId } from "mongodb";
@@ -17,12 +12,13 @@ type PurchaseResponse = {
 type PurchaseRequestBody = {
   ticketId: string;
   categoryName: string;
-  email: string;
-  name: string;
-  phone: string;
+  buyerEmail: string;
+  buyerName: string;
+  buyerPhone: string;
   identityType: "KTP" | "Passport" | "SIM" | "Student";
   identityNumber: string;
   identityDetails: string;
+  subscriptionType: "free" | "premium" | "vip"; // Add this line
 };
 
 export const GET = async () => {
@@ -36,25 +32,19 @@ export const GET = async () => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = (await request.json()) as PurchaseRequestBody;
+
     const {
       ticketId,
       categoryName,
-      email: buyerEmail,
-      name: buyerName,
-      phone: buyerPhone,
+      buyerEmail,
+      buyerName,
+      buyerPhone,
       identityType,
       identityDetails,
+      subscriptionType, // Add this line
     } = body;
 
-    if (
-      !ticketId ||
-      !categoryName ||
-      !buyerEmail ||
-      !buyerName ||
-      !buyerPhone ||
-      !identityType ||
-      !identityDetails
-    ) {
+    if (!ticketId || !categoryName || !buyerEmail || !buyerName || !buyerPhone || !identityType || !identityDetails) {
       return NextResponse.json<CustomResponse<null>>(
         {
           statusCode: 400,
@@ -94,6 +84,7 @@ export const POST = async (request: NextRequest) => {
       identityType,
       identityDetails,
       userId,
+      subscriptionType, // Add this line
     });
 
     if (purchaseResult.statusCode !== 201 || !purchaseResult.data) {
@@ -104,13 +95,7 @@ export const POST = async (request: NextRequest) => {
 
     const purchaseData = purchaseResult.data as PurchaseResponse;
 
-    const stripeSession = await createPaymentSession(
-      ticket.data,
-      categoryName,
-      userId,
-      purchaseData.purchaseId.toString(),
-      purchaseData.seatNumber
-    );
+    const stripeSession = await createPaymentSession(ticket.data, categoryName, userId, purchaseData.purchaseId.toString(), purchaseData.seatNumber, subscriptionType);
 
     if (stripeSession.statusCode !== 200) {
       return NextResponse.json(stripeSession, {

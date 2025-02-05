@@ -1,23 +1,18 @@
 "use client";
 
 import { baseUrl } from "@/constants/baseUrl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Dialog } from "@headlessui/react";
+import TicketPurchaseModal from "@/components/TicketPurchaseModal";
+import { TicketPurchase } from "@/db/models/ticket";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function BuyTicketButton({ listingId, isOwner }: { listingId: string; isOwner: boolean }) {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-  const [buyerData, setBuyerData] = useState({
-    buyerEmail: "",
-    buyerName: "",
-    buyerPhone: "",
-    identityType: "KTP" as "KTP" | "Passport" | "SIM" | "Student",
-    identityNumber: "",
-  });
 
-  const handleBuyTicket = async () => {
+  const handleBuyTicket = async (buyerData: Omit<TicketPurchase, "_id" | "ticketId" | "categoryName" | "seatNumber" | "price" | "paymentStatus" | "paymentIntentId" | "purchaseDate">) => {
     try {
       setLoading(true);
       const response = await fetch(`${baseUrl}/api/marketplace/${listingId}`, {
@@ -26,17 +21,32 @@ export default function BuyTicketButton({ listingId, isOwner }: { listingId: str
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(buyerData),
+        body: JSON.stringify({
+          buyerEmail: buyerData.buyerEmail,
+          buyerName: buyerData.buyerName,
+          buyerPhone: buyerData.buyerPhone,
+          identityType: buyerData.identityType,
+          identityDetails: buyerData.identityDetails,
+        }),
       });
 
-      if (response.ok) {
-        router.push("/home/my-tickets");
+      if (!response.ok) {
+        throw new Error("Failed to initiate purchase");
+      }
+
+      const data = await response.json();
+
+      if (data.data?.url) {
+        router.push(data?.data.url);
+      } else {
+        throw new Error("No payment URL received");
       }
     } catch (error) {
       console.error("Error buying ticket:", error);
+      toast.error("Failed to purchase ticket. Please try again.");
+      setIsModalOpen(false);
     } finally {
       setLoading(false);
-      setIsModalOpen(false);
     }
   };
 
@@ -59,94 +69,12 @@ export default function BuyTicketButton({ listingId, isOwner }: { listingId: str
         {loading ? "Processing..." : "Buy Ticket"}
       </button>
 
-      <Dialog
-        open={isModalOpen}
+      <TicketPurchaseModal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        className="relative z-50">
-        <div
-          className="fixed inset-0 bg-black/30"
-          aria-hidden="true"
-        />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-black/90 rounded-2xl p-8 max-w-md w-full border border-[#00D2FF]/20">
-            <Dialog.Title className="text-2xl font-bold mb-6 bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] text-transparent bg-clip-text">Enter Buyer Details</Dialog.Title>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleBuyTicket();
-              }}
-              className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={buyerData.buyerEmail}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, buyerEmail: e.target.value }))}
-                  className="w-full bg-black/50 border border-[#00D2FF]/20 rounded-lg px-4 py-2 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Name</label>
-                <input
-                  type="text"
-                  required
-                  value={buyerData.buyerName}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, buyerName: e.target.value }))}
-                  className="w-full bg-black/50 border border-[#00D2FF]/20 rounded-lg px-4 py-2 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  required
-                  value={buyerData.buyerPhone}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, buyerPhone: e.target.value }))}
-                  className="w-full bg-black/50 border border-[#00D2FF]/20 rounded-lg px-4 py-2 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Type</label>
-                <select
-                  value={buyerData.identityType}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, identityType: e.target.value as typeof buyerData.identityType }))}
-                  className="w-full bg-black/50 border border-[#00D2FF]/20 rounded-lg px-4 py-2 text-white">
-                  <option value="KTP">KTP</option>
-                  <option value="Passport">Passport</option>
-                  <option value="SIM">SIM</option>
-                  <option value="Student">Student ID</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Identity Number</label>
-                <input
-                  type="text"
-                  required
-                  value={buyerData.identityNumber}
-                  onChange={(e) => setBuyerData((prev) => ({ ...prev, identityNumber: e.target.value }))}
-                  className="w-full bg-black/50 border border-[#00D2FF]/20 rounded-lg px-4 py-2 text-white"
-                />
-              </div>
-              <div className="flex gap-4 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-[#00D2FF]/20 rounded-lg text-gray-400 hover:border-[#00D2FF] transition-colors">
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] rounded-lg text-white font-medium hover:brightness-110 transition-all disabled:opacity-50">
-                  {loading ? "Processing..." : "Confirm Purchase"}
-                </button>
-              </div>
-            </form>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
+        onSubmit={handleBuyTicket}
+        requiresVerification={true}
+      />
     </>
   );
 }

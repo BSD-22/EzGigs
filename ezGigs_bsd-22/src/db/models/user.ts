@@ -40,7 +40,7 @@ export type UserModel = {
   subscriptionType: "free" | "premium" | "vip";
   ownedTickets: UserTicket[];
   soldTickets: SoldTicket[];
-  hiddenChats?: string[]; // Add this field
+  hiddenChats?: string[];
 };
 
 export type UserTicketsResponse = {
@@ -160,13 +160,11 @@ export const getUserTickets = async (email: string): Promise<CustomResponse<User
       }
     }
 
-    // Update user jika ada tiket yang tidak valid
     if (validTickets.length !== user.ownedTickets.length) {
       await collection.updateOne({ email }, { $set: { ownedTickets: validTickets } });
     }
   }
 
-  // Lanjutkan dengan aggregation pipeline yang sudah ada
   const userWithTickets = (await collection
     .aggregate([
       {
@@ -260,7 +258,7 @@ export const addTicketToUser = async (
         categoryName,
         seatNumber,
         status: "owned",
-        purchasePrice,
+        purchasePrice, // This will now store the actual discounted price
         purchaseDate: new Date(),
         buyerEmail: buyerData.email,
         buyerName: buyerData.name,
@@ -340,6 +338,7 @@ export const updateTicketStatus = async (userId: string, ticketId: string, statu
     data: result.acknowledged,
   };
 };
+
 export const updateUserSubscription = async (userId: string, subscriptionType: "free" | "premium" | "vip"): Promise<CustomResponse<unknown>> => {
   const db = await getDb();
   const collection = db.collection<UserModel>("User");
