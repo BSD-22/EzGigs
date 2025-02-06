@@ -104,7 +104,7 @@ const SideBar = ({ userData }: SideBarProps) => {
                 flex items-center gap-2
                 group">
                 <div className="text-[#00D2FF] group-hover:scale-110 transition-transform duration-300">{getSubscriptionIcon(subscription)}</div>
-                <span className="text-white/80 text-sm capitalize">{subscription} Plan</span>
+                <span className="text-white/80 text-sm capitalize">{subscription === "premium" ? "Silver" : subscription === "vip" ? "Gold" : subscription} Plan</span>
               </div>
             </div>
           ) : (

@@ -7,6 +7,10 @@ export const middleware = async (request: NextRequest) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
 
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.next();
+  }
+
   const isProtectedRoute = request.nextUrl.pathname.startsWith("/home") || request.nextUrl.pathname.startsWith("/api/ticket") || request.nextUrl.pathname.startsWith("/seller");
 
   if (isProtectedRoute && (!token || token.value.length <= 0)) {

@@ -63,7 +63,6 @@ const MarketplaceSell = () => {
   const handleSubmitSale = async () => {
     if (!selectedTicket || !price) return;
 
-    // Find the selected ticket details
     const ticket = ownedTickets.find((t) => t.ticketId.toString() === selectedTicket);
     if (!ticket) return;
 
@@ -78,8 +77,8 @@ const MarketplaceSell = () => {
           ticketId: selectedTicket,
           price: Number(price),
           description,
-          categoryName: ticket.categoryName, // Add categoryName
-          seatNumber: ticket.seatNumber, // Add seatNumber
+          categoryName: ticket.categoryName,
+          seatNumber: ticket.seatNumber,
         }),
       });
 
@@ -146,21 +145,15 @@ const MarketplaceSell = () => {
                 <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-4">
                   <div className="flex items-end justify-between gap-1 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-[11px] sm:text-xl font-bold text-white leading-tight line-clamp-2 mb-0.5 sm:mb-2">
-                        {ticket?.ticketDetails?.name}
-                      </h3>
+                      <h3 className="text-[11px] sm:text-xl font-bold text-white leading-tight line-clamp-2 mb-0.5 sm:mb-2">{ticket?.ticketDetails?.name}</h3>
                       <div className="flex items-start sm:items-center gap-0.5 sm:gap-2 text-[9px] sm:text-sm text-gray-200">
                         <span className="flex-shrink-0">📍</span>
                         <span className="line-clamp-1 break-words">{ticket?.ticketDetails?.venue}</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0 bg-white rounded-md sm:rounded-xl p-1 sm:p-2 text-center min-w-[35px] sm:min-w-[60px]">
-                      <p className="text-sm sm:text-xl font-bold text-[#2C3228] leading-none">
-                        {new Date(ticket?.ticketDetails?.date).getDate()}
-                      </p>
-                      <p className="text-[8px] sm:text-xs font-medium text-[#4A5043] mt-0.5">
-                        {new Date(ticket?.ticketDetails?.date).toLocaleDateString("id-ID", { month: "short" })}
-                      </p>
+                      <p className="text-sm sm:text-xl font-bold text-[#2C3228] leading-none">{new Date(ticket?.ticketDetails?.date).getDate()}</p>
+                      <p className="text-[8px] sm:text-xs font-medium text-[#4A5043] mt-0.5">{new Date(ticket?.ticketDetails?.date).toLocaleDateString("id-ID", { month: "short" })}</p>
                     </div>
                   </div>
                 </div>

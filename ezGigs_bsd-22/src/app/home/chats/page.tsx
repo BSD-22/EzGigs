@@ -5,6 +5,7 @@ import { database } from "@/services/firebase";
 import { ref, get } from "firebase/database";
 import Link from "next/link";
 import DeleteChatButton from "./_components/DeleteChatButton";
+import ChatSkeleton from "./_components/ChatSkeleton";
 
 interface FirebaseChat {
   messages?: Record<
@@ -143,7 +144,7 @@ const ChatsPage = () => {
     return timeB - timeA;
   });
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <ChatSkeleton />;
 
   return (
     <div className="w-full h-[100dvh] md:h-[calc(100vh-64px)] flex flex-col bg-gradient-to-br from-[#F4F6F0] via-[#E8EDE1] to-[#F4F6F0] overflow-hidden fixed inset-0 md:relative z-[60]">

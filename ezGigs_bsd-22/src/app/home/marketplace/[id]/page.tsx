@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { getMarketplaceById } from "@/db/models/marketplace";
 import BuyTicketButton from "./BuyTicketButton";
 import { verifyToken } from "@/utils/jose";
 import { JosePayload } from "@/types";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getMarketplaceById } from "@/db/models/marketplace";
 
 const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -275,6 +277,9 @@ const MarketplaceTicketDetail = async ({ params }: { params: Promise<{ id: strin
           </div>
         </div>
       </div>
+
+      {/* Add ToastContainer at the end of the component */}
+      <ToastContainer />
     </div>
   );
 };

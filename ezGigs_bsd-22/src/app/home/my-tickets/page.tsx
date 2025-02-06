@@ -32,8 +32,8 @@ async function MyTicketsPage() {
 
   const payload = await verifyToken<JosePayload>(token.value);
   const { data: userTickets } = await getUserTickets(payload.email);
-  console.log('user ticket >>>>>>>',userTickets);
-  
+  console.log("user ticket >>>>>>>", userTickets);
+
   const { data: marketplaceListings } = await getAllMarketplace();
 
   if (!userTickets) {
@@ -50,10 +50,13 @@ async function MyTicketsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex-1 p-4 sm:p-7 overflow-auto">
         <div className="flex items-center justify-between mb-6">
-          <Header title="My Tickets🎫" description="View your purchased tickets here" />
+          <Header
+            title="My Tickets🎫"
+            description="View your purchased tickets here"
+          />
           {/* <div className="text-sm sm:text-base text-gray-600"> */}
 
-            {/* {activeTickets.length} {activeTickets.length === 1 ? "ticket" : "tickets"} */}
+          {/* {activeTickets.length} {activeTickets.length === 1 ? "ticket" : "tickets"} */}
           {/* </div> */}
         </div>
 
@@ -122,9 +125,7 @@ async function MyTicketsPage() {
                         {ticket.status === "selling" && marketplaceListing ? (
                           <div>
                             <span className="font-semibold text-gray-800">Rp {marketplaceListing.price.toLocaleString("id-ID")}</span>
-                            <span className="text-xs text-gray-500 block">
-                              Original: Rp {ticketDetails.seatCategories.find((cat) => cat.name === ticket.categoryName)?.price.toLocaleString("id-ID")}
-                            </span>
+                            <span className="text-xs text-gray-500 block">Bought for: Rp {ticket.purchasePrice?.toLocaleString("id-ID")}</span>
                           </div>
                         ) : (
                           <div>
