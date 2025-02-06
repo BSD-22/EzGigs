@@ -281,31 +281,6 @@ const Navbar = () => {
 
             {/* Right Section */}
             <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="relative hidden md:block">
-                <Image
-                  width={200}
-                  height={200}
-                  src="https://ik.imagekit.io/3a0xukows/glass.png?updatedAt=1738593019666"
-                  alt="search"
-                  className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2"
-                />
-                <input
-                  type="text"
-                  className="w-40 px-9 py-2 bg-[#f5f5f5] text-[#707072] rounded-2xl font-semibold text-sm"
-                  placeholder="Search"
-                />
-              </div>
-              
-              {/* Mobile Search Icon */}
-              <div className="md:hidden">
-                <Image
-                  width={200}
-                  height={200}
-                  src="https://ik.imagekit.io/3a0xukows/glass.png?updatedAt=1738593019666"
-                  alt="search"
-                  className="w-5 h-5"
-                />
-              </div>
               
               <Link href={"/login"}>
                 <Image
