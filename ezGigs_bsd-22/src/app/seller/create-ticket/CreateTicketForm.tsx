@@ -12,6 +12,20 @@ interface CreateTicketFormProps {
 
 type SeatCategoryInput = Omit<SeatCategory, "availableSeats" | "soldSeats">;
 
+// Add Libraries import
+import { Libraries } from "@react-google-maps/api";
+
+const mapOptions = {
+  disableDefaultUI: false,
+  zoomControl: true,
+  mapTypeControl: false,
+  streetViewControl: false,
+  fullscreenControl: true,
+};
+
+// Add this constant at the top level
+const GOOGLE_MAPS_LIBRARIES: Libraries = ["places"];
+
 const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,11 +49,6 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
     ] as SeatCategoryInput[],
   });
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-  });
-
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     const latLng = e.latLng;
     if (latLng !== null) {
@@ -53,6 +62,26 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
     }
   };
 
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: GOOGLE_MAPS_LIBRARIES,
+    version: "weekly",
+    id: "script-loader",
+  });
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [, setMap] = useState<google.maps.Map | null>(null);
+
+  const onMapLoad = (map: google.maps.Map) => {
+    setMap(map);
+    setMapLoaded(true);
+  };
+
+  const onMapUnmount = () => {
+    setMap(null);
+    setMapLoaded(false);
+  };
+
   const googleMapsScript = useMemo(() => {
     if (!isLoaded) return null;
 
@@ -61,11 +90,21 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
         mapContainerStyle={{ width: "100%", height: "400px" }}
         center={{ lat: formData.location.latitude, lng: formData.location.longitude }}
         zoom={15}
-        onClick={handleMapClick}>
-        <Marker position={{ lat: formData.location.latitude, lng: formData.location.longitude }} />
+        onClick={handleMapClick}
+        onLoad={onMapLoad}
+        onUnmount={onMapUnmount}
+        options={mapOptions}>
+        {mapLoaded && (
+          <Marker
+            position={{
+              lat: formData.location.latitude,
+              lng: formData.location.longitude,
+            }}
+          />
+        )}
       </GoogleMap>
     );
-  }, [isLoaded, formData.location]);
+  }, [isLoaded, formData.location, mapLoaded]);
 
   const handleSeatCategoryChange = (index: number, field: keyof SeatCategoryInput, value: string | number) => {
     const updatedCategories = [...formData.seatCategories];
@@ -123,10 +162,12 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
     }
   };
 
-  const inputClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/20 focus:border-[#FF8008] focus:ring-2 focus:ring-[#FF8008]/20 outline-none transition-colors bg-white/80 backdrop-blur-sm shadow-sm text-[#2D1810] placeholder-gray-400";
+  const inputClasses =
+    "w-full px-4 py-2 rounded-xl border border-[#FF8008]/20 focus:border-[#FF8008] focus:ring-2 focus:ring-[#FF8008]/20 outline-none transition-colors bg-white/80 backdrop-blur-sm shadow-sm text-[#2D1810] placeholder-gray-400";
   const labelClasses = "block text-[#2D1810]/80 font-medium mb-2 text-sm";
   const buttonClasses = "w-full px-4 py-2 rounded-xl border border-[#FF8008]/30 text-[#FF8008] hover:bg-[#FF8008]/5 active:bg-[#FF8008]/10 transition-colors";
-  const submitButtonClasses = "w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#FF8008] to-[#FFA03C] text-white font-medium hover:opacity-90 active:opacity-80 transition-all shadow-lg shadow-[#FF8008]/10";
+  const submitButtonClasses =
+    "w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#FF8008] to-[#FFA03C] text-white font-medium hover:opacity-90 active:opacity-80 transition-all shadow-lg shadow-[#FF8008]/10";
 
   return (
     <form
@@ -207,13 +248,27 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
       <div>
         <label className={labelClasses}>Event Location</label>
         <p className="text-sm text-gray-400 mb-2">Click on the map to set the event location</p>
-        <div className="rounded-lg overflow-hidden border border-[#8E2DE2]/20">{googleMapsScript}</div>
+        <div className="w-full h-[400px] relative rounded-xl overflow-hidden border border-[#8E2DE2]/20">
+          {!isLoaded ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A5043]"></div>
+            </div>
+          ) : loadError ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <p className="text-red-500">Error loading map</p>
+            </div>
+          ) : (
+            googleMapsScript
+          )}
+        </div>
       </div>
 
       <div>
         <label className={labelClasses}>Ticket Categories</label>
         {formData.seatCategories.map((category, index) => (
-          <div key={index} className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
+          <div
+            key={index}
+            className="mb-4 p-4 rounded-xl border border-[#FF8008]/20 bg-white/80 backdrop-blur-sm shadow-sm">
             <div className="flex flex-col gap-4 mb-4">
               <div>
                 <label className={labelClasses}>Category Name</label>
@@ -251,8 +306,7 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
                 <button
                   type="button"
                   onClick={() => removeSeatCategory(index)}
-                  className={`${buttonClasses} w-full sm:w-32 py-2.5`}
-                >
+                  className={`${buttonClasses} w-full sm:w-32 py-2.5`}>
                   Remove
                 </button>
               </div>
@@ -262,8 +316,7 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
         <button
           type="button"
           onClick={addSeatCategory}
-          className={buttonClasses}
-        >
+          className={buttonClasses}>
           Add Category
         </button>
       </div>
@@ -278,8 +331,7 @@ const CreateTicketForm = ({ sellerId }: CreateTicketFormProps) => {
         <button
           type="submit"
           disabled={loading}
-          className={submitButtonClasses}
-        >
+          className={submitButtonClasses}>
           {loading ? "Creating..." : "Create Ticket"}
         </button>
       </div>
