@@ -26,11 +26,7 @@ const LayoutSeller = ({ children }: { children: React.ReactNode }) => {
             name: "Create Ticket",
             path: "/seller/create-ticket",
         },
-        {
-            icon: "⚙️",
-            name: "Settings",
-            path: "/seller/settings",
-        },
+        
     ];
 
     return (
