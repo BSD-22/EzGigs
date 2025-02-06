@@ -24,7 +24,9 @@ type VerifyPaymentResponse = {
     discountApplied: string;
   };
   amount_total: number;
-  payment_intent: string;
+  payment_intent: {
+    id: string;
+  };
 };
 
 export const createPaymentSession = async (
@@ -66,7 +68,7 @@ export const createPaymentSession = async (
               description: `Event at ${ticket.venue} on ${ticket.date} ${ticket.time}${discountPercentage > 0 ? ` (${discountPercentage}% Subscription Discount Applied)` : ""}`,
               images: [ticket.image],
             },
-            unit_amount: Math.round(finalPrice * 100), // Round to avoid floating point issues
+            unit_amount: Math.round(finalPrice * 100),
           },
           quantity: 1,
         },
@@ -179,7 +181,7 @@ export const verifyPaymentSession = async (sessionId: string): Promise<CustomRes
         status: session.payment_status,
         metadata: session.metadata as VerifyPaymentResponse["metadata"],
         amount_total: session.amount_total || 0,
-        payment_intent: session.payment_intent as string,
+        payment_intent: session.payment_intent as VerifyPaymentResponse["payment_intent"],
       },
     };
   } catch (error) {
