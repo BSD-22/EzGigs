@@ -22,8 +22,6 @@ export const GET = async (req: NextRequest) => {
 
     const dashboardStats = await analyzeDashboardData(userData.data);
 
-    // console.log(dashboardStats, "dashboardstats");
-
     return NextResponse.json<CustomResponse<unknown>>({
       statusCode: 200,
       data: dashboardStats,

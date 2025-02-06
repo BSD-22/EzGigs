@@ -109,10 +109,6 @@ export const analyzeDashboardData = async (userData: UserTicketsResponse): Promi
     const aiResponse = result.response.text();
     const aiStats = JSON.parse(aiResponse.substring(aiResponse.indexOf("{"), aiResponse.lastIndexOf("}") + 1));
 
-    console.log(userData, "userdata");
-
-    // console.log(userData.soldTickets, "userdata.soldtickets");
-
     const recentActivities = userData.soldTickets
       .sort((a, b) => new Date(b.soldDate).getTime() - new Date(a.soldDate).getTime())
       .slice(0, 3)

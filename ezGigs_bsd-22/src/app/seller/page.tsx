@@ -34,23 +34,25 @@ const SellerPage = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        const [dashboardResponse, userResponse] = await Promise.all([
-          fetch(`${baseUrl}/api/dashboard`, {
-            credentials: "include",
-          }),
-          fetch(`${baseUrl}/api/user/me`, {
-            credentials: "include",
-          }),
-        ]);
 
-        const [dashData, userData] = await Promise.all([
-          dashboardResponse.json(),
-          userResponse.json(),
-        ]);
+        // Fetch user data first
+        const userResponse = await fetch(`${baseUrl}/api/user/me`, {
+          credentials: "include",
+        });
+        const userData = await userResponse.json();
 
-        if (dashboardResponse.ok && userResponse.ok) {
-          setStats(dashData.data);
+        if (userResponse.ok) {
           setUserData(userData.data);
+        }
+
+        // Then fetch dashboard data
+        const dashboardResponse = await fetch(`${baseUrl}/api/dashboard`, {
+          credentials: "include",
+        });
+        const dashData = await dashboardResponse.json();
+
+        if (dashboardResponse.ok) {
+          setStats(dashData.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,8 +75,7 @@ const SellerPage = () => {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
-            >
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
               <div className="h-4 bg-[#FF8008]/10 rounded animate-pulse mb-2 w-20"></div>
               <div className="h-8 bg-[#FF8008]/10 rounded animate-pulse mb-2"></div>
               <div className="h-3 bg-[#FF8008]/10 rounded animate-pulse w-24"></div>
@@ -87,8 +88,7 @@ const SellerPage = () => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm"
-            >
+              className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#FF8008]/10 rounded-lg animate-pulse"></div>
                 <div className="flex-1">
@@ -106,8 +106,7 @@ const SellerPage = () => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between py-4 border-b border-[#FF8008]/10 last:border-b-0"
-            >
+              className="flex items-center justify-between py-4 border-b border-[#FF8008]/10 last:border-b-0">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-[#FF8008]/10 rounded-full animate-pulse"></div>
                 <div>
@@ -120,18 +119,14 @@ const SellerPage = () => {
           ))}
         </div>
 
-        <div className="text-center text-[#2D1810]/40 mt-4">
-          AI is analyzing your dashboard data...
-        </div>
+        <div className="text-center text-[#2D1810]/40 mt-4">AI is analyzing your dashboard data...</div>
       </div>
     );
   }
 
   const formatTimeAgo = (date: string) => {
     const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60)
-    );
+    const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
 
     if (diffInHours < 24) {
       return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
@@ -145,73 +140,51 @@ const SellerPage = () => {
     <div className="flex-1 p-8 bg-[#FFF8F3] min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
-          <h1 className="text-4xl font-black text-[#2D1810]">
-            Welcome back, {userData.name}! 📊
-          </h1>
-          <p className="text-[#2D1810]/60 mt-2">
-            Here's what's happening with your tickets today
-          </p>
+          <h1 className="text-4xl font-black text-[#2D1810]">Welcome back, {userData.name}! 📊</h1>
+          <p className="text-[#2D1810]/60 mt-2">Here&apos;s what&apos;s happening with your tickets today</p>
         </div>
 
         {/* Stats Grid dengan layout yang lebih rapi */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
           <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 shadow-sm hover:shadow-md transition-all">
-            <p className="text-[#2D1810]/90 text-sm font-medium">
-              Tickets Sold
-            </p>
-            <p className="text-3xl font-bold mt-2 text-[#2D1810]">
-              {stats.ticketsSold}
-            </p>
+            <p className="text-[#2D1810]/90 text-sm font-medium">Tickets Sold</p>
+            <p className="text-3xl font-bold mt-2 text-[#2D1810]">{stats.ticketsSold}</p>
           </div>
           <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 shadow-sm hover:shadow-md transition-all">
-            <p className="text-[#2D1810]/90 text-sm font-medium">
-              Total Revenue
-            </p>
-            <p className="text-3xl font-bold mt-2 text-[#2D1810]">
-              Rp {stats.revenue.toLocaleString("id-ID")}
-            </p>
-            <div className="mt-2 text-xs text-[#2D1810]/60 mt-1">
-              {stats.revenueGrowth > 0 ? "+" : ""}
-            </div>
+            <p className="text-[#2D1810]/90 text-sm font-medium">Total Revenue</p>
+            <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.revenue.toLocaleString("id-ID")}</p>
+            <div className="mt-2 text-xs text-[#2D1810]/60">{stats.revenueGrowth > 0 ? "+" : ""}</div>
           </div>
           <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 shadow-sm hover:shadow-md transition-all">
-            <p className="text-[#2D1810]/90 text-sm font-medium">
-              Average Price
-            </p>
-            <p className="text-3xl font-bold mt-2 text-[#2D1810]">
-              Rp {stats.averagePrice.toLocaleString("id-ID")}
-            </p>
+            <p className="text-[#2D1810]/90 text-sm font-medium">Average Price</p>
+            <p className="text-3xl font-bold mt-2 text-[#2D1810]">Rp {stats.averagePrice.toLocaleString("id-ID")}</p>
           </div>
         </div>
 
         {/* Quick Actions dengan design yang lebih menarik */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-          <Link href="/seller/all-tickets" className="group">
+          <Link
+            href="/seller/all-tickets"
+            className="group">
             <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 hover:border-[#FF8008]/30 hover:shadow-md transition-all">
               <div className="flex items-center gap-5">
                 <span className="text-4xl">🎫</span>
                 <div>
-                  <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">
-                    Manage Inventory
-                  </h3>
-                  <p className="text-sm text-[#2D1810]/60">
-                    View and manage your ticket listings
-                  </p>
+                  <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">Manage Inventory</h3>
+                  <p className="text-sm text-[#2D1810]/60">View and manage your ticket listings</p>
                 </div>
               </div>
             </div>
           </Link>
-          <Link href="/seller/create-ticket" className="group">
+          <Link
+            href="/seller/create-ticket"
+            className="group">
             <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 hover:border-[#FF8008]/30 hover:shadow-md transition-all">
               <div className="flex items-center gap-5">
                 <span className="text-4xl">✨</span>
                 <div>
-                  <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">
-                    List New Ticket
-                  </h3>
-                  <p className="text-sm text-[#2D1810]/60">
-                    Start selling your next amazing event
-                  </p>
+                  <h3 className="font-semibold text-[#2D1810] group-hover:text-[#FF8008] transition-colors">List New Ticket</h3>
+                  <p className="text-sm text-[#2D1810]/60">Start selling your next amazing event</p>
                 </div>
               </div>
             </div>
@@ -220,37 +193,27 @@ const SellerPage = () => {
 
         {/* Recent Activity dengan styling yang lebih clean */}
         <div className="bg-white/80 backdrop-blur-xl border border-[#FF8008]/10 rounded-xl p-7 shadow-sm">
-          <h2 className="text-xl font-bold mb-4 text-[#2D1810]">
-            Recent Activity
-          </h2>
+          <h2 className="text-xl font-bold mb-4 text-[#2D1810]">Recent Activity</h2>
           <div className="space-y-4">
             {stats.recentActivities.length > 0 ? (
               stats.recentActivities.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between py-3 border-b border-[#FF8008]/10 last:border-b-0"
-                >
+                  className="flex items-center justify-between py-3 border-b border-[#FF8008]/10 last:border-b-0">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#FF8008]/10 flex items-center justify-center">
-                      💰
-                    </div>
+                    <div className="w-10 h-10 rounded-full bg-[#FF8008]/10 flex items-center justify-center">💰</div>
                     <div>
                       <p className="font-medium text-[#2D1810]">Ticket Sold</p>
                       <p className="text-sm text-[#2D1810]/70">
-                        {activity.eventName} - Rp{" "}
-                        {activity.price.toLocaleString("id-ID")}
+                        {activity.eventName} - Rp {activity.price.toLocaleString("id-ID")}
                       </p>
                     </div>
                   </div>
-                  <span className="text-sm text-[#2D1810]/60">
-                    {formatTimeAgo(activity.date)}
-                  </span>
+                  <span className="text-sm text-[#2D1810]/60">{formatTimeAgo(activity.date)}</span>
                 </div>
               ))
             ) : (
-              <div className="text-center text-[#2D1810]/60 py-4">
-                No recent activities
-              </div>
+              <div className="text-center text-[#2D1810]/60 py-4">No recent activities</div>
             )}
           </div>
         </div>
